@@ -1,11 +1,40 @@
 
 
-.bottomNav {
+.bottomNavWrapper {
   position: fixed;
-
   bottom: 0;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  transform: translateX(-50%);
 
   width: 100%;
   max-width: var(--app-max-width);
+  height: var(--bottom-nav-height);
+  border-top: 1px solid var(--border-color);
+  z-index: var(--z-bottom-nav);
 }
 
+
+.link{
+  display: flex;
+  width: var(--bottom-nav-height);
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-secondary);
+}
+
+.link span{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+}

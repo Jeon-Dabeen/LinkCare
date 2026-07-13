@@ -1,9 +1,11 @@
 'use client';
 
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
+
+import clsx from "clsx";
 import styles from "@/styles/components/bottomSheet.module.css";
 
-import Button, {ButtonClose} from "@/app/_components/ui/Button";
+import {ButtonClose} from "@/app/_components/ui/Button";
 
 type BottomSheetProps = {
   open: boolean;
@@ -21,8 +23,12 @@ export default function BottomSheet({
 
   return (
     <>
-      <div className={`${styles.bottomSheetOverlay} ${open ? styles.open : ""}`} />
-      <div className={`${styles.bottomSheetWrapper} ${open ? styles.open : ""}`}>
+      <div className={clsx(
+        styles.bottomSheetOverlay,
+        open && styles.open)} />
+      <div className={clsx(
+        styles.bottomSheetWrapper,
+        open && styles.open)}>
         <div className={styles.bottomSheetHeader}>
           <p className={styles.bottomSheetTitle}>{title}</p>
           <ButtonClose onClick={onClose} />

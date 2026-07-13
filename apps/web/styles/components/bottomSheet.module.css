@@ -7,8 +7,8 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   transition:
-    opacity .25s ease,
-    visibility .25s ease;
+    opacity var(--duration-normal) var(--ease-default),
+    visibility var(--duration-normal) var(--ease-default);
 
   opacity: 0;
   visibility: hidden;
@@ -34,9 +34,9 @@
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   z-index: var(--z-bottom-sheet);
   transition:
-    transform .25s ease,
-    opacity .25s ease,
-    visibility .25s ease;
+    transform var(--duration-normal) var(--ease-default),
+    opacity var(--duration-normal) var(--ease-default),
+    visibility var(--duration-normal) var(--ease-default);
   transform: translateY(100%) translateX(-50%);
 }
 

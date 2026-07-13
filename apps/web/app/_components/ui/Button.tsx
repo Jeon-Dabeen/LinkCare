@@ -4,10 +4,13 @@ import styles from "@/styles/components/button.module.css";
 
 
 import { X } from "lucide-react";
+import clsx from "clsx";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "outline" | "text-primary" | "text-secondary" | "text-tertiary";
   size?: "small" | "medium" | "large";
+  full?: boolean,
+  round?: boolean
 };
 
 
@@ -17,16 +20,20 @@ export default function Button({
   className,
   variant = "primary",
   size = "medium",
+  full,
+  round,
   ...props
 }: ButtonProps) {
   return (
     <button
-      className={`
-        ${styles.button}
-        ${styles[variant]}
-        ${styles[size]}
-        ${className ?? ""}
-      `}
+      className={clsx(
+        styles.button,
+        styles[variant],
+        styles[size],
+        full && styles.full,
+        round && styles.round,
+        className
+      )}
       {...props}
     >
       {children}

@@ -34,6 +34,35 @@
 }
 
 
+/* formButtonWrapper */
+
+.formButtonWrapper{
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+}
+
+.formButtonWrapper.column{
+  flex-direction: column;
+}
+
+.formButtonWrapper > button {
+  flex: 1;
+}
+
+.formBox{
+  display: flex;
+  gap: 8px;
+}
+.formBoxRight{
+  text-align: right;
+}
+.formBoxCenter{
+  text-align: center;
+}
+
+
+
 /* input */
 .formInput {
   flex: 1;
@@ -71,13 +100,34 @@
 }
 
 
-.formButtonWrapper{
+
+
+/* file upload */
+.formFileUpload{
+  padding: 40px 20px;
+  text-align: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.formFileUpload .info{
+  padding-bottom: 20px;
+  font-size: var(--font-size-sm);
+  color: var(--color-secondary);
+}
+
+.formFileName {
   display: flex;
+  align-items: center;
   gap: 8px;
-  padding-top: 16px;
+  padding: 16px;
+  color: var(--color-secondary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
-.formButtonWrapper > button {
-  flex: 1;
+.formFileName .text{
+  color: var(--color-text-primary);
 }
-

@@ -13,7 +13,6 @@ export default function Register() {
   const [open, setOpen] = useState(false);
 
   function handleOpenSheet() {
-    console.log("BottomSheet 열기 버튼 클릭");
     setOpen(true);
   }
 
