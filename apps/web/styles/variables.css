@@ -1,0 +1,133 @@
+:root{
+  /* colors */
+  --color-primary: #5E8B62;
+  --color-primary-hover: #4A6F4E;
+  --color-primary-active: #3A5A3E;
+  --color-secondary: #B49465;
+  --color-secondary-hover: #9A7A50;
+  --color-secondary-active: #80613B;
+  --color-tertiary: #8682A3;
+  --color-tertiary-hover: #6B678A;
+  --color-tertiary-active: #524E6B;
+
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F5F5F5;
+
+  --color-success: #7FAE95;
+  --color-success-hover: #6A9B7F;
+  --color-success-active: #5A7F66;
+  --color-warning: #D8A557;
+  --color-warning-hover: #C08E40;
+  --color-warning-active: #A8772A;
+  --color-error: #CB7568;
+  --color-error-hover: #B05A4D;
+  --color-error-active: #964A3F;
+  --color-info: #8FA0C0;
+  --color-info-hover: #7B8BB8;
+  --color-info-active: #6A7AA5;
+
+  /* text */
+  --color-text-primary: #342E28;
+  --color-text-secondary: #665F57;
+  --color-text-dark: #161616;
+  --color-text-light: #968F88;
+  --color-text-inverse: #FFFFFF;
+  --color-placeholder: #9F988F;
+
+  /* background */
+  --color-bg: #F9F7F3;
+
+  /* border */
+  --border-width: 1px;
+  --border-radius: 8px;
+  --border-color: #9F988F;
+
+  /* fonts */
+  --font-size-xs: 12px;  /* 캡션, 보조 */
+  --font-size-sm: 13px;  /* 작은 설명 */
+  --font-size-base: 14px; /* 기본 본문 */
+  --font-size-md: 16px;  /* 강조 본문 */
+  --font-size-lg: 20px;  /* 섹션 제목 */
+  --font-size-xl: 24px;  /* 페이지 제목 */
+  --line-height-base: 1.5;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* icon color */
+  --icon-color-primary: #222;
+  --icon-color-secondary: #666;
+  --icon-color-muted: #aaa;
+
+  /* icon size */
+  --icon-size-sm: 16px;
+  --icon-size-md: 24px;
+
+  /* icon stroke width */
+  --icon-stroke-normal: 2;
+  --icon-stroke-thin: 1.5;
+
+  /* spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+
+  /* radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* shadow */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.12);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.16);
+
+  /* layout */
+  --app-max-width: 600px;
+  --header-height: 56px;
+  --header-bg: #FFFDFA;
+  --bottom-nav-height: 64px;
+  --content-max-width: 480px;
+  --layout-padding-x: 20px;
+
+  /* transition */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-default: ease-in-out;
+
+  /* z-index */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-header: 200;
+  --z-sticky: 250;
+  --z-bottom-bar: 300;
+  --z-bottom-nav: 350;
+  --z-overlay: 400;
+  --z-bottom-sheet: 500;
+  --z-modal: 600;
+  --z-toast: 700;
+  --z-tooltip: 800;
+
+
+
+  /* input */
+  --input-height: 48px;
+  --input-padding-x: 10px;
+  --input-padding-y: 15px;
+  --input-border-radius: 8px;
+  --input-border-color: #DCD2C5;
+  --input-border-color-focus: var(--color-tertiary);
+  --input-border-color-error: var(--color-error);
+  --input-bg-color: var(--color-surface);
+  --color-disabled: #E0E0E0;
+}
+
+[data-theme="dark"] {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}

@@ -1,0 +1,31 @@
+.wrapper{
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background: #cecdcd;
+}
+
+.app{
+  position: relative;
+  width: 100%;
+  max-width: var(--app-max-width);
+  min-height: 100vh;
+  background: var(--color-bg);
+  z-index: var(--z-header);
+}
+
+
+.main{
+  width: 100%;
+  max-width: var(--app-max-width);
+  padding: var(--layout-padding-x);
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+  background: var(--color-bg);
+}
+
+/* 
+✅ Header → sticky
+✅ BottomNav → fixed
+✅ BottomSheet → fixed
+✅ Modal → fixed
+✅ Toast → fixed */

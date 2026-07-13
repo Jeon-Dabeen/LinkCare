@@ -1,0 +1,29 @@
+html,
+body {
+  width: 100%;
+}
+
+body {
+  min-height: 100vh;
+
+  font-family:
+    var(--font-pretendard),
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    "Malgun Gothic",
+    sans-serif;
+
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
+}

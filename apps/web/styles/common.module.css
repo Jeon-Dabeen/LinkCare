@@ -1,0 +1,51 @@
+
+.pageTitleWrapper{
+  display: flex;
+  padding: 20px 0;
+}
+
+.pageTitle{
+  flex: 1;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+
+.fixedBottom{
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  max-width: var(--app-max-width);
+  padding: var(--layout-padding-x);
+  z-index: var(--z-bottom-bar);
+}
+
+
+.fixedBottomInner{
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+.fixedBottomInner > button{
+  flex: 1;
+}
+
+
+
+
+/* text */
+.textInfo{
+  color: var(--color-text-light);
+}
+
+
+
