@@ -18,7 +18,7 @@ export default function Register() {
 
 
   return (
-    <section>
+    <section className={commonStyle.mainContent}>
       <div className={commonStyle.pageTitleWrapper}>
         <h2 className={commonStyle.pageTitle}>회원 정보를 입력해주세요</h2>
       </div>

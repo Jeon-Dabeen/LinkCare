@@ -13,6 +13,8 @@
   --color-surface: #FFFFFF;
   --color-surface-hover: #F5F5F5;
 
+  --color-card-bg: #F4EDE3;
+
   --color-success: #7FAE95;
   --color-success-hover: #6A9B7F;
   --color-success-active: #5A7F66;
@@ -38,7 +40,6 @@
   --color-bg: #F9F7F3;
 
   /* border */
-  --border-width: 1px;
   --border-radius: 8px;
   --border-color: #9F988F;
 
@@ -72,6 +73,7 @@
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
+  --spacing-box-inner: 10px;
 
   /* radius */
   --radius-sm: 4px;

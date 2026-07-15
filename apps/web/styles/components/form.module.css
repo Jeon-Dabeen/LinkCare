@@ -33,6 +33,13 @@
   color: var(--color-text-primary);
 }
 
+.formUnit{
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-placeholder);
+}
 
 /* formButtonWrapper */
 

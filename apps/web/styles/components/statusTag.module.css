@@ -1,0 +1,52 @@
+
+/* statusTag */
+
+.statusTag{
+  position: absolute;
+  top: -2px;
+  right: 10px;
+  padding: 6px 5px 2px;
+  width: 28px;
+  height: 25px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text-inverse);
+}
+
+.statusTag::after{
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 4px solid currentColor;
+}
+
+
+.normal{
+  background: var(--color-success);
+}
+
+.normal::after {
+  border-top-color: var(--color-success);
+}
+
+.warning {
+  background: var(--color-warning);
+}
+
+.warning::after {
+  border-top-color: var(--color-warning);
+}
+
+.danger {
+  background: var(--color-error);
+}
+
+.danger::after {
+  border-top-color: var(--color-error);
+}
+

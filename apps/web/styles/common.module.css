@@ -1,7 +1,21 @@
 
+
+.mainContent{
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+
 .pageTitleWrapper{
   display: flex;
-  padding: 20px 0;
+  align-items: center;
+}
+
+.pageTitleWrapper .left{
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
 .pageTitle{
@@ -42,9 +56,46 @@
 
 
 
+
 /* text */
-.textInfo{
+
+.messageTitle{
+  padding-bottom: var(--spacing-md);
+  font-size: var(--font-size-md);
+  color: var(--color-text-dark);
+}
+
+
+.colorPrimary{
+  color: var(--color-primary);
+}
+
+.colorSecondary{
+  color: var(--color-secondary);
+}
+
+.colorTertiary{
+  color: var(--color-tertiary);
+}
+
+.textDark{
+  color: var(--color-text-dark);
+}
+
+.textLight{
   color: var(--color-text-light);
+}
+
+.textInfo{
+  color: var(--color-info);
+}
+
+.textWarning{
+  color: var(--color-warning);
+}
+
+.textError{
+  color: var(--color-error);
 }
 
 
