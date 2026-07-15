@@ -18,7 +18,7 @@ export default function Page(){
 
 
   return (
-    <section>
+    <section className={commonStyle.mainContent}>
       <div className={commonStyle.pageTitleWrapper}>
         <h2 className={commonStyle.pageTitle}>건강검진 결과 파일 등록</h2>
       </div>

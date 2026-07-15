@@ -14,7 +14,7 @@ export default function Login() {
   const router = useRouter();
 
   return (
-    <section>
+    <section className={commonStyle.mainContent}>
       <div className={commonStyle.pageTitleWrapper}>
         <h2 className={commonStyle.pageTitle}>로그인</h2>
       </div>
