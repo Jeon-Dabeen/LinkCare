@@ -25,7 +25,7 @@ CREATE TABLE "Profile" (
 	"goalWeight"	REAL		NULL,
 	"goalCalorie"	INT		NULL,
 	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
 );
 
 COMMENT ON COLUMN "Profile"."id" IS 'autoincrement';
@@ -44,7 +44,7 @@ CREATE TABLE "Meal" (
 	"photoUrl"	TEXT		NULL,
 	"mealStatus"	ENUM		NOT NULL,
 	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
 );
 
 COMMENT ON COLUMN "Meal"."id" IS 'autoincrement';
@@ -104,7 +104,7 @@ CREATE TABLE "BloodPressure" (
 	"dayPeriod"	"DayPeriod"		NOT NULL,
 	"bpDate"	Date		NOT NULL,
 	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
 );
 
 COMMENT ON COLUMN "BloodPressure"."id" IS 'autoincrement';
@@ -127,7 +127,7 @@ CREATE TABLE "DailyShield" (
 	"isSupplement"	Boolean		NULL,
 	"supplementType"	TEXT		NULL,
 	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
 );
 
 COMMENT ON COLUMN "DailyShield"."id" IS 'autoincrement';
