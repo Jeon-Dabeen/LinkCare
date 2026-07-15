@@ -42,7 +42,7 @@ CREATE TABLE "Meal" (
 	"goalCalorie"	INT		NULL,
 	"unitCalorie"	INT		NULL,
 	"photoUrl"	TEXT		NULL,
-	"mealStatus"	ENUM		NOT NULL,
+	"mealStatus"	ENUM	DEFAULT "PENDING"	NOT NULL,
 	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
 );
@@ -119,12 +119,12 @@ CREATE TABLE "DailyShield" (
 	"dailyDate"	TEXT		NOT NULL,
 	"feel"	INT		NULL,
 	"energy"	INT		NULL,
-	"isExercise"	Boolean		NULL,
-	"exersiseTime"	TEXT		NULL,
+	"isExercise"	Boolean	 DEFAULT FALSE	NOT NULL,
+	"exersiseTime"	TEXT	DEFAULT 30	NOT NULL,
 	"exersiseType"	TEXT		NULL,
-	"isWater"	Boolean		NULL,
+	"isWater"	Boolean	DEFAULT FALSE	NULL,
 	"waterCup"	INT		NULL,
-	"isSupplement"	Boolean		NULL,
+	"isSupplement"	Boolean	 DEFAULT FALSE	NOT NULL,
 	"supplementType"	TEXT		NULL,
 	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
