@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Weight" ADD COLUMN     "userId" INTEGER NOT NULL DEFAULT 5;

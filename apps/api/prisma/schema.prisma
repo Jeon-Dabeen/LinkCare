@@ -13,10 +13,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Weight {
   id         Int      @id @default(autoincrement())
-  userId Int
+  userId     Int      @default(5)
   height     Decimal  @db.Decimal(4, 1)
   weight     Decimal  @db.Decimal(4, 1)
   weightDate DateTime @db.Date
