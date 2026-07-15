@@ -147,25 +147,25 @@ DROP TABLE "CheckUp";
 CREATE TABLE "CheckUp" (
 	"id"	INT		NOT NULL,
 	"userId"	INT		NOT NULL,
-	"height"	INT		NULL,
-	"weight"	INT		NULL,
-	"waist"	INT		NULL,
-	"bmi"	INT		NULL,
-	"visionLeft"	INT		NULL,
-	"visionRight"	INT		NULL,
+	"height"	REAL		NULL,
+	"weight"	REAL		NULL,
+	"waist"	REAL		NULL,
+	"bmi"	REAL		NULL,
+	"visionLeft"	REAL		NULL,
+	"visionRight"	REAL		NULL,
 	"hearing"	TEXT		NULL,
 	"bp_systolic"	INT		NULL,
 	"bp_diastolic"	INT		NULL,
 	"urine_protein"	TEXT		NULL,
-	"hemoglobin"	INT		NULL,
+	"hemoglobin"	REAL		NULL,
 	"fbg"	INT		NULL,
-	"creatinine"	INT		NULL,
+	"creatinine"	REAL		NULL,
 	"egfr"	INT		NULL,
 	"ast"	INT		NULL,
 	"alt"	INT		NULL,
 	"ygtp"	INT		NULL,
 	"year"	INT		NULL,
-	"checkupDate"	DateTime		NOT NULL,
+	"checkUpDate"	DateTime		NOT NULL,
 	"isShow"	BOOLEAN		NOT NULL,
 	"createdAt"	DateTime		NOT NULL
 );
@@ -188,6 +188,7 @@ COMMENT ON COLUMN "CheckUp"."egfr" IS '신장기능-신사구체여과율';
 COMMENT ON COLUMN "CheckUp"."ast" IS '간기능-에이에스티';
 COMMENT ON COLUMN "CheckUp"."alt" IS '간기능-에이엘티';
 COMMENT ON COLUMN "CheckUp"."ygtp" IS '간기능-감미지티피';
+COMMENT ON COLUMN "CheckUp"."checkUpDate" IS '검진 날짜';
 COMMENT ON COLUMN "CheckUp"."isShow" IS 'default true';
 
 -- 검진 코멘트
