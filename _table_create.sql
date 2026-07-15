@@ -251,8 +251,18 @@ ALTER TABLE "CheckupAssessment" ADD CONSTRAINT "FK_CheckUp_TO_CheckupAssessment_
 REFERENCES "CheckUp" ("id");
 
 --** Unique **--
+-- 쥬얼
 ALTER TABLE "Weight" ADD CONSTRAINT "UK_WEIGHT_USER_DATE" UNIQUE ("userId", "measure_date");
+
+-- 큐드
+
+-- 블링
 
 
 --** ENUM **--
+-- 쥬얼
 CREATE TYPE member_grade AS ENUM ('BRONZE', 'SILVER', 'GOLD');
+
+-- 큐드
+
+-- 블링
