@@ -246,24 +246,54 @@ ALTER TABLE "CheckUp" ADD CONSTRAINT "PK_CHECKUP" PRIMARY KEY ("id");
 
 ALTER TABLE "BloodPressure" ADD CONSTRAINT "PK_BLOODPRESSURE" PRIMARY KEY ("id");
 
+--** FK **--
+ALTER TABLE "Profile" ADD CONSTRAINT "FK_User_TO_Profile_1" FOREIGN KEY ("userId")
+REFERENCES "User" ("id")
+ON DELETE CASCADE;
+
+--
+ALTER TABLE "CheckUp" ADD CONSTRAINT "FK_User_TO_CheckUp_1" FOREIGN KEY ("userId")
+REFERENCES "User" ("id")
+ON DELETE CASCADE;
+
 ALTER TABLE "CheckUpComment" ADD CONSTRAINT "FK_CheckUp_TO_CheckUpComment_1" FOREIGN KEY ("checkUpId")
-REFERENCES "CheckUp" ("id");
+REFERENCES "CheckUp" ("id")
+ON DELETE CASCADE;
 
 ALTER TABLE "CheckupAssessment" ADD CONSTRAINT "FK_CheckUp_TO_CheckupAssessment_1" FOREIGN KEY ("checkUpId")
-REFERENCES "CheckUp" ("id");
+REFERENCES "CheckUp" ("id")
+ON DELETE CASCADE;
 
+--
+ALTER TABLE "Weight" ADD CONSTRAINT "FK_User_TO_Weight_1" FOREIGN KEY ("userId")
+REFERENCES "User" ("id")
+ON DELETE CASCADE;
 
+ALTER TABLE "BloodGlucose" ADD CONSTRAINT "FK_User_TO_BloodGlucose_1" FOREIGN KEY ("userId")
+REFERENCES "User" ("id")
+ON DELETE CASCADE;
 
+ALTER TABLE "BloodPressure" ADD CONSTRAINT "FK_User_TO_BloodPressure_1" FOREIGN KEY ("userId")
+REFERENCES "User" ("id")
+ON DELETE CASCADE;
 
+--
+ALTER TABLE "DailyShield" ADD CONSTRAINT "FK_User_TO_DailyShield_1" FOREIGN KEY ("id2")
+REFERENCES "User" ("id")
+ON DELETE CASCADE;
+
+ALTER TABLE "Meal" ADD CONSTRAINT "FK_User_TO_Meal_1" FOREIGN KEY ("userId")
+REFERENCES "User" ("id")
+ON DELETE CASCADE;
+
+ALTER TABLE "MealFood" ADD CONSTRAINT "FK_Meal_TO_MealFood_1" FOREIGN KEY ("mealId")
+REFERENCES "Meal" ("id")
+ON DELETE CASCADE;
 
 
 --** Unique **--
--- 쥬얼
-
-
 ALTER TABLE "CheckUp" ADD CONSTRAINT "UK_CHECKUP_USER_YEAR" UNIQUE ("userId", "year");
 
--- 큐드
 ALTER TABLE "Weight" ADD CONSTRAINT "UK_WEIGHT_USER_DATE" UNIQUE ("userId", "weightDate");
 
 ALTER TABLE "BloodPressure" ADD CONSTRAINT "UK_BP_USER_PERIOD_DATE" UNIQUE ("userId","dayPeriod","bpDate");
@@ -274,10 +304,6 @@ ALTER TABLE "BloodGlucose" ADD CONSTRAINT "UK_BLOODGLUCOSE_USER_DATE" UNIQUE ("u
 
 
 --** ENUM **--
--- 쥬얼
-
-
--- 큐드
 CREATE TYPE DayPeriod AS ENUM ('MORNING','EVENING');
 CREATE TYPE MealType AS ENUM ('BREAKFAST','LUNCH','DINNER');
 CREATE TYPE MealTiming AS ENUM ('BEFORE','AFTER');
