@@ -7,7 +7,7 @@ CREATE TABLE "User" (
 	"email"	TEXT 	NOT NULL UNIQUE,
 	"password"	TEXT		NOT NULL,
 	"loginCnt"	INT	DEFAULT 0	NOT NULL,
-	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+	"createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 );
 
 COMMENT ON COLUMN "User"."id" IS 'autoincrement';
@@ -24,8 +24,8 @@ CREATE TABLE "Profile" (
 	"height"	REAL		NULL,
 	"goalWeight"	REAL		NULL,
 	"goalCalorie"	INT		NULL,
-	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
+	"createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"updatedAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NULL
 );
 
 COMMENT ON COLUMN "Profile"."id" IS 'autoincrement';
@@ -43,8 +43,8 @@ CREATE TABLE "Meal" (
 	"unitCalorie"	INT		NULL,
 	"photoUrl"	TEXT		NULL,
 	"mealStatus"	ENUM	DEFAULT "PENDING"	NOT NULL,
-	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
+	"createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"updatedAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NULL
 );
 
 COMMENT ON COLUMN "Meal"."id" IS 'autoincrement';
@@ -72,7 +72,7 @@ CREATE TABLE "Weight" (
 	"weight"	REAL		NOT NULL,
 	"weightDate"	DATE		NOT NULL,
 	"bmi"	REAL		NULL,
-	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+	"createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 );
 
 COMMENT ON COLUMN "Weight"."id" IS 'autoincrement';
@@ -85,7 +85,7 @@ CREATE TABLE "BloodGlucose" (
 	"glucose"	INT		NOT NULL,
 	"mealType"	"MealType"		NOT NULL,
 	"mealTiming"	"MealTiming"		NOT NULL,
-	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"bgDate"	DATE		NOT NULL
 );
 
@@ -103,8 +103,8 @@ CREATE TABLE "BloodPressure" (
 	"pulse"	INT		NULL,
 	"dayPeriod"	"DayPeriod"		NOT NULL,
 	"bpDate"	Date		NOT NULL,
-	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
+	"createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"updatedAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NULL
 );
 
 COMMENT ON COLUMN "BloodPressure"."id" IS 'autoincrement';
@@ -126,8 +126,8 @@ CREATE TABLE "DailyShield" (
 	"waterCup"	INT		NULL,
 	"isSupplement"	Boolean	 DEFAULT FALSE	NOT NULL,
 	"supplementType"	TEXT		NULL,
-	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NULL
+	"createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"updatedAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NULL
 );
 
 COMMENT ON COLUMN "DailyShield"."id" IS 'autoincrement';
@@ -168,7 +168,7 @@ CREATE TABLE "CheckUp" (
 	"year"	INT		NULL,
 	"checkUpDate"	DateTime		NOT NULL,
 	"isShow"	BOOLEAN		DEFAULT TRUE	NOT NULL,
-	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+	"createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 );
 
 COMMENT ON COLUMN "CheckUp"."id" IS 'autoincrement';
@@ -313,3 +313,34 @@ CREATE TYPE MealTiming AS ENUM ('BEFORE','AFTER');
 -- 블링
 CREATE TYPE ExerciseTime AS ENUM (0, 30, 60, 120);
 CREATE TYPE MealStatus AS ENUM ("PENDING", "COMPLETE", "SKIPPED");
+
+
+--** updateAt trigger **--
+-- updateAt 공용 함수 생성 (DB에 단 한 번만 생성)
+CREATE OR REPLACE FUNCTION update_modified_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW."updatedAt" = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_profile_modtime
+    BEFORE UPDATE ON "Profile"
+    FOR EACH ROW
+    EXECUTE FUNCTION update_modified_column();
+
+CREATE TRIGGER update_meal_modtime
+    BEFORE UPDATE ON "Meal"
+    FOR EACH ROW
+    EXECUTE FUNCTION update_modified_column();
+
+CREATE TRIGGER update_bloodPressure_modtime
+    BEFORE UPDATE ON "BloodPressure"
+    FOR EACH ROW
+    EXECUTE FUNCTION update_modified_column();
+
+CREATE TRIGGER update_dailyShield_modtime
+    BEFORE UPDATE ON "DailyShield"
+    FOR EACH ROW
+    EXECUTE FUNCTION update_modified_column();
