@@ -167,7 +167,7 @@ CREATE TABLE "CheckUp" (
 	"ygtp"	INT		NULL,
 	"year"	INT		NULL,
 	"checkUpDate"	DateTime		NOT NULL,
-	"isShow"	BOOLEAN		NOT NULL,
+	"isShow"	BOOLEAN		DEFAULT TRUE	NOT NULL,
 	"createdAt"	timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
