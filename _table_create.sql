@@ -254,6 +254,8 @@ REFERENCES "CheckUp" ("id");
 -- 쥬얼
 ALTER TABLE "Weight" ADD CONSTRAINT "UK_WEIGHT_USER_DATE" UNIQUE ("userId", "measure_date");
 
+ALTER TABLE "CheckUp" ADD CONSTRAINT "UK_CHECKUP_USER_YEAR" UNIQUE ("userId", "year");
+
 -- 큐드
 
 -- 블링
