@@ -15,6 +15,7 @@
     "outDir": "./dist",
     // "baseUrl": "./",
     "strictPropertyInitialization": false, // 생성자 값 미할당 시 오류
+    "noUnusedLocals": false, // 쓰지 않는 지역 변수가 있어도 빨간 줄(에러) 띄우지 않음
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,

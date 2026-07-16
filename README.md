@@ -15,3 +15,8 @@ pnpm i class-validator class-transformer dotenv
 pnpm i @prisma/client@6
 pnpm i -D prisma@6
 pnpm i @nestjs/swagger
+// 로거
+pnpm add winston winston-daily-rotate-file
+
+# azure 호출을 위한 라이브러리 설치
+pnpm add @azure/ai-form-recognizer
