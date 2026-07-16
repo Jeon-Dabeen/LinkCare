@@ -3,10 +3,14 @@ import { AppModule } from "./app.module";
 import { UploadedFile, ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { logger } from "./config/logger";
+import { AllExceptionsFilter } from "./common/filters/http-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  // 글로벌 예외 필터 (모든 에러 인터셉터)
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   // swagger
   const config = new DocumentBuilder()
