@@ -1,7 +1,4 @@
-
-
 import commonStyle from "@/styles/common.module.css";
-
 
 export default function Page(){
 

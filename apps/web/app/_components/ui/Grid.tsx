@@ -1,8 +1,5 @@
 import { ReactNode } from "react";
-
-
 import styles from '@/styles/layout/grid.module.css';
-
 
 type GridProps = {
   children: ReactNode;

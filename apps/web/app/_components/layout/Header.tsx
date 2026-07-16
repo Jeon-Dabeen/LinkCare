@@ -1,5 +1,3 @@
-
-
 import style from "@/styles/layout/header.module.css";
 
 export default function Header() {

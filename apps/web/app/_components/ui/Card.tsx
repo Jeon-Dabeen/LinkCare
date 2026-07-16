@@ -3,7 +3,6 @@ import { ReactNode } from "react";
 import clsx from "clsx";
 import styles from '@/styles/components/card.module.css';
 
-
 type CardProps = {
   children: ReactNode;
   variant?: "default" | "color";

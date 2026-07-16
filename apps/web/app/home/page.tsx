@@ -1,5 +1,3 @@
-
-
 import clsx from "clsx";
 import { HeartPulse, Droplet, Salad, ShieldCheck } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";

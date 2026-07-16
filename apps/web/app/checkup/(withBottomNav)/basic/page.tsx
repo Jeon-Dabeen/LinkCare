@@ -1,9 +1,4 @@
-
-
-
-
 'use client';
-
 
 import { Ear, Eye, HeartPulse, Hospital } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";

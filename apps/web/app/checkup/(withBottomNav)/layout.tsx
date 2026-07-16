@@ -1,5 +1,3 @@
-
-
 import BottomNav from "@/app/_components/layout/BottomNav";
 
 

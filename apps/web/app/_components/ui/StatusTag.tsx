@@ -1,5 +1,3 @@
-
-
 import clsx from "clsx";
 import styles from "@/styles/components/statusTag.module.css";
 

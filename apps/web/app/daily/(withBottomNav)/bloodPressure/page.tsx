@@ -1,6 +1,5 @@
 'use client';
 
-
 import { ArrowDown, HeartPulse, Pencil } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 import dashStyle from "@/styles/daily/dash.module.css";
