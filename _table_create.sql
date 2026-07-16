@@ -6,7 +6,7 @@ CREATE TYPE MealType AS ENUM ('BREAKFAST','LUNCH','DINNER');
 CREATE TYPE MealTiming AS ENUM ('BEFORE','AFTER');
 
 -- 블링
-CREATE TYPE ExerciseTime AS ENUM ('0', '30', '60', '120');
+CREATE TYPE ExerciseTime AS ENUM ('t0', 't30', 't60', 't120');
 CREATE TYPE MealStatus AS ENUM ('PENDING', 'COMPLETE', 'SKIPPED');
 
 --** 사용자 **--
@@ -130,7 +130,7 @@ CREATE TABLE "DailyShield" (
 	"feel"	INT		NULL,
 	"energy"	INT		NULL,
 	"isExercise"	Boolean	 DEFAULT FALSE	NOT NULL,
-	"exersiseTime"	TEXT	DEFAULT 30	NOT NULL,
+	"exersiseTime"	ExerciseTime	DEFAULT 't30'	NOT NULL,
 	"exersiseType"	TEXT		NULL,
 	"isWater"	Boolean	DEFAULT FALSE	NULL,
 	"waterCup"	INT		NULL,
@@ -144,10 +144,10 @@ COMMENT ON COLUMN "DailyShield"."id" IS 'autoincrement';
 COMMENT ON COLUMN "DailyShield"."feel" IS '1: 힘듦, 2: 별로, 3: 무난, 4:  좋음, 5: 최고';
 COMMENT ON COLUMN "DailyShield"."energy" IS '1: 지침,  2: 부족, 3: 충분, 4: 활력';
 COMMENT ON COLUMN "DailyShield"."isExercise" IS 'default:false';
-COMMENT ON COLUMN "DailyShield"."exersiseTime" IS 'default:30';
+COMMENT ON COLUMN "DailyShield"."exersiseTime" IS 'default: t30';
 COMMENT ON COLUMN "DailyShield"."exersiseType" IS '걷기, 달리기, 등산, 자전거, 수영, 헬스, 크로스핏, 요가, 필라테스, 스트레칭, 홈트레이닝, 구기 스포츠, 댄스, 기타';
 COMMENT ON COLUMN "DailyShield"."isWater" IS 'default:false';
-COMMENT ON COLUMN "DailyShield"."waterCup" IS 'default:0';
+COMMENT ON COLUMN "DailyShield"."waterCup" IS 'default: 0';
 COMMENT ON COLUMN "DailyShield"."isSupplement" IS 'default:false';
 COMMENT ON COLUMN "DailyShield"."supplementType" IS '종합비타민, 비타민C, 비타민D, 비타민B군, 오메가3, 프로바이오틱스, 마그네슘, 칼슘, 아연, 철분, 밀크씨슬, 루테인, 코엔자임Q10, 콜라겐, 글루코사민, 홍삼, 프로틴, 커큐민, 엽산, 기타';
 
@@ -308,11 +308,11 @@ ALTER TABLE "Weight" ADD CONSTRAINT "UK_WEIGHT_USER_DATE" UNIQUE ("userId", "wei
 
 ALTER TABLE "BloodPressure" ADD CONSTRAINT "UK_BP_USER_PERIOD_DATE" UNIQUE ("userId","dayPeriod","bpDate");
 
-ALTER TABLE "BloodGlucose" ADD CONSTRAINT "UK_BLOODGLUCOSE_USER_DATE" UNIQUE ("userId","bgDate","mealType","mealTiming")
+ALTER TABLE "BloodGlucose" ADD CONSTRAINT "UK_BLOODGLUCOSE_USER_DATE" UNIQUE ("userId","bgDate","mealType","mealTiming");
 
-ALTER TABLE "Meal" ADD CONSTRAINT "UK_MEAL_USER_DATE_TYPE" UNIQUE ("userId", "mealDate", "mealType")
+ALTER TABLE "Meal" ADD CONSTRAINT "UK_MEAL_USER_DATE_TYPE" UNIQUE ("userId", "mealDate", "mealType");
 
-ALTER TABLE "DailyShield" ADD CONSTRAINT "UK_SHIELD_USER_DATE" UNIQUE ("userId", "dailyDate")
+ALTER TABLE "DailyShield" ADD CONSTRAINT "UK_SHIELD_USER_DATE" UNIQUE ("userId", "dailyDate");
 
 
 --** updateAt trigger **--
