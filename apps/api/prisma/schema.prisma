@@ -1,14 +1,221 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model BloodGlucose {
+  id         Int        @id(map: "PK_BLOODGLUCOSE") @default(autoincrement())
+  userId     Int
+  glucose    Int
+  mealType   mealtype
+  mealTiming mealtiming
+  createdAt  DateTime   @default(now()) @db.Timestamptz(6)
+  bgDate     DateTime   @db.Date
+  User       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_BloodGlucose_1")
+
+  @@unique([userId, bgDate, mealType, mealTiming], map: "UK_BLOODGLUCOSE_USER_DATE")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model BloodPressure {
+  id        Int       @id(map: "PK_BLOODPRESSURE") @default(autoincrement())
+  userId    Int
+  systolic  Int
+  diastolic Int
+  pulse     Int?
+  dayPeriod dayperiod
+  bpDate    DateTime  @db.Date
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime? @default(now()) @db.Timestamptz(6)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_BloodPressure_1")
+
+  @@unique([userId, dayPeriod, bpDate], map: "UK_BP_USER_PERIOD_DATE")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model CheckUp {
+  id                Int                 @id(map: "PK_CHECKUP") @default(autoincrement())
+  userId            Int
+  height            Float?              @db.Real
+  weight            Float?              @db.Real
+  waist             Float?              @db.Real
+  bmi               Float?              @db.Real
+  visionLeft        Float?              @db.Real
+  visionRight       Float?              @db.Real
+  hearing           String?
+  bp_systolic       Int?
+  bp_diastolic      Int?
+  urine_protein     String?
+  hemoglobin        Float?              @db.Real
+  fbg               Int?
+  creatinine        Float?              @db.Real
+  egfr              Int?
+  ast               Int?
+  alt               Int?
+  ygtp              Int?
+  year              Int?
+  checkUpDate       DateTime            @db.Timestamptz(6)
+  isShow            Boolean             @default(true)
+  createdAt         DateTime            @default(now()) @db.Timestamptz(6)
+  User              User                @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_CheckUp_1")
+  CheckUpComment    CheckUpComment[]
+  CheckupAssessment CheckupAssessment[]
+
+  @@unique([userId, year], map: "UK_CHECKUP_USER_YEAR")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model CheckUpComment {
+  id        Int     @default(autoincrement())
+  checkUpId Int
+  comment   String
+  CheckUp   CheckUp @relation(fields: [checkUpId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CheckUp_TO_CheckUpComment_1")
+
+  @@id([id, checkUpId], map: "PK_CHECKUPCOMMENT")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model CheckupAssessment {
+  id            Int     @default(autoincrement())
+  checkUpId     Int
+  waist         String
+  bmi           String
+  bp            String
+  urine_protein String
+  hemoglobin    String
+  fbg           String
+  creatinine    String
+  egfr          String
+  ast           String
+  alt           String
+  ygtp          String
+  CheckUp       CheckUp @relation(fields: [checkUpId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CheckUp_TO_CheckupAssessment_1")
+
+  @@id([id, checkUpId], map: "PK_CHECKUPASSESSMENT")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model DailyShield {
+  id             Int          @id(map: "PK_DAILYSHIELD") @default(autoincrement())
+  userId         Int
+  dailyDate      String
+  feel           Int?
+  energy         Int?
+  isExercise     Boolean      @default(false)
+  exersiseTime   exercisetime @default(t30)
+  exersiseType   String?
+  isWater        Boolean?     @default(false)
+  waterCup       Int?
+  isSupplement   Boolean      @default(false)
+  supplementType String?
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime?    @default(now()) @db.Timestamptz(6)
+  User           User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_DailyShield_1")
+
+  @@unique([userId, dailyDate], map: "UK_SHIELD_USER_DATE")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Meal {
+  id          Int        @id(map: "PK_MEAL") @default(autoincrement())
+  userId      Int
+  mealType    mealtype
+  mealDate    DateTime   @db.Date
+  goalCalorie Int?
+  unitCalorie Int?
+  photoUrl    String?
+  mealStatus  mealstatus @default(PENDING)
+  createdAt   DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime?  @default(now()) @db.Timestamptz(6)
+  User        User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_Meal_1")
+  MealFood    MealFood[]
+
+  @@unique([userId, mealDate, mealType], map: "UK_MEAL_USER_DATE_TYPE")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model MealFood {
+  id       Int    @id(map: "PK_MEALFOOD") @default(autoincrement())
+  mealId   Int
+  FoodName String
+  calorie  Int
+  Meal     Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Meal_TO_MealFood_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Profile {
+  id          Int       @id(map: "PK_PROFILE") @default(autoincrement())
+  userId      Int
+  gender      String?
+  nickName    String?
+  birthDate   DateTime? @db.Date
+  height      Float?    @db.Real
+  goalWeight  Float?    @db.Real
+  goalCalorie Int?
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime? @default(now()) @db.Timestamptz(6)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_Profile_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model User {
+  id            Int             @id(map: "PK_USER") @default(autoincrement())
+  email         String          @unique
+  password      String
+  loginCnt      Int             @default(0)
+  createdAt     DateTime        @default(now()) @db.Timestamptz(6)
+  BloodGlucose  BloodGlucose[]
+  BloodPressure BloodPressure[]
+  CheckUp       CheckUp[]
+  DailyShield   DailyShield[]
+  Meal          Meal[]
+  Profile       Profile[]
+  Weight        Weight[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Weight {
+  id         Int      @id(map: "PK_WEIGHT") @default(autoincrement())
+  userId     Int
+  weight     Float    @db.Real
+  weightDate DateTime @db.Date
+  bmi        Float?   @db.Real
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_Weight_1")
+
+  @@unique([userId, weightDate], map: "UK_WEIGHT_USER_DATE")
+}
+
+enum dayperiod {
+  MORNING
+  EVENING
+}
+
+enum mealstatus {
+  PENDING
+  COMPLETE
+  SKIPPED
+}
+
+enum mealtiming {
+  BEFORE
+  AFTER
+}
+
+enum mealtype {
+  BREAKFAST
+  LUNCH
+  DINNER
+}
+
+enum exercisetime {
+  t0
+  t30
+  t60
+  t120
 }
