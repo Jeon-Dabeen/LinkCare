@@ -6,9 +6,9 @@
   gap: var(--spacing-md);
 }
 
+
 .gridItemFull{
   grid-column: span 2;
 }
-
 
 

@@ -1,0 +1,66 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 1000;
+
+  width: max-content;
+  max-width: min(300px, calc(100vw - 32px));
+
+  padding: 12px 14px;
+
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, .18);
+
+  transform: translateY(0);
+}
+
+.tooltip.top {
+  transform: translateY(-100%);
+}
+
+.tooltip.bottom {
+  transform: translateY(0);
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 12px;
+  height: 12px;
+
+  background: var(--color-surface);
+  border-top: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+
+  rotate: 45deg;
+}
+
+.tooltip.bottom::after {
+  top: -6px;
+}
+
+.tooltip.top::after {
+  bottom: -6px;
+}

@@ -1,5 +1,7 @@
 'use client';
 
+import { ReactNode, forwardRef, ButtonHTMLAttributes } from "react";
+
 import styles from "@/styles/components/button.module.css";
 
 
@@ -12,6 +14,13 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   full?: boolean,
   round?: boolean
 };
+
+type ButtonIconColor = "primary" | "secondary" | "textLight";
+
+type ButtonIconProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  color?: ButtonIconColor,
+  children: ReactNode;
+}
 
 
 // default
@@ -59,6 +68,55 @@ export function ButtonClose({
     </button>
   )
 }
+
+
+// 아이콘 버튼
+const colorClass = {
+  primary: styles.iconPrimary,
+  secondary: styles.iconSecondary,
+  textLight: styles.iconTextLight,
+} as const;
+
+export function ButtonIcon ({
+  color = "textLight",
+  children,
+  ...props
+}: ButtonIconProps){
+  return (
+    <button
+      className={clsx(
+        styles.buttonIcon,
+        colorClass[color]
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
+
+
+
+// 
+type ButtonQuestionProps = 
+  ButtonHTMLAttributes<HTMLButtonElement>;
+
+
+export const ButtonQuestion = forwardRef<
+  HTMLButtonElement,
+  ButtonQuestionProps
+>(function ButtonQuestion ({
+  ...props
+}, ref){
+  return (
+    <button
+      className={styles.buttonQuestion}
+      ref={ref}
+      {...props}
+    ></button>
+  )
+})
+
 
 
 

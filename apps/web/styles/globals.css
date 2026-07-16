@@ -27,3 +27,7 @@ body {
   color: var(--color-placeholder);
   opacity: 1;
 }
+
+button:disabled {
+  opacity: 0.5;
+}

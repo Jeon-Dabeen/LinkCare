@@ -10,5 +10,6 @@
   height: var(--header-height);
   background-color: var(--header-bg);
   box-shadow: var(--shadow-sm);
+  z-index: var(--z-header);
 }
 

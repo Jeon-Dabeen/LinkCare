@@ -1,0 +1,80 @@
+
+
+.dashWrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  height: 100%;
+  text-align: center;
+}
+
+.current{
+  position: relative;
+  display: inline-block;
+  padding: 0 32px;
+  text-align: center;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.value{
+  font-size: 28px;
+}
+
+.separator{
+  padding: 0 4px;
+  font-size: 28px;
+  font-weight: 200;
+}
+
+.unit{
+  padding-left: 4px;
+}
+
+.buttonArea{
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+
+.dashBox{
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm);
+  gap: 10px;
+  height: 22px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-inverse);
+  background-color: var(--color-primary);
+  border-radius: 4px;
+}
+
+
+.dashStatus{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm);
+  gap: 10px;
+  width: 150px;
+  height: 22px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-inverse);
+  background-color: var(--color-success);
+  border-radius: 4px;
+}
+
+.normal{
+  background-color: var(--color-success);
+}
+
+.warning{
+  background-color: var(--color-warning);
+}
+
+.danger{
+  background-color: var(--color-error);
+}
+

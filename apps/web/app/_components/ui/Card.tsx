@@ -14,12 +14,25 @@ type CardHeaderProps = {
   title?: ReactNode;
   left?: ReactNode;
   right?: ReactNode;
+  noPadding?: boolean;
 }
 
 type CardBodyProps = {
   children: ReactNode;
 }
 
+type CardGridProps = {
+  columns?: 2 | 3;
+  topDivider?: boolean;
+  leftDivider?: boolean;
+  children: ReactNode;
+}
+
+type CardItemProps = {
+  icon?: ReactNode,
+  title?: ReactNode,
+  children: ReactNode;
+}
 
 export function Card({
   variant = "default",
@@ -44,17 +57,22 @@ export function CardHeader({
   icon,
   title,
   left,
-  right
+  right,
+  noPadding
 }:CardHeaderProps){
 
   return (
-    <div className={styles.cardHeader}>
+    <div className={clsx(
+      styles.cardHeader,
+      noPadding && styles.noPadding
+    )}
+    >
       <div className={styles.left}>
-        <span className={styles.icon}>{icon}</span>
-        <h3 className={styles.title}>{title}</h3>
-        {left}
+        {icon && <span className={styles.icon}>{icon}</span>}
+        {title && <h3 className={styles.title}>{title}</h3>}
+        {left && left}
       </div>
-      <div className={styles.right}>{right}</div>
+      {right && <div className={styles.right}>{right}</div>}
     </div>
   )
 }
@@ -73,7 +91,52 @@ export function CardBody({
 
 
 
+export function CardGrid({
+  columns = 2,
+  topDivider,
+  leftDivider,
+  children
+}:CardGridProps){
+
+  return (
+    <div 
+      className={clsx(
+        styles.cardGrid,
+        topDivider && styles.lineTop,
+        leftDivider && styles.lineLeft,
+      )}
+      style={{
+        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+
+export function CardItem({
+  icon,
+  title,
+  children
+}:CardItemProps
+
+){
+  return (
+    <div className={styles.cardItem}>
+      <div className={styles.cardItemHeader}>
+        {icon && <span className={styles.itemIcon}>{icon}</span>}
+        {title && <h3 className={styles.itemTitle}>{title}</h3>}
+      </div>
+      {children}
+    </div>
+  )
+}
+
+
 Card.Header = CardHeader;
 Card.Body = CardBody;
+Card.Grid = CardGrid;
+Card.Item = CardItem;
 
 export default Card;

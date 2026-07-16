@@ -43,6 +43,7 @@ export default function SampleLink() {
         margin: "10px 0 15px"
       }}>
         <li><Link href="/daily/bloodPressure">혈압</Link></li>
+        <li><Link href="/daily/weight">체중</Link></li>
       </ul>
 
       <p>- checkup -</p>
@@ -55,6 +56,7 @@ export default function SampleLink() {
       }}>
         <li><Link href="/checkup">검진 대시보드</Link></li>
         <li><Link href="/checkup/uploadFile">건강검진 결과 파일 등록</Link></li>
+        <li><Link href="/checkup/basic">신체 기본 지표</Link></li>
       </ul>
 
     </aside>

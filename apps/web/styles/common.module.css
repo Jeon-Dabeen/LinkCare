@@ -55,12 +55,26 @@
 
 
 
+/* align */
+.alignCenter{
+  text-align: center;
+}
+.alignRight{
+  text-align: right;
+}
+.alignLeft{
+  text-align: left;
+}
+
+.jfCenter{
+  justify-content: center;
+}
+
 
 
 /* text */
 
 .messageTitle{
-  padding-bottom: var(--spacing-md);
   font-size: var(--font-size-md);
   color: var(--color-text-dark);
 }
@@ -99,4 +113,48 @@
 }
 
 
+
+
+
+/* textBox */
+.infoBox{
+  padding-left: 20px;
+  color: var(--color-info);
+  background-image: url('/icon/icon_info.svg');
+  background-repeat: no-repeat;
+  background-position: 0px 2px;
+}
+
+
+
+/* data */
+.dataWrapper{
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.dataLabel{
+  padding-right: 8px;
+  font-size: var(--font-size-sm);
+}
+.dataValue{
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+.dataValue + .dataLabel{
+  padding-left: 16px;
+}
+.dataUnit{
+  padding-left: 4px;
+  font-size: var(--font-size-sm);
+}
+.dataSeparator{
+  padding: 0 4px;
+}
+
+.dataWrapper button{
+  margin-left: 10px;
+}
 

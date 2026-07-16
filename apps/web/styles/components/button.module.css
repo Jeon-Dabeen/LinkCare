@@ -90,10 +90,6 @@
 }
 
 
-/* disabled */
-.button:disabled {
-  opacity: 0.5;
-}
 
 
 
@@ -110,5 +106,44 @@
 .buttonCloseIcon svg{
   width: 24px;
   height: 24px;
-  color: var(--color-text-primary);
 }
+
+
+/* icon button */
+.buttonIcon{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.iconPrimary{
+  color: var(--color-primary);
+}
+
+.iconSecondary{
+  color: var(--color-secondary);
+}
+
+.iconTextLight{
+  color: var(--color-text-light);
+}
+
+
+
+/* buttonQuestion */
+.buttonQuestion{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-image: url('/icon/button_question.svg');
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: 24px 24px;
+}
+
+
+
