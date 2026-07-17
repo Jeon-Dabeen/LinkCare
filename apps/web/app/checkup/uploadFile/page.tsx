@@ -8,12 +8,18 @@ import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
 
 import Button from "@/app/_components/ui/Button";
+import StatePage from "@/app/_components/ui/StatePage";
 
 
 
 export default function Page(){
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  function handleOpenStage() {
+    setOpen(true);
+  }
 
 
   return (
@@ -44,13 +50,31 @@ export default function Page(){
               </Button>
             </div>
             <div className={formStyle.formBox}>
-              <Button type="button" variant="primary" size="large" full>
+              <Button 
+                type="button" 
+                variant="primary" 
+                size="large" 
+                full
+                onClick={handleOpenStage}
+              >
                 검진 파일 업로드
               </Button>
             </div>
           </div>
           </form>
       </div>
+
+      <StatePage
+        open={open}
+        title="건강검진 결과를 불러오고 있어요"
+        description={
+          <>
+          검진 결과를 안전하게 불러오고 있어요.<br />
+          데이터 양에 따라 조금 시간이 걸릴 수 있으니 <br />
+          잠시만 기다려 주시면 건강 리포트를 확인하실 수 있어요.
+          </>
+        }
+      />
     </section>
   )
 }

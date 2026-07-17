@@ -41,7 +41,9 @@ export default function SampleLink() {
         gap: "5px",
         margin: "10px 0 15px"
       }}>
+        <li><Link href="/daily/writeBp">혈압 입력</Link></li>
         <li><Link href="/daily/bloodPressure">혈압</Link></li>
+        <li><Link href="/daily/writeWeight">체중 입력</Link></li>
         <li><Link href="/daily/weight">체중</Link></li>
       </ul>
 

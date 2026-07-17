@@ -1,0 +1,27 @@
+
+/* checkbox */
+
+.wrapper{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.checkbox {
+  display: none;
+}
+.checkbox + label {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 32px;
+  height: 32px;
+  font-size: var(--font-size-base);
+  background-image: url('/icon/form_checkbox.svg');
+  background-repeat: no-repeat;
+  background-position: 0 50%;
+}
+.checkbox:checked + label {
+  background-image: url('/icon/form_checkbox_checked.svg');
+}
