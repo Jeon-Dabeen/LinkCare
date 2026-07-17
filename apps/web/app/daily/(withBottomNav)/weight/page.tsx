@@ -10,12 +10,17 @@ import dashStyle from "@/styles/daily/dash.module.css";
 import Card from "@/app/_components/ui/Card";
 import Button, { ButtonIcon } from "@/app/_components/ui/Button";
 import BottomSheet from "@/app/_components/ui/BottomSheet";
+import Input from "@/app/_components/ui/Input";
 
 export default function Page(){
-  const [open, setOpen] = useState(false);
+  const [openHeight, setOpenHeight] = useState(false);
+  const [openGoal, setOpenGoal] = useState(false);
 
-  function handleOpenSheet() {
-    setOpen(true);
+  function handleOpenHeight() {
+    setOpenHeight(true);
+  }
+  function handleOpenGoal() {
+    setOpenGoal(true);
   }
 
   return (
@@ -52,7 +57,7 @@ export default function Page(){
               <div className={commonStyle.dataWrapper}>
                 <span className={commonStyle.dataValue}>173</span>
                 <span className={commonStyle.dataUnit}>cm</span>
-                <ButtonIcon>
+                <ButtonIcon onClick={handleOpenHeight}>
                   <Pencil />
                 </ButtonIcon>
               </div>
@@ -61,7 +66,7 @@ export default function Page(){
               <div className={commonStyle.dataWrapper}>
                 <span className={commonStyle.dataValue}>65.0</span>
                 <span className={commonStyle.dataUnit}>kg</span>
-                <ButtonIcon onClick={handleOpenSheet}>
+                <ButtonIcon onClick={handleOpenGoal}>
                   <Pencil />
                 </ButtonIcon>
               </div>
@@ -75,7 +80,7 @@ export default function Page(){
           title="이번 주 체중 추이"
         />
         <Card.Body>
-          <Card.Grid>
+          <Card.Grid columns={1}>
             체중 차트
           </Card.Grid>
           <Card.Grid columns={3} topDivider leftDivider>
@@ -108,15 +113,27 @@ export default function Page(){
 
 
       <BottomSheet
-        open={open}
-        title="목표 체중"
-        onClose={() => setOpen(false)}>
+        open={openHeight}
+        title="키"
+        onClose={() => setOpenHeight(false)}>
           <div className={formStyle.formWrapper}>
             <div className={formStyle.formGroup}>
-              <div className={formStyle.formInputWrapper}>
-                <input type="number" id="goalWeight" name="goalWeight" className={formStyle.formInput} required />
-                <div className={formStyle.formUnit}>kg</div>
-              </div>
+              <Input unit="cm" type="number" id="newHeight" name="newHeight" required />
+            </div>
+            <Button type="button" variant="primary" size="large" onClick={() => {}} disabled>
+              기록
+            </Button>
+          </div>
+      </BottomSheet>
+
+
+      <BottomSheet
+        open={openGoal}
+        title="목표 체중"
+        onClose={() => setOpenGoal(false)}>
+          <div className={formStyle.formWrapper}>
+            <div className={formStyle.formGroup}>
+              <Input unit="kg" type="number" id="goalWeight" name="goalWeight" required />
             </div>
             <Button type="button" variant="primary" size="large" onClick={() => {}} disabled>
               기록

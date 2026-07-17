@@ -56,9 +56,7 @@
   --line-height-relaxed: 1.75;
 
   /* icon color */
-  --icon-color-primary: #222;
-  --icon-color-secondary: #666;
-  --icon-color-muted: #aaa;
+  --icon-color: #DEC29E;
 
   /* icon size */
   --icon-size-sm: 16px;
@@ -73,7 +71,7 @@
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
-  --spacing-box-inner: 16px;
+  --spacing-box-inner: 20px;
 
   /* radius */
   --radius-sm: 4px;

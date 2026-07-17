@@ -21,7 +21,7 @@ type CardBodyProps = {
 }
 
 type CardGridProps = {
-  columns?: 2 | 3;
+  columns?: 1 | 2 | 3;
   topDivider?: boolean;
   leftDivider?: boolean;
   children: ReactNode;

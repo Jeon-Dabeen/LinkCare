@@ -8,6 +8,7 @@ import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
 
 import Button from "@/app/_components/ui/Button";
+import Input from "@/app/_components/ui/Input";
 
 
 export default function Login() {
@@ -24,13 +25,13 @@ export default function Login() {
             <label htmlFor="uemail" className={formStyle.formLabel}>
               이메일
             </label>
-            <input type="email" id="uemail" name="uemail" className={formStyle.formInput} required />
+            <Input type="email" id="uemail" name="uemail" required />
           </div>
           <div className={formStyle.formGroup}>
             <label htmlFor="upassword" className={formStyle.formLabel}>
               비밀번호
             </label>
-            <input type="password" id="upassword" name="upassword" className={formStyle.formInput} required />
+            <Input type="password" id="upassword" name="upassword" required />
           </div>
           <div className={clsx(formStyle.formButtonWrapper, formStyle.column)}>
             <div className={clsx(formStyle.formBoxRight)}>

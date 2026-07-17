@@ -6,6 +6,8 @@ import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
 
 import Button from "@/app/_components/ui/Button";
+import Input from "@/app/_components/ui/Input";
+import CheckBox from "@/app/_components/ui/Checkbox";
 import BottomSheet from "@/app/_components/ui/BottomSheet";
 
 
@@ -28,11 +30,10 @@ export default function Register() {
             <label htmlFor="confirmPassword" className={formStyle.formLabel}>
               비밀번호 확인
             </label>
-            <input
+            <Input
               type="password"
               id="confirmPassword"
               name="confirmPassword"
-              className={formStyle.formInput}
               required
             />
           </div>
@@ -40,14 +41,14 @@ export default function Register() {
             <label htmlFor="upassword" className={formStyle.formLabel}>
               비밀번호
             </label>
-            <input type="password" id="upassword" name="upassword" className={formStyle.formInput} required />
+            <Input type="password" id="upassword" name="upassword" required />
           </div>
           <div className={formStyle.formGroup}>
             <label htmlFor="uemail" className={formStyle.formLabel}>
               이메일
             </label>
             <div className={formStyle.formInputWrapper}>
-              <input type="email" id="uemail" name="uemail" className={formStyle.formInput} required />
+              <Input type="email" id="uemail" name="uemail" required />
               <Button type="button" variant="secondary" size="medium" onClick={() => console.log("중복 확인 버튼 클릭")}>
                 중복 확인
               </Button>
@@ -69,28 +70,31 @@ export default function Register() {
           <div className={formStyle.formWrapper}>
             <div className={formStyle.formGroup}>
               <div className={formStyle.formInputWrapper}>
-                <input type="checkbox" id="terms" name="terms" className={formStyle.formCheckbox} required />
-                <label htmlFor="terms">
-                  [필수]이용약관에 동의합니다
-                </label>
+                <CheckBox 
+                  type="checkbox" id="terms" name="terms" 
+                  label="[필수]이용약관에 동의합니다"
+                  required 
+                />
                 <Button type="button" variant="text-secondary" size="small">약관 보기</Button>
               </div>
             </div>
             <div className={formStyle.formGroup}>
               <div className={formStyle.formInputWrapper}>
-                <input type="checkbox" id="privacy" name="privacy" className={formStyle.formCheckbox} required />
-                <label htmlFor="privacy">
-                  [필수]개인정보처리방침에 동의합니다
-                </label>
+                <CheckBox 
+                  type="checkbox" id="privacy" name="privacy" 
+                  label="[필수]개인정보처리방침에 동의합니다"
+                  required 
+                />
                 <Button type="button" variant="text-secondary" size="small">약관 보기</Button>
               </div>
             </div>
             <div className={formStyle.formGroup}>
               <div className={formStyle.formInputWrapper}>
-                <input type="checkbox" id="sensitive" name="sensitive" className={formStyle.formCheckbox} required />
-                <label htmlFor="sensitive">
-                  [필수]민감정보 활용에 동의합니다
-                </label>
+                <CheckBox 
+                  type="checkbox" id="sensitive" name="sensitive" 
+                  label="[필수]민감정보 활용에 동의합니다" 
+                  required 
+                />
                 <Button type="button" variant="text-secondary" size="small">약관 보기</Button>
               </div>
             </div>

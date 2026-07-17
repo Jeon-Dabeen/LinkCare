@@ -1,0 +1,53 @@
+
+
+.statePage{
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+  padding: var(--layout-padding-x);
+  width: 100%;
+  max-width: var(--app-max-width);
+  height: 100vh;
+  background-color: var(--color-bg);
+  transform: translateX(-50%);
+  z-index: var(--z-overlay);
+}
+
+.open{
+  display: flex;
+}
+
+
+.icon{
+  text-align: center;
+  color: var(--icon-color);
+}
+
+.loading{
+  animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.title{
+  text-align: center;
+  font-size: var(--font-size-lg);
+}
+
+.description{
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+

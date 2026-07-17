@@ -23,9 +23,12 @@ export default function BottomSheet({
 
   return (
     <>
-      <div className={clsx(
-        styles.bottomSheetOverlay,
-        open && styles.open)} />
+      <div 
+        className={clsx(
+          styles.bottomSheetOverlay,
+          open && styles.open)}  
+         onClick={onClose}
+      />
       <div className={clsx(
         styles.bottomSheetWrapper,
         open && styles.open)}>

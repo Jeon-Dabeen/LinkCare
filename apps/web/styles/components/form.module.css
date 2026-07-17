@@ -70,42 +70,6 @@
 
 
 
-/* input */
-.formInput {
-  flex: 1;
-  padding: 12px 16px;
-  height: var(--input-height);
-  font-size: var(--font-size-base);
-  border: 1px solid var(--input-border-color);
-  border-radius: var(--input-border-radius);
-  background-color: var(--input-bg-color);
-}
-
-.formInput:focus {
-  outline: none;
-  outline: 2px solid var(--input-border-color-focus);
-  box-shadow: var(--input-focus-box-shadow);
-}
-
-
-/* checkbox */
-.formCheckbox {
-  display: none;
-}
-.formCheckbox + label {
-  display: inline-flex;
-  align-items: center;
-  padding-left: 32px;
-  height: 32px;
-  font-size: var(--font-size-base);
-  background-image: url('/icon/form_checkbox.svg');
-  background-repeat: no-repeat;
-  background-position: 0 50%;
-}
-.formCheckbox:checked + label {
-  background-image: url('/icon/form_checkbox_checked.svg');
-}
-
 
 
 
