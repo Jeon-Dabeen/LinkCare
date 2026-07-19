@@ -51,6 +51,10 @@
 }
 
 
+.noTopPadding{
+  padding-top: 0;
+}
+
 .cardGrid{
   position: relative;
   display: grid;

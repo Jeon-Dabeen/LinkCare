@@ -17,6 +17,7 @@ type CardHeaderProps = {
 }
 
 type CardBodyProps = {
+  noTopPadding?: boolean,
   children: ReactNode;
 }
 
@@ -57,7 +58,7 @@ export function CardHeader({
   title,
   left,
   right,
-  noPadding
+  noPadding,
 }:CardHeaderProps){
 
   return (
@@ -78,11 +79,15 @@ export function CardHeader({
 
 
 export function CardBody({
+  noTopPadding,
   children
 }:CardBodyProps){
 
   return (
-    <div className={styles.cardBody}>
+    <div className={clsx(
+      styles.cardBody,
+      noTopPadding && styles.noTopPadding
+    )}>
       {children}
     </div>
   )

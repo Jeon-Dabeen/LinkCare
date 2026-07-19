@@ -1,0 +1,79 @@
+
+
+.wrapper{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.count{
+  text-align: center;
+}
+
+.count dt{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 66px;
+  height: 22px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-sm);
+}
+
+.count dd{
+  font-size: var(--font-size-xs);
+}
+
+.count dd strong{
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.goal dt{
+  background-color: var(--color-secondary);
+}
+.goal dd{
+  color: var(--color-secondary);
+}
+
+.current dt{
+  background-color: var(--color-tertiary);
+}
+.current dd{
+  color: var(--color-tertiary);
+}
+
+
+.icon {
+  position: relative;
+  width: 65px;
+  height: 64px;
+}
+
+.iconGoal,
+.iconCurrent {
+  width: 64px;
+  height: 64px;
+}
+
+.iconGoal{
+  fill: var(--color-secondary);
+  opacity: 0.3;
+}
+
+
+.currentWrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  transform: scaleX(var(--scale-x));
+  transform-origin: center;
+}
+
+.iconCurrent {
+  color: var(--color-tertiary);
+}

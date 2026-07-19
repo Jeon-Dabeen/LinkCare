@@ -1,0 +1,57 @@
+
+.greeting{
+  font-size: var(--font-size-md);
+  color: var(--color-text-dark);
+}
+
+.nickname{
+  font-size: var(--font-size-md);
+  color: var(--color-text-dark);
+}
+
+.aiComment{
+  margin-top: var(--spacing-sm);
+  color: var(--color-secondary);
+}
+
+
+/* dailyShield */
+.dailyShield{
+  margin-top: calc(var(--spacing-lg) * -1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.shieldWrapper{
+
+  display: block;
+  border: 1px solid red;
+
+}
+
+.shieldTitle{
+  padding-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.quickWrapper{
+  display: flex;
+  gap: var(--spacing-box-inner);
+}
+
+
+.customWrapper{
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+
+.customButton{
+  text-align: right;
+}
+.customButton button{
+  min-width: 100px;
+}
