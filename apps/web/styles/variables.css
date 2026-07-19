@@ -123,6 +123,11 @@
   --input-border-color-error: var(--color-error);
   --input-bg-color: var(--color-surface);
   --color-disabled: #E0E0E0;
+
+
+  /*  */
+  --color-water-none: #E5E5E5;
+  --color-water-active: #81CCE2;
 }
 
 [data-theme="dark"] {

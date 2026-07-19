@@ -120,7 +120,7 @@
 .infoBox{
   padding-left: 20px;
   color: var(--color-info);
-  background-image: url('/icon/icon_info.svg');
+  background-image: url('/images/icon/icon_info.svg');
   background-repeat: no-repeat;
   background-position: 0px 2px;
 }
@@ -144,6 +144,9 @@
   color: var(--color-text-primary);
 }
 .dataValue + .dataLabel{
+  padding-left: 16px;
+}
+.dataUnit + .dataValue{
   padding-left: 16px;
 }
 .dataUnit{

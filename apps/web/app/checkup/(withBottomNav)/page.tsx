@@ -5,6 +5,7 @@ import Button from "@/app/_components/ui/Button";
 import Grid from "@/app/_components/ui/Grid";
 import Card from "@/app/_components/ui/Card";
 import StatusTag from "@/app/_components/ui/StatusTag";
+import Link from "next/link";
 
 
 export default function Page(){
@@ -38,58 +39,70 @@ export default function Page(){
         </Grid.ItemFull>
 
         <Grid.ItemFull>
-          <Card>
-            <Card.Header 
-              icon={<BookHeart />}
-              title="신체 기본 지표"
-            />
-            <Card.Body>
-              키, 체중, 시력...
-            </Card.Body>
-          </Card>
+          <Link href="/checkup/basic">
+            <Card>
+              <Card.Header 
+                icon={<BookHeart />}
+                title="신체 기본 지표"
+              />
+              <Card.Body>
+                키, 체중, 시력...
+              </Card.Body>
+            </Card>
+          </Link>
         </Grid.ItemFull>
 
-        <Card>
-          <Card.Header 
-            icon={<Droplet />}
-            title="빈혈/혈당"
-          />
-          <Card.Body>
-            빈혈 11, 혈당 60
-          </Card.Body>
-        </Card>
 
-        <Card>
-          <Card.Header 
-            icon={<Ruler />}
-            title="신장"
-          />
-          <Card.Body>
-            170cm
-          </Card.Body>
-        </Card>
+        <Link href="/checkup/basic">
+          <Card>
+            <Card.Header 
+              icon={<Droplet />}
+              title="빈혈/혈당"
+            />
+            <Card.Body>
+              빈혈 11, 혈당 60
+            </Card.Body>
+          </Card>
+        </Link>
 
-        <Card>
-          <Card.Header 
-            icon={<FlaskRound />}
-            title="간"
-          />
-          <Card.Body>
-            ALT : 32, AST: 60
-          </Card.Body>
-          <StatusTag status="normal" />
-        </Card>
+        <Link href="/checkup/basic">
+          <Card>
+            <Card.Header 
+              icon={<Ruler />}
+              title="신장"
+            />
+            <Card.Body>
+              170cm
+            </Card.Body>
+          </Card>
+        </Link>
 
-        <Card>
-          <Card.Header 
-            icon={<HeartPulse />}
-            title="혈압"
-          />
-          <Card.Body>
-            110/70mmHg 90bpm
-          </Card.Body>
-          <StatusTag status="warning" />
-        </Card>
+        <Link href="/checkup/basic">
+          <Card>
+            <Card.Header 
+              icon={<FlaskRound />}
+              title="간"
+            />
+            <Card.Body>
+              ALT : 32, AST: 60
+            </Card.Body>
+            <StatusTag status="normal" />
+          </Card>
+        </Link>
+
+        <Link href="/checkup/basic">
+          <Card>
+            <Card.Header 
+              icon={<HeartPulse />}
+              title="혈압"
+            />
+            <Card.Body>
+              110/70mmHg 90bpm
+            </Card.Body>
+            <StatusTag status="warning" />
+          </Card>
+        </Link>
+
 
       </Grid>
 
