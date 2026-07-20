@@ -12,7 +12,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   round?: boolean
 };
 
-type ButtonIconColor = "primary" | "secondary" | "textLight";
+type ButtonIconColor = "primary" | "secondary" | "tertiary" | "textLight";
 
 type ButtonIconProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   color?: ButtonIconColor,
@@ -71,6 +71,7 @@ export function ButtonClose({
 const colorClass = {
   primary: styles.iconPrimary,
   secondary: styles.iconSecondary,
+  tertiary: styles.iconTertiary,
   textLight: styles.iconTextLight,
 } as const;
 

@@ -1,0 +1,47 @@
+
+.goalCalorie{
+  display: flex;
+  align-items: center;
+}
+
+.goalCalorie .value{
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-tertiary);
+}
+
+.goalCalorie .unit{
+  margin-left: var(--spacing-xs);
+  margin-right: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-tertiary);
+}
+
+
+/* todayCalorie */
+.todayCalorie{
+  font-size: var(--font-size-lg);
+  text-align: center;
+  color: var(--color-primary);
+}
+
+.todayCalorie .value{
+  font-weight: 700;
+}
+
+.todayCalorie .unit{
+  padding-left: 2px;
+  font-weight: 400;
+}
+
+
+.photoList{
+  display: flex;
+  gap: 10px;
+}
+
+.photoItem{
+  flex: 1;
+  text-align: center;
+}
+
