@@ -1,15 +1,14 @@
-
-.greeting{
+.greeting {
   font-size: var(--font-size-md);
   color: var(--color-text-dark);
 }
 
-.nickname{
+.nickname {
   font-size: var(--font-size-md);
   color: var(--color-text-dark);
 }
 
-.aiComment{
+.aiComment {
   margin-top: var(--spacing-sm);
   color: var(--color-secondary);
 }
@@ -26,7 +25,6 @@
 .shieldWrapper{
 
   display: block;
-  border: 1px solid red;
 
 }
 
@@ -49,9 +47,22 @@
 }
 
 
+.customItemsRow{
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.customItems{
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+
 .customButton{
   text-align: right;
 }
 .customButton button{
   min-width: 100px;
 }
+

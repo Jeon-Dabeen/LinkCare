@@ -121,7 +121,7 @@
   --input-border-color: #DCD2C5;
   --input-border-color-focus: var(--color-tertiary);
   --input-border-color-error: var(--color-error);
-  --input-bg-color: var(--color-surface);
+  --input-bg-color: #FFFDFA;
   --color-disabled: #E0E0E0;
 
 
