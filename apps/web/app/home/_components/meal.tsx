@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { Salad, Scan, Utensils } from "lucide-react";
+import { Scan, Utensils } from "lucide-react";
 
 import clsx from "clsx";
 import styles from "@/styles/home/meal.module.css";
@@ -9,7 +9,7 @@ import styles from "@/styles/home/meal.module.css";
 
 import Progress from "@/app/_components/ui/Progress";
 
-import { formatNumber } from "@/lib/format";
+import { formatNumber } from "@/utils/format";
 
 
 type MealProps = {
