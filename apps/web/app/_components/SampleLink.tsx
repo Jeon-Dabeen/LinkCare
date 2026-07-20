@@ -47,6 +47,17 @@ export default function SampleLink() {
         <li><Link href="/daily/weight">체중</Link></li>
       </ul>
 
+      <p>- meal -</p>
+      <ul style={{
+        listStyle: "number", paddingLeft: '15px',
+        display: "flex",
+        flexDirection: "column",
+        gap: "5px",
+        margin: "10px 0 15px"
+      }}>
+        <li><Link href="/meal">식사 다이어리</Link></li>
+      </ul>
+
       <p>- checkup -</p>
       <ul style={{
         listStyle: "number", paddingLeft: '15px',

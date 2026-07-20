@@ -126,6 +126,10 @@
   color: var(--color-secondary);
 }
 
+.iconTertiary{
+  color: var(--color-tertiary);
+}
+
 .iconTextLight{
   color: var(--color-text-light);
 }
