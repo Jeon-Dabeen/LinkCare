@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { WeightService } from './weight.service';
 import { CreateWeightDto } from './dto/create-weight.dto';
 import { UpdateWeightProfileDto } from './dto/update-weight-profile-dto';
@@ -22,8 +22,12 @@ export class WeightController {
   }
 
   @Get('month/:id')
-  findMonth(@Param('id') id : string){
-    return this.weightService.findMonthWeight(+id);
+  findMonth(
+    @Param('id') id : string,
+    @Query('year') year: string,
+    @Query('month') month: string,
+  ){
+    return this.weightService.findMonthWeight(+id,+year,+month);
   }
 
   @Patch('profile/:id')

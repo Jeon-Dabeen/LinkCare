@@ -153,23 +153,26 @@ export class WeightService {
 
   //알아보니까 이번달 기록만 보는것도 성능상 범위를 지정해서 하는게 맞다고 함.
 
-  async findMonthWeight(userId:number){
-    const today = this.getToday();
-    //오늘날짜 일단필요하니까.. 위에 getToday() 함수 돌려주고
-    const thisMonth = new Date(today);//오늘 날짜를 기준으로
-    thisMonth.setUTCDate(1);//이번달1일
+  async findMonthWeight(userId:number,year:number, month:number){
 
-    const nextMonth = new Date(thisMonth);
-    nextMonth.setUTCMonth(nextMonth.getUTCMonth() + 1);
-    //이번달1일로 만들고, 거기에 +1 해서 다음달 1일을 만듬
+    
+    const thisMonth = new Date(
+      Date.UTC(year,month -1,1)
+    );
+    //프론트로부터 받은 year, month로 선택한 달의 1일을 만든다.
+    //javascript월 번호는 0부터 시작이므로 
 
-    const monthWeight = await this.prisma.weight.findMany({
+    const nextMonth = new Date(
+      Date.UTC(year,month,1)
+    );
+
+
+    return this.prisma.weight.findMany({
       where:{
         userId,
         weightDate:{
-          gte:thisMonth,
-          lt:nextMonth,
-          //gte~lt 는 gte 이상 lt 미만
+          gte: thisMonth,
+          lt: nextMonth,
         },
       },
       select:{
@@ -178,10 +181,8 @@ export class WeightService {
       },
       orderBy:{
         weightDate:'asc'
-      },
-    });
-    return monthWeight;
-    
+      }
+    })
   }
 
 
