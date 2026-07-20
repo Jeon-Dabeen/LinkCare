@@ -25,7 +25,7 @@ import StepSelector from "./_components/stepSelector";
 import Button from "../_components/ui/Button";
 
 
-
+import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 
 // 
 type DailyShieldState = {
@@ -55,6 +55,9 @@ type Action =
 
 
 export default function Home(){
+
+  const {baseDate, formattedDate} = useBaseDate();
+  console.log(baseDate, formattedDate);
 
   const [water, setWater] = useState(5);
 

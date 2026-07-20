@@ -7,6 +7,7 @@ import style from "@/styles/layout/layout.module.css";
 
 import Header from "@/app/_components/layout/Header";
 import SampleLink from "./_components/SampleLink";
+import { Providers } from "./_providers/Provider";
 
 
 const pretendard = localFont({
@@ -31,10 +32,12 @@ export default function RootLayout({
         <SampleLink />
         <div className={style.wrapper}>
           <aside />
-          <div className={style.app}>
-            <Header />
-            <main className={style.main}>{children}</main>
-          </div>
+          <Providers>
+            <div className={style.app}>
+              <Header />
+              <main className={style.main}>{children}</main>
+            </div>
+          </Providers>
         </div>
       </body>
     </html>
