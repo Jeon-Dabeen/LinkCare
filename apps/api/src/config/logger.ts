@@ -9,7 +9,7 @@ const logFormat = printf(({ timestamp, level, message }) => {
 });
 
 export const logger = winston.createLogger({
-  level: "info",
+  level: "debug",
   format: combine(timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), logFormat),
   transports: [
     // 콘솔 출력
@@ -20,7 +20,7 @@ export const logger = winston.createLogger({
       dirname: "log", // 로그를 저장할 폴더명
       filename: "%DATE%.log", // 파일명 패턴 (예: 2026-07-16.log)
       datePattern: "YYYY-MM-DD", // %DATE% 영역에 들어갈 날짜 포맷
-      maxFiles: "30d", // 보관 기한: 14일이 지난 로그는 자동 삭제 (용량 관리용)
+      maxFiles: "30d", // 보관 기한: 30일이 지난 로그는 자동 삭제 (용량 관리용)
     }),
   ],
 });
