@@ -1,0 +1,219 @@
+{
+  "waist": {
+    "female": {
+      "normal": {
+        "min": 0.0,
+        "max": 84.9
+      },
+      "danger": {
+        "min": 85.0,
+        "max": 999.0
+      }
+    },
+    "male": {
+      "normal": {
+        "min": 0.0,
+        "max": 89.9
+      },
+      "danger": {
+        "min": 90.0,
+        "max": 999.0
+      }
+    }
+  },
+  "bmi": {
+    "low": {
+      "min": 0.0,
+      "max": 18.4
+    },
+    "normal": {
+      "min": 18.5,
+      "max": 24.9
+    },
+    "warning": {
+      "min": 25,
+      "max": 29.9
+    },
+    "danger": {
+      "min": 30,
+      "max": 999.0
+    }
+  },
+  "bp": {
+    "diastolic": {
+      "low": {
+        "min": 0,
+        "max": 59
+      },
+      "normal": {
+        "min": 60,
+        "max": 79
+      },
+      "warning": {
+        "min": 80,
+        "max": 89
+      },
+      "danger": {
+        "min": 90,
+        "max": 999
+      }
+    },
+    "systolic": {
+      "low": {
+        "min": 0,
+        "max": 89
+      },
+      "normal": {
+        "min": 90,
+        "max": 119
+      },
+      "caution": {
+        "min": 120,
+        "max": 129
+      },
+      "warning": {
+        "min": 130,
+        "max": 139
+      },
+      "danger": {
+        "min": 140,
+        "max": 999
+      }
+    }
+  },
+  "urine_protein": {
+    "normal": "음성",
+    "warning": "약양성",
+    "danger": "양성"
+  },
+  "hemoglobin": {
+    "female": {
+      "normal": {
+        "min": 12.0,
+        "max": 15.5
+      },
+      "caution": {
+        "min": 10.0,
+        "max": 11.9
+      },
+      "warning": {
+        "min": 8.0,
+        "max": 9.9
+      },
+      "danger": {
+        "min": 0.0,
+        "max": 7.9
+      }
+    },
+    "male": {
+      "normal": {
+        "min": 13.0,
+        "max": 16.5
+      },
+      "caution": {
+        "min": 12.0,
+        "max": 12.9
+      },
+      "warning": {
+        "min": 8.0,
+        "max": 11.9
+      },
+      "danger": {
+        "min": 0.0,
+        "max": 7.9
+      }
+    }
+  },
+  "fbg": {
+    "normal": {
+      "min": 0,
+      "max": 99
+    },
+    "warning": {
+      "min": 100,
+      "max": 125
+    },
+    "danger": {
+      "min": 126,
+      "max": 999
+    }
+  },
+  "creatinine": {
+    "normal": {
+      "min": 0.0,
+      "max": 1.6
+    },
+    "danger": {
+      "min": 1.7,
+      "max": 99.9
+    }
+  },
+  "egfr": {
+    "normal": {
+      "min": 60,
+      "max": 999
+    },
+    "danger": {
+      "min": 0,
+      "max": 59
+    }
+  },
+  "ast": {
+    "normal": {
+      "min": 0,
+      "max": 40
+    },
+    "warning": {
+      "min": 41,
+      "max": 50
+    },
+    "danger": {
+      "min": 51,
+      "max": 999
+    }
+  },
+  "alt": {
+    "normal": {
+      "min": 0,
+      "max": 35
+    },
+    "warning": {
+      "min": 36,
+      "max": 45
+    },
+    "danger": {
+      "min": 46,
+      "max": 999
+    }
+  },
+  "ygtp": {
+    "female": {
+      "normal": {
+        "min": 8,
+        "max": 35
+      },
+      "warning": {
+        "min": 36,
+        "max": 45
+      },
+      "danger": {
+        "min": 46,
+        "max": 999
+      }
+    },
+    "male": {
+      "normal": {
+        "min": 11,
+        "max": 63
+      },
+      "warning": {
+        "min": 64,
+        "max": 77
+      },
+      "danger": {
+        "min": 78,
+        "max": 999
+      }
+    }
+  }
+}
