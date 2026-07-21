@@ -1,11 +1,15 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { UploadedFile, ValidationPipe } from "@nestjs/common";
+import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { logger } from "./config/logger";
 import { AllExceptionsFilter } from "./common/filters/http-exception.filter";
+import { mkdirSync } from "fs";
+import { UPLOAD_DIR } from "./config/pdf.upload.config";
 
 async function bootstrap() {
+  mkdirSync(UPLOAD_DIR, { recursive: true });
+
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
