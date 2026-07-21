@@ -20,6 +20,7 @@
 
 /* todayCalorie */
 .todayCalorie{
+  padding-bottom: 10px;
   font-size: var(--font-size-lg);
   text-align: center;
   color: var(--color-primary);

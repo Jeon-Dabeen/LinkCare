@@ -56,6 +56,7 @@ export default function SampleLink() {
         margin: "10px 0 15px"
       }}>
         <li><Link href="/meal">식사 다이어리</Link></li>
+        <li><Link href="/meal/record">식사 기록</Link></li>
       </ul>
 
       <p>- checkup -</p>

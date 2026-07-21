@@ -6,6 +6,7 @@ import styles from "@/styles/meal/photoButton.module.css";
 
 import { MealType, getMealTypeLabel } from "@/types/mealType";
 import { Plus, Scan, Utensils } from "lucide-react";
+import clsx from "clsx";
 
 
 type PhotoButtonProps = {

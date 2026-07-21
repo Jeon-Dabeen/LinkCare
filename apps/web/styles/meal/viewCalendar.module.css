@@ -1,0 +1,25 @@
+
+.wrapper{
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  display: none;
+  padding: 0 var(--layout-padding-x) var(--layout-padding-x);
+  width: 100%;
+  max-width: var(--app-max-width);
+  height: 100vh;
+  background-color: var(--color-bg);
+  transform: translateX(-50%);
+  z-index: var(--z-overlay);
+}
+
+.wrapper.open {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) translateX(-50%);
+}
+
+.header button{
+  margin-left: auto;
+}

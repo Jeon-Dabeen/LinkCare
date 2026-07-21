@@ -1,0 +1,26 @@
+
+
+
+
+.inputItem{
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: 10px;
+}
+
+.name{
+  flex: 1;
+}
+
+.unit{
+  width: 100px;
+}
+
+.unit input{
+  width: 100%;
+}
+
+.addButton{
+  text-align: center;
+}

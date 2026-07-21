@@ -28,6 +28,23 @@
   --color-info-hover: #7B8BB8;
   --color-info-active: #6A7AA5;
 
+  /* status */
+  --color-low: #6F9FC9;
+  --color-low-hover: #5A8BB8;
+  --color-low-active: #49789F;
+  --color-normal: #7FAE95;
+  --color-normal-hover: #6A9B7F;
+  --color-normal-active: #5A7F66;
+  --color-caution: #D8C36A;
+  --color-caution-hover: #C5AE4F;
+  --color-caution-active: #AA9540;
+  --color-warning: #D99555;
+  --color-warning-hover: #C57E3F;
+  --color-warning-active: #A9692E;
+  --color-danger: #CB7568;
+  --color-danger-hover: #B05A4D;
+  --color-danger-active: #964A3F;
+
   /* text */
   --color-text-primary: #342E28;
   --color-text-secondary: #665F57;
@@ -38,6 +55,7 @@
 
   /* background */
   --color-bg: #F9F7F3;
+  --calender-selected-bg: #D9D9D9;
 
   /* border */
   --border-radius: 8px;

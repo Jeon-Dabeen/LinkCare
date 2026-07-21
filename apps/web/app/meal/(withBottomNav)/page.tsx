@@ -5,31 +5,47 @@ import { useState } from "react";
 
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 
-import { CircleOff, Goal, Pencil } from "lucide-react";
+import { CalendarDays, CircleOff, Goal, Pencil } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
 import styles from "@/styles/meal/meal.module.css";
 
-import Grid from "../../_components/ui/Grid";
-import Card from "../../_components/ui/Card";
-import Button, { ButtonIcon } from "../../_components/ui/Button";
-import Progress from "../../_components/ui/Progress";
-import BottomSheet from "../../_components/ui/BottomSheet";
-import Input from "../../_components/ui/Input";
+import Grid from "@/app/_components/ui/Grid";
+import Card from "@/app/_components/ui/Card";
+import Button, { ButtonIcon } from "@/app/_components/ui/Button";
+import Progress from "@/app/_components/ui/Progress";
+import BottomSheet from "@/app/_components/ui/BottomSheet";
+import Input from "@/app/_components/ui/Input";
+import Calendar from "@/app/_components/ui/calendar/MonthCalendar";
 import MealDetail from "../_components/mealDetail";
 import PhotoButton from "../_components/photoButton";
+import {ViewCalendar, ViewWeek} from "../_components/viewCalendar";
+import dayjs from "dayjs";
+
 
 export default function Page({
 }){
 
+  const [viewCalendar, setViewCalendar] = useState(false);
   const [openGoal, setOpenGoal] = useState(false);
   
   function handleOpenGoal() {
     setOpenGoal(true);
   }
+  
+  function handleOpenCalendar() {
+    setViewCalendar(true);
+  }
 
   const {baseDate, formattedDate} = useBaseDate();
   console.log(baseDate, formattedDate);
+
+
+  // router.push(
+  //   `/meal/record?date=${date}&mealType=breakfast`
+  // );
+
+
 
   return (
     <section className={commonStyle.mainContent}>
@@ -37,12 +53,17 @@ export default function Page({
         <div className={commonStyle.left}>
           <h2 className={commonStyle.pageTitle}>식사 다이어리</h2>
         </div>
+        <div className={commonStyle.right}>
+          <Button variant="text-primary" onClick={handleOpenCalendar}>
+            <CalendarDays />
+          </Button>
+        </div>
       </header>
       
       <Grid>
 
         <Grid.ItemFull>
-          1주일 달력
+          <ViewWeek  selectedDate={dayjs("2026-07-10")} />
         </Grid.ItemFull>
         
         <Grid.ItemFull>
@@ -129,6 +150,12 @@ export default function Page({
             </Button>
           </div>
       </BottomSheet>
+
+
+      <ViewCalendar 
+        open={viewCalendar} 
+        onClose={() => setViewCalendar(false)}
+      />
     </section>
   )
 }
