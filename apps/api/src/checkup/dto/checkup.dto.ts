@@ -1,25 +1,4 @@
-export interface CheckupData {
-  checkUpDate: string;
-  height: number;
-  weight: number;
-  waist: number;
-  bmi: number;
-  visionLeft: number;
-  visionRight: number;
-  hearing: string;
-  bp_systolic: number;
-  bp_diastolic: number;
-  urine_protein: string;
-  hemoglobin: number;
-  fbg: number;
-  creatinine: number;
-  egfr: number;
-  ast: number;
-  alt: number;
-  ygtp: number;
-}
-
-export interface CheckupResponse {
+export class CheckupResponseDto {
   height: number | null;
   weight: number | null;
   waist: number | null;

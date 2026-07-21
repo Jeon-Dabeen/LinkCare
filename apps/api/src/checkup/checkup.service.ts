@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
 import { UpdateCheckupDto } from "./dto/update-checkup.dto";
-import { CheckupResponse } from "./interfaces/checkup.interface";
+import { CheckupResponseDto } from "./dto/checkup.dto";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { PrismaService } from "../prisma/prisma.service";
 import { logger } from "../config/logger";
@@ -83,7 +83,7 @@ export class CheckupService {
     try {
       return await this.prisma.$transaction(async (tx) => {
         logger.debug(`checkup - ${this.create.name} transaction start`);
-        const results: CheckupResponse[] = [];
+        const results: CheckupResponseDto[] = [];
 
         let count = 0;
 
