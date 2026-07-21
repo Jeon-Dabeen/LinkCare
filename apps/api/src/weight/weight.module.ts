@@ -1,8 +1,7 @@
-import { Module } from '@nestjs/common';
-import { WeightService } from './weight.service';
-import { WeightController } from './weight.controller';
-import { PrismaModule } from '../prisma/prisma.module';
-
+import { Module } from "@nestjs/common";
+import { WeightService } from "./weight.service";
+import { WeightController } from "./weight.controller";
+import { PrismaModule } from "../prisma/prisma.module";
 
 @Module({
   imports: [PrismaModule],
