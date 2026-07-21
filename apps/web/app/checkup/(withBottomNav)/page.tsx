@@ -30,7 +30,7 @@ export default function Page(){
             <Card.Header 
               icon={<MessageSquareCheck />}
             />
-            <Card.Body>
+            <Card.Body noTopPadding>
               <p className={commonStyle.messageTitle}>면역력에는 운동이 필수죠!</p>
               <div>균형잡힌 식사와 운동으로 정상체중을 유지하시기 바랍니다. 검진결과 LDL 콜레스테롤 수치는 정상입니다. B형간염 항체 양성으로 면역력을 보유하고 있습니다.
               </div>
@@ -86,7 +86,7 @@ export default function Page(){
             <Card.Body>
               ALT : 32, AST: 60
             </Card.Body>
-            <StatusTag status="normal" />
+            <StatusTag status="normal" label="정상" />
           </Card>
         </Link>
 
@@ -99,7 +99,7 @@ export default function Page(){
             <Card.Body>
               110/70mmHg 90bpm
             </Card.Body>
-            <StatusTag status="warning" />
+            <StatusTag status="warning" label="위험" />
           </Card>
         </Link>
 

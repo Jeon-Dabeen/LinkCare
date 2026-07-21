@@ -2,7 +2,7 @@
 .wrapper{
   position: relative;
   width: 100%;
-  height: 120px;
+  height: 200px;
   background-color: var(--input-bg-color);
   border: 1px solid var(--input-border-color);
   border-radius: var(--border-radius);
@@ -33,6 +33,7 @@
   height: 100%;
   border: 1px solid var(--color-primary);
   border-radius: var(--border-radius);
+  pointer-events: none;
 }
 
 .photo img{

@@ -1,20 +1,18 @@
 import clsx from "clsx";
 import styles from "@/styles/components/statusTag.module.css";
+import {StatusType} from "@/types/statusType";
 
-type Status = "normal" | "warning" | "danger";
+type Status = StatusType;
 
 type StatusTagProps = {
-  status?: Status;
+  status: Status;
+  label: string;
 }
 
-const STATUS_LABEL: Record<Status, string> = {
-  normal: "정상",
-  warning: "주의",
-  danger: "위험",
-}
 
 export default function StatusTag({
-  status = "normal"
+  status,
+  label
 }: StatusTagProps){
 
   return(
@@ -24,7 +22,7 @@ export default function StatusTag({
         styles[status]
       )}
     >
-      {STATUS_LABEL[status]}
+      {label}
     </span>
   )
 }

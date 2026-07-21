@@ -78,14 +78,14 @@ export default function Page(){
                     <span className={commonStyle.dataValue}>62.5</span>
                     <span className={commonStyle.dataUnit}>kg</span>
                   </div>
-                  <StatusTag />
+                  <StatusTag status="danger" label="위험" />
                 </Card.Item>
                 <Card.Item title="허리둘레">
                   <div className={commonStyle.dataWrapper}>
                     <span className={commonStyle.dataValue}>55.8</span>
                     <span className={commonStyle.dataUnit}>cm</span>
                   </div>
-                  <StatusTag status="warning" />
+                  <StatusTag status="warning" label="위험" />
                 </Card.Item>
               </Card.Grid>
               <Card.Grid topDivider leftDivider>

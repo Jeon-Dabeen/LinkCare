@@ -5,8 +5,8 @@
   position: absolute;
   top: -2px;
   right: 10px;
-  padding: 6px 5px 2px;
-  width: 28px;
+  padding: 6px 2px 2px;
+  width: 36px;
   height: 25px;
   text-align: center;
   font-size: 10px;
@@ -20,33 +20,44 @@
   top: 25px;
   left: 50%;
   transform: translateX(-50%);
-  border-left: 14px solid transparent;
-  border-right: 14px solid transparent;
-  border-top: 4px solid currentColor;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-top: 6px solid currentColor;
 }
 
 
-.normal{
-  background: var(--color-success);
+.low{
+  background: var(--color-low);
+}
+.low::after {
+  border-top-color: var(--color-low);
 }
 
+.normal {
+  background: var(--color-normal);
+}
 .normal::after {
-  border-top-color: var(--color-success);
+  border-top-color: var(--color-normal);
+}
+
+.caution {
+  background: var(--color-caution);
+}
+.caution::after {
+  border-top-color: var(--color-caution);
 }
 
 .warning {
   background: var(--color-warning);
 }
-
 .warning::after {
   border-top-color: var(--color-warning);
 }
 
 .danger {
-  background: var(--color-error);
+  background: var(--color-danger);
 }
-
 .danger::after {
-  border-top-color: var(--color-error);
+  border-top-color: var(--color-danger);
 }
 
