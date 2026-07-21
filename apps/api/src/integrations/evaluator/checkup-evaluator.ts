@@ -1,5 +1,5 @@
 import { logger } from "../../config/logger";
-import * as REFERENCE_RANGES from "./checkup-rage.json";
+import * as REFERENCE_RANGES from "./checkup-range.json";
 
 export class CheckupEvaluator {
   /**
