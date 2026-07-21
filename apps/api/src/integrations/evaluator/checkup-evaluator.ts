@@ -2,6 +2,27 @@ import { logger } from "../../config/logger";
 import * as REFERENCE_RANGES from "./checkup-range.json";
 
 export class CheckupEvaluator {
+  // 검진 항목별 메타데이터 매핑
+  private static readonly ITEM_METADATA: Array<{
+    key: string;
+    unit: string;
+    rangeKey: string;
+    subKey?: string; // bp.systolic 처럼 2단계 깊이인 경우
+    isGenderSpecific?: boolean; // 성별 분기가 필요한 항목인지
+  }> = [
+    { key: "waist", unit: "cm", rangeKey: "waist", isGenderSpecific: true },
+    { key: "bmi", unit: "kg/m²", rangeKey: "bmi" },
+    { key: "bp_systolic", unit: "mmHg", rangeKey: "bp", subKey: "systolic" },
+    { key: "bp_diastolic", unit: "mmHg", rangeKey: "bp", subKey: "diastolic" },
+    { key: "hemoglobin", unit: "g/dL", rangeKey: "hemoglobin", isGenderSpecific: true },
+    { key: "fbg", unit: "mg/dL", rangeKey: "fbg" },
+    { key: "creatinine", unit: "mg/dL", rangeKey: "creatinine" },
+    { key: "egfr", unit: "mL/min/1.73m²", rangeKey: "egfr" },
+    { key: "ast", unit: "U/L", rangeKey: "ast" },
+    { key: "alt", unit: "U/L", rangeKey: "alt" },
+    { key: "ygtp", unit: "U/L", rangeKey: "ygtp", isGenderSpecific: true },
+  ];
+
   /**
    * @param inputData - { total_count: 3, checkup_history: [...] } 형태의 객체 또는 배열
    * @param gender - 'female' | 'male'
@@ -27,34 +48,78 @@ export class CheckupEvaluator {
   }
 
   /* 리턴 데이터 예시
-  {
-  "total_count": 3,
-  "gender": "female",
-  "checkup_status": [
-    {
-      "checkup_year": "`25",
-      "waist": "normal",
-      "bmi": "normal",
-      "bp_systolic": "warning",
-      "bp_diastolic": "warning",
-      "urine_protein": "normal",
-      "hemoglobin": "normal",
-      "fbg": "warning",
-      "creatinine": "normal",
-      "egfr": "normal",
-      "ast": "normal",
-      "alt": "normal",
-      "ygtp": "normal"
-    },
-    {
-      "checkup_year": "`23",
-      "waist": "normal",
-      "bmi": "normal",
-      ...
-    }
-  ]
-}
-*/
+  
+    "total_count": 3,
+    "gender": "female",
+    "checkup_status": [
+        {
+          "checkup_year": "`25",
+          "waist": {
+              "value": "65.0",
+              "unit": "cm",
+              "status": "normal"
+          },
+          "bmi": {
+              "value": "22.9",
+              "unit": "kg/m²",
+              "status": "normal"
+          },
+          "bp_systolic": {
+              "value": "130",
+              "unit": "mmHg",
+              "status": "warning"
+          },
+          "bp_diastolic": {
+              "value": "84",
+              "unit": "mmHg",
+              "status": "warning"
+          },
+          "hemoglobin": {
+              "value": "12.9",
+              "unit": "g/dL",
+              "status": "normal"
+          },
+          "fbg": {
+              "value": "105.0",
+              "unit": "mg/dL",
+              "status": "warning"
+          },
+          "creatinine": {
+              "value": "0.58",
+              "unit": "mg/dL",
+              "status": "normal"
+          },
+          "egfr": {
+              "value": "98.0",
+              "unit": "mL/min/1.73m²",
+              "status": "normal"
+          },
+          "ast": {
+              "value": "21.0",
+              "unit": "U/L",
+              "status": "normal"
+          },
+          "alt": {
+              "value": "13.0",
+              "unit": "U/L",
+              "status": "normal"
+          },
+          "ygtp": {
+              "value": "16.0",
+              "unit": "U/L",
+              "status": "normal"
+          },
+          "urine_protein": {
+              "value": "음성",
+              "unit": "",
+              "status": "normal"
+          }
+        },
+        // ... 이하 생략
+      }
+    ]
+  }
+  */
 
   /**
    * 단일 수치와 범주 범위 기준을 비교하여 해당하는 카테고리(normal, warning 등) 리턴
@@ -75,73 +140,43 @@ export class CheckupEvaluator {
   }
 
   /**
-   * 단일 검진 레코드를 받아 원하는 형태의 status 객체로 변환
+   * 단일 검진 레코드를 받아 원하는 형태의 객체로 변환
    */
   public static evaluateRecord(record: Record<string, any>, gender: "male" | "female") {
-    // 1) waist (허리둘레 - 성별 구분)
-    const waistVal = parseFloat(record.waist);
-    const waistStatus = this.evaluateRange(waistVal, REFERENCE_RANGES.waist[gender]);
+    const result: Record<string, any> = {
+      checkup_year: record.checkup_year ?? "",
+    };
 
-    // 2) bmi (성별 공통)
-    const bmiVal = parseFloat(record.bmi);
-    const bmiStatus = this.evaluateRange(bmiVal, REFERENCE_RANGES.bmi);
+    // 1. 수치형 항목 반복문으로 일괄 처리
+    for (const item of this.ITEM_METADATA) {
+      const rawValue = record[item.key];
+      const numericVal = parseFloat(rawValue);
 
-    // 3) bp (혈압 - 수축기 / 이완기)
-    const bpSystolicVal = parseFloat(record.bp_systolic);
-    const bpDiastolicVal = parseFloat(record.bp_diastolic);
-    const bpSystolicStatus = this.evaluateRange(bpSystolicVal, REFERENCE_RANGES.bp.systolic);
-    const bpDiastolicStatus = this.evaluateRange(bpDiastolicVal, REFERENCE_RANGES.bp.diastolic);
+      // 기준표 타겟 객체 탐색 (bp처럼 subKey가 있거나 성별 구분이 있는 경우 대응)
+      let rangeTarget = REFERENCE_RANGES[item.rangeKey];
+      if (item.subKey) rangeTarget = rangeTarget[item.subKey];
+      if (item.isGenderSpecific) rangeTarget = rangeTarget[gender];
 
-    // 4) urine_protein (요단백 - 텍스트 매칭)
-    const proteinVal = record.urine_protein;
+      result[item.key] = {
+        value: rawValue ?? "",
+        unit: item.unit,
+        status: this.evaluateRange(numericVal, rangeTarget),
+      };
+    }
+
+    // 2. 특수 항목: 요단백 (문자열 정성 검사이므로 단독 처리)
+    const proteinVal = record.urine_protein ?? "";
     let urineProteinStatus = "unknown";
     if (proteinVal === REFERENCE_RANGES.urine_protein.normal) urineProteinStatus = "normal";
     else if (proteinVal === REFERENCE_RANGES.urine_protein.warning) urineProteinStatus = "warning";
     else if (proteinVal === REFERENCE_RANGES.urine_protein.danger) urineProteinStatus = "danger";
 
-    // 5) hemoglobin (혈색소 - 성별 구분)
-    const hbVal = parseFloat(record.hemoglobin);
-    const hemoglobinStatus = this.evaluateRange(hbVal, REFERENCE_RANGES.hemoglobin[gender]);
-
-    // 6) fbg (공복혈당)
-    const fbgVal = parseFloat(record.fbg);
-    const fbgStatus = this.evaluateRange(fbgVal, REFERENCE_RANGES.fbg);
-
-    // 7) creatinine (크레아티닌)
-    const creVal = parseFloat(record.creatinine);
-    const creatinineStatus = this.evaluateRange(creVal, REFERENCE_RANGES.creatinine);
-
-    // 8) egfr (신사구체신재율)
-    const egfrVal = parseFloat(record.egfr);
-    const egfrStatus = this.evaluateRange(egfrVal, REFERENCE_RANGES.egfr);
-
-    // 9) ast
-    const astVal = parseFloat(record.ast);
-    const astStatus = this.evaluateRange(astVal, REFERENCE_RANGES.ast);
-
-    // 10) alt
-    const altVal = parseFloat(record.alt);
-    const altStatus = this.evaluateRange(altVal, REFERENCE_RANGES.alt);
-
-    // 11) ygtp (감마지티피 - 성별 구분)
-    const ygtpVal = parseFloat(record.ygtp);
-    const ygtpStatus = this.evaluateRange(ygtpVal, REFERENCE_RANGES.ygtp[gender]);
-
-    // 1 depth JSON 규격으로 반환
-    return {
-      checkup_year: record.checkup_year ?? "",
-      waist: waistStatus,
-      bmi: bmiStatus,
-      bp_systolic: bpSystolicStatus,
-      bp_diastolic: bpDiastolicStatus,
-      urine_protein: urineProteinStatus,
-      hemoglobin: hemoglobinStatus,
-      fbg: fbgStatus,
-      creatinine: creatinineStatus,
-      egfr: egfrStatus,
-      ast: astStatus,
-      alt: altStatus,
-      ygtp: ygtpStatus,
+    result["urine_protein"] = {
+      value: proteinVal,
+      unit: "",
+      status: urineProteinStatus,
     };
+
+    return result;
   }
 }
