@@ -7,6 +7,7 @@ import {
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
 import { UpdateCheckupDto } from "./dto/update-checkup.dto";
 import { CheckupData, CheckupResponse } from "./interfaces/checkup.interface";
+import { BlobServiceClient } from "@azure/storage-blob";
 import { PrismaService } from "../prisma/prisma.service";
 import fs from "fs";
 import * as mockJsonData from "../../mock/data.json";
@@ -21,28 +22,43 @@ export class CheckupService {
   ) {}
 
   async uploadPdf(file: Express.Multer.File) {
-    logger.debug(`checkup - ${this.uploadPdf.name} start`);
+    logger.info(`CheckupService uploadPdf started. fileName: ${this.uploadPdf.name}`);
 
-    if (!file) throw new BadRequestException("PDF 파일을 찾을 수 없음");
+    if (!file) throw new BadRequestException("PDF 파일을 찾을 수 없습니다.");
 
-    const blobStorageUrl = process.env.AZURE_STORAGE_INPUT || "";
-    const fileBuffer = fs.readFileSync(file.path);
-    const fileBlob = new Blob([fileBuffer], { type: file.mimetype });
+    const baseUrl = process.env.AZURE_STORAGE_INPUT || "";
+    const sasToken = process.env.AZURE_SAS_TOKEN || "";
+
+    if (!baseUrl || !sasToken) throw new BadRequestException("업로드할 저장소를 찾을 수 없습니다.");
+
+    const targetFileName = encodeURIComponent(file.originalname);
+    const fullUploadUrl = sasToken
+      ? `${baseUrl}${targetFileName}?${sasToken}`
+      : `${baseUrl}${targetFileName}`;
+    logger.debug(`fullUploadUrl: ${fullUploadUrl}`);
 
     try {
-      logger.debug(`checkup - ${this.uploadPdf.name} send pdf file start`);
-      const response = await fetch(blobStorageUrl, {
+      logger.debug(`Send pdf a file started. fileName: ${this.uploadPdf.name}`);
+
+      const fileBuffer = fs.readFileSync(file.path);
+
+      const response = await fetch(fullUploadUrl, {
         method: "PUT",
         headers: {
           "x-ms-blob-type": "BlockBlob",
           "Content-Type": file.mimetype,
           "x-ms-version": "2026-06-06",
-          "WWW-Authenticate": `Bearer https://login.windows.net/${process.env.TENANT_ID}`,
         },
-        body: fileBlob,
+        body: fileBuffer,
       });
-      logger.debug(response.statusText);
-      logger.debug(`checkup - ${this.uploadPdf.name} send pdf file end`);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.error(`Azure Response Error: ${response.status} - ${errorText}`);
+        throw new Error(`Azure HTTP Error ${response.status}`);
+      }
+
+      logger.debug(`Send pdf a file ended. fileName: ${this.uploadPdf.name}`);
     } catch (error) {
       throw new InternalServerErrorException("PDF 전송 실패");
     }
@@ -82,7 +98,7 @@ export class CheckupService {
       checkUpDataList.push(checkupData);
     });
 
-    logger.debug(`checkup - ${this.uploadPdf.name} end`);
+    logger.info(`CheckupService uploadPdf ended. fileName: ${this.uploadPdf.name}`);
     return { result: "success", code: 201, checkUpDataList };
   }
 
