@@ -20,3 +20,6 @@ pnpm add winston winston-daily-rotate-file
 
 # azure 호출을 위한 라이브러리 설치
 pnpm add @azure/ai-form-recognizer
+
+# web 달력, 차트 
+pnpm add dayjs chart.js react-chartjs-2
