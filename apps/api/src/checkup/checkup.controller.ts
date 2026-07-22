@@ -14,13 +14,14 @@ import { CreateCheckupDto } from "./dto/create-checkup.dto";
 import { UpdateCheckupDto } from "./dto/update-checkup.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { pdfUploadOptions } from "../config/pdf.upload.config";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
-@ApiTags("Check Up")
+@ApiTags("CheckUp")
 @Controller("checkup")
 export class CheckupController {
   constructor(private readonly checkupService: CheckupService) {}
 
+  @ApiOperation({ summary: "PDF 업로드" })
   @Post("/upload")
   @UseInterceptors(FileInterceptor("file", pdfUploadOptions))
   uploadPdf(@UploadedFile() file: Express.Multer.File) {

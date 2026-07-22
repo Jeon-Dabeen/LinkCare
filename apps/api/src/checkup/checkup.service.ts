@@ -6,11 +6,9 @@ import {
 } from "@nestjs/common";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
 import { UpdateCheckupDto } from "./dto/update-checkup.dto";
-import { CheckupData, CheckupResponse } from "./interfaces/checkup.interface";
+import { CheckupResponse } from "./interfaces/checkup.interface";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { PrismaService } from "../prisma/prisma.service";
-import fs from "fs";
-import * as mockJsonData from "../../mock/data.json";
 import { logger } from "../config/logger";
 import { AzureDiService } from "../integrations/azure-di/azure-di.service";
 
@@ -22,9 +20,12 @@ export class CheckupService {
   ) {}
 
   async uploadPdf(file: Express.Multer.File) {
-    logger.info(`CheckupService uploadPdf started. fileName: ${this.uploadPdf.name}`);
+    logger.info(`CheckupService uploadPdf started. fileName: ${file.originalname}`);
 
-    if (!file) throw new BadRequestException("PDF 파일을 찾을 수 없습니다.");
+    if (!file) {
+      logger.error("Upload Error: 400 - PDF 업로드 실패");
+      throw new BadRequestException("PDF 파일을 찾을 수 없습니다.");
+    }
 
     const baseUrl = process.env.AZURE_STORAGE_INPUT || "";
     const sasToken = process.env.AZURE_SAS_TOKEN || "";
@@ -38,9 +39,7 @@ export class CheckupService {
     logger.debug(`fullUploadUrl: ${fullUploadUrl}`);
 
     try {
-      logger.debug(`Send pdf a file started. fileName: ${this.uploadPdf.name}`);
-
-      const fileBuffer = fs.readFileSync(file.path);
+      logger.debug(`Send pdf a file started. fileName: ${file.originalname}`);
 
       const response = await fetch(fullUploadUrl, {
         method: "PUT",
@@ -49,7 +48,7 @@ export class CheckupService {
           "Content-Type": file.mimetype,
           "x-ms-version": "2026-06-06",
         },
-        body: fileBuffer,
+        body: new Uint8Array(file.buffer),
       });
 
       if (!response.ok) {
@@ -58,48 +57,19 @@ export class CheckupService {
         throw new Error(`Azure HTTP Error ${response.status}`);
       }
 
-      logger.debug(`Send pdf a file ended. fileName: ${this.uploadPdf.name}`);
+      logger.debug(`Send pdf a file ended. fileName: ${file.originalname}`);
     } catch (error) {
+      logger.error("Send pdf Error: 500 - 전송 실패");
       throw new InternalServerErrorException("PDF 전송 실패");
     }
 
-    // 여기에 추가되어야 할 부분
-    // 1. 받은 파일 Document Intelligence API로 전송
-    // const result = this.azureDiService.analyzeDocumentByUrl(file.filename);
-    // logger.debug(`checkup - ${this.uploadPdf.name} : \n`, result);
-    // 2. 보낸 PDF에서 뽑아낸 JSON 데이터 받아오기
+    logger.debug(`Fetch Document Intelligence api started. fileName: ${file.originalname}`);
+    const data = await this.azureDiService.analyzeDocumentByUrl(file.originalname);
+    logger.debug(`Document Intelligence api result total count: ${data?.total_count}`);
+    logger.debug(`Fetch Document Intelligence api  ended. fileName: ${file.originalname}`);
 
-    // 임시로 JSON 읽어와서 사용하는 부분
-    const data = mockJsonData.checkup_records;
-    const checkUpDataList: CheckupData[] = [];
-
-    data.forEach((d) => {
-      const checkupData: CheckupData = {
-        checkUpDate: d.date,
-        height: d.vital_signs.height.value,
-        weight: d.vital_signs.weight.value,
-        waist: d.vital_signs.waist.value,
-        bmi: d.vital_signs.bmi.value,
-        visionLeft: d.vital_signs.vision_left.value,
-        visionRight: d.vital_signs.vision_right.value,
-        hearing: d.vital_signs.hearing.value,
-        bp_systolic: d.test_results.bp_systolic.value,
-        bp_diastolic: d.test_results.bp_diastolic.value,
-        urine_protein: d.test_results.urine_protein.value,
-        hemoglobin: d.test_results.hemoglobin.value,
-        fbg: d.test_results.fbg.value,
-        creatinine: d.test_results.creatinine.value,
-        egfr: d.test_results.egfr.value,
-        ast: d.test_results.ast.value,
-        alt: d.test_results.alt.value,
-        ygtp: d.test_results.ygtp.value,
-      };
-
-      checkUpDataList.push(checkupData);
-    });
-
-    logger.info(`CheckupService uploadPdf ended. fileName: ${this.uploadPdf.name}`);
-    return { result: "success", code: 201, checkUpDataList };
+    logger.info(`CheckupService uploadPdf ended. fileName: ${file.originalname}`);
+    return { result: "success", code: 201, data };
   }
 
   async create(createCheckupDto: CreateCheckupDto) {
