@@ -1,23 +1,26 @@
-import { IsNumber, IsOptional } from "class-validator";
-
-
+import { IsNumber, IsOptional, Matches, Max, Min } from "class-validator";
 
 export class CreateWeightDto {
+  @Min(0)
+  @Max(300)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  weight: number;
 
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  weightDate: string;
 
-@IsNumber({maxDecimalPlaces:2})
-weight:number;
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 1 })
+  @Min(0)
+  @Max(250)
+  height?: number;
 
-
-@IsNumber({maxDecimalPlaces:1})
-@IsOptional()
-height?:number;
-
-
-@IsOptional()
-@IsNumber({
-  maxDecimalPlaces:2
-})
-goalWeight?:number;
-
+  @IsOptional()
+  @IsNumber({
+    maxDecimalPlaces: 2,
+  })
+  @Min(0)
+  @Max(250)
+  @IsNumber({maxDecimalPlaces:2})
+  goalWeight?: number;
 }

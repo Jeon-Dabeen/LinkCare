@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Query } from "@nestjs/common";
 import { WeightService } from "./weight.service";
 import { CreateWeightDto } from "./dto/create-weight.dto";
 import { UpdateWeightProfileDto } from "./dto/update-weight-profile-dto";
@@ -12,16 +12,14 @@ export class WeightController {
     return this.weightService.createWeight(+id, createWeightDto);
   }
 
-  //나중에 수정해야함 당장은
-  //weight/week/:id로 하자
   @Get("week/:id")
-  findWeek(@Param("id") id: string) {
-    return this.weightService.findWeekWeight(+id);
+  findWeek(@Param("id") id: string, @Query("date") date: string) {
+    return this.weightService.findWeekWeight(+id, date);
   }
 
   @Get("month/:id")
-  findMonth(@Param("id") id: string, @Query("year") year: string, @Query("month") month: string) {
-    return this.weightService.findMonthWeight(+id, +year, +month);
+  findMonth(@Param("id") id: string, @Query("date") date: string) {
+    return this.weightService.findMonthWeight(+id, date);
   }
 
   @Patch("profile/:id")
