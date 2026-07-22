@@ -1,17 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseInterceptors,
-  UploadedFile,
-} from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, UseInterceptors, UploadedFile } from "@nestjs/common";
 import { CheckupService } from "./checkup.service";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
-import { UpdateCheckupDto } from "./dto/update-checkup.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { pdfUploadOptions } from "../config/pdf.upload.config";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -33,6 +22,7 @@ export class CheckupController {
     return this.checkupService.create(createCheckupDto);
   }
 
+  @ApiOperation({ summary: "검진 대시보드 수치, 분류 조회" })
   @Get()
   findAll() {
     return this.checkupService.findAll();
@@ -41,15 +31,5 @@ export class CheckupController {
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.checkupService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateCheckupDto: UpdateCheckupDto) {
-    return this.checkupService.update(+id, updateCheckupDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.checkupService.remove(+id);
   }
 }

@@ -3,10 +3,10 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from "@nestjs/common";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
-import { UpdateCheckupDto } from "./dto/update-checkup.dto";
-import { CheckupResponseDto } from "./dto/checkup.dto";
+import { CheckupResponseDto, DashboardResponseDto } from "./dto/checkup.dto";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { PrismaService } from "../prisma/prisma.service";
 import { logger } from "../config/logger";
@@ -171,19 +171,72 @@ export class CheckupService {
     // }
   }
 
-  findAll() {
-    return `This action returns all checkup`;
+  async findAll() {
+    const userId = 1; // 임시 유저 아이디
+    logger.info(`CheckupService findAll started.`);
+
+    const checkup = await this.prisma.checkUp.findFirst({
+      select: {
+        id: true,
+        height: true,
+        weight: true,
+        waist: true,
+        bmi: true,
+        visionLeft: true,
+        visionRight: true,
+        hearing: true,
+        bp_systolic: true,
+        bp_diastolic: true,
+        urine_protein: true,
+        hemoglobin: true,
+        fbg: true,
+        creatinine: true,
+        egfr: true,
+        ast: true,
+        alt: true,
+        ygtp: true,
+        year: true,
+      },
+      orderBy: { year: "desc" },
+      where: { userId },
+    });
+    if (!checkup) throw new NotFoundException(`검진 결과를 찾을 수 없음`);
+    logger.debug(`find Checkup result: userId ${checkup.id} year ${checkup.year}`);
+
+    const {
+      height,
+      weight,
+      waist,
+      bmi,
+      visionLeft,
+      visionRight,
+      hearing,
+      bp_systolic,
+      bp_diastolic,
+      fbg,
+      hemoglobin,
+      ast,
+      alt,
+      ygtp,
+      urine_protein,
+      creatinine,
+      egfr,
+    } = checkup;
+
+    const dashboardResponseDto: DashboardResponseDto = {
+      id: checkup.id,
+      body_metrics: { height, weight, waist, bmi, visionLeft, visionRight, hearing },
+      blood_pressure: { bp_systolic, bp_diastolic },
+      diabetes_anemia: { fbg, hemoglobin },
+      liver: { ast, alt, ygtp },
+      kidney: { urine_protein, creatinine, egfr },
+    };
+
+    logger.info(`CheckupService findAll ended.`);
+    return { result: "success", code: 200, data: dashboardResponseDto };
   }
 
   findOne(id: number) {
     return `This action returns a #${id} checkup`;
-  }
-
-  update(id: number, updateCheckupDto: UpdateCheckupDto) {
-    return `This action updates a #${id} checkup`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} checkup`;
   }
 }
