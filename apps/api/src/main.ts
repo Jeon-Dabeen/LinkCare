@@ -11,6 +11,8 @@ async function bootstrap() {
   mkdirSync(UPLOAD_DIR, { recursive: true });
 
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors(); // cors
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // 글로벌 예외 필터 (모든 에러 인터셉터)
