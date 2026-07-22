@@ -1,2 +1,8 @@
 
-export type StatusType = "low" | "normal" | "caution" | "warning" | "danger";
+export type StatusType =
+  | "low"
+  | "normal"
+  | "caution"
+  | "warning"
+  | "danger";
+

@@ -4,6 +4,7 @@ import { Droplet } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 
 import Card from "@/app/_components/ui/Card"
+import GaugeChart from "@/app/_components/ui/chart/guageChart";
 
 
 type BpProps = {
@@ -22,8 +23,13 @@ export default function BG({
         icon={<Droplet />}
         right="TODAY"
       />
-      <Card.Body>
-        <div>chart</div>
+      <Card.Body noTopPadding>
+        <GaugeChart 
+          key="danger"
+          levels={["low", "normal", "warning", "danger"]}
+          status="danger"
+          value="위험"
+        />
         <div className={clsx(
           commonStyle.dataWrapper,
           commonStyle.jfCenter

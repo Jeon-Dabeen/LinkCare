@@ -1,15 +1,60 @@
+'use client';
+
+
 import Link from "next/link";
+import { useState } from "react";
+import { ButtonClose, ButtonIcon } from "./ui/Button";
+import { ExternalLink } from "lucide-react";
 
 export default function SampleLink() {
+
+  const [open, setOpen] = useState(true);
+
+  const handleOpen = () => {
+    setOpen(true);
+  }
+  const handleClose = () => {
+    setOpen(false);
+  }
+
+  if(!open){
+    return (
+    <aside style={{ 
+      position: "fixed", bottom: 0, right: 0, 
+      maxWidth: "var(--app-max-width)", 
+      padding: "20px",
+      maxHeight: "calc(100vh - 30px)",
+      fontWeight: 600,
+      backgroundColor: "#fff",
+      overflowY: "auto",
+      zIndex: 9000
+    }}>
+        <ButtonIcon onClick={handleOpen}>
+          <ExternalLink />
+        </ButtonIcon>
+      </aside>
+    )
+  }
+
   return (
     <aside style={{ 
       position: "fixed", bottom: 0, right: 0, 
       maxWidth: "var(--app-max-width)", 
       padding: "20px",
+      maxHeight: "calc(100vh - 30px)",
       fontWeight: 600,
       backgroundColor: "#fff",
+      overflowY: "auto",
       zIndex: 9000
     }}>
+      <div style={{
+        position: "sticky",
+        top: "-20px",
+        right: 0,
+        background: "#fff"
+      }}>
+        <ButtonClose onClick={handleClose} />
+      </div>
 
       <ul style={{
         listStyle: "number", paddingLeft: '15px',

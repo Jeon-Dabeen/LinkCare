@@ -1,11 +1,16 @@
+
+import Link from "next/link";
+import clsx from "clsx";
+
 import { BookHeart, CirclePlus, Droplet, FlaskRound, HeartPulse, MessageSquareCheck, Ruler } from "lucide-react"
 import commonStyle from "@/styles/common.module.css";
+import styles from "@/styles/checkup/checkupDash.module.css";
 
 import Button from "@/app/_components/ui/Button";
 import Grid from "@/app/_components/ui/Grid";
 import Card from "@/app/_components/ui/Card";
 import StatusTag from "@/app/_components/ui/StatusTag";
-import Link from "next/link";
+import GaugeChart from "@/app/_components/ui/chart/guageChart";
 
 
 export default function Page(){
@@ -45,8 +50,50 @@ export default function Page(){
                 icon={<BookHeart />}
                 title="신체 기본 지표"
               />
-              <Card.Body>
-                키, 체중, 시력...
+              <Card.Body noTopPadding>
+                <Card.Grid>
+                  <Card.Item>
+                    <GaugeChart 
+                      key="normal"
+                      levels={["low", "normal", "warning", "danger"]}
+                      status="normal"
+                      value="정상"
+                    />
+                    <div className={clsx(
+                      commonStyle.dataWrapper,
+                      commonStyle.jfCenter
+                    )}>
+                      <span className={commonStyle.dataValue}>22.4</span>
+                      <span className={commonStyle.dataUnit}>BMI</span>
+                    </div>
+                  </Card.Item>
+                  <div className={styles.basicValues}>
+                    <div className={clsx(
+                      commonStyle.dataWrapper,
+                      commonStyle.jfEnd,
+                    )}>
+                      <span className={commonStyle.dataValue}>175.3</span>
+                      <span className={commonStyle.dataUnit}>cm</span>
+                    </div>
+                    <div className={clsx(
+                      commonStyle.dataWrapper,
+                      commonStyle.jfEnd,
+                    )}>
+                      <span className={commonStyle.dataValue}>54.42</span>
+                      <span className={commonStyle.dataUnit}>kg</span>
+                    </div>
+                    <div className={clsx(
+                      commonStyle.dataWrapper,
+                      commonStyle.jfEnd,
+                    )}>
+                      <span className={commonStyle.dataLabel}>L</span>
+                      <span className={commonStyle.dataValue}>1.5</span>
+                      <span className={commonStyle.dataSeparator}>/</span>
+                      <span className={commonStyle.dataLabel}>R</span>
+                      <span className={commonStyle.dataValue}>1.5</span>
+                    </div>
+                  </div>
+                </Card.Grid>
               </Card.Body>
             </Card>
           </Link>

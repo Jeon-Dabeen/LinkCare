@@ -11,4 +11,6 @@
   grid-column: span 2;
 }
 
-
+.link{
+  min-width: 0;
+}
