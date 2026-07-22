@@ -10,13 +10,14 @@ npx prisma generate // 새로 생성된 schema에 맞춰 prisma client 생성
 추가 설치하지 않도록 설치한 명령어 아래 기입
 
 ## 기본 설치 내역
-7/16
 pnpm i class-validator class-transformer dotenv
 pnpm i @prisma/client@6
 pnpm i -D prisma@6
 pnpm i @nestjs/swagger
 // 로거
 pnpm add winston winston-daily-rotate-file
+// 멀터
+pnpm i multer
 
 # azure 호출을 위한 라이브러리 설치
 pnpm add @azure/ai-form-recognizer
