@@ -9,13 +9,13 @@ import styles from "@/styles/home/home.module.css";
 
 import Grid from "@/app/_components/ui/Grid";
 import Card from '@/app/_components/ui/Card';
+import Progress from "@/app/_components/ui/Progress";
 
 import { getMealTypeLabel } from "@/types/mealType";
 import BP from "./_components/bloodPressure";
 import BG from "./_components/bloodGlucose";
 import Weight from "./_components/weight";
 import Meal from "./_components/meal";
-import Progress from "@/app/_components/ui/Progress";
 import QuickSelectCard from "./_components/quickSelectCard";
 import CustomStep from "./_components/customStep";
 import { useState } from "react";
@@ -75,14 +75,14 @@ export default function Home(){
       </div>
 
       <Grid>
-        <Link href="/daily/bloodPressure">
+        <Grid.Link href="/daily/bloodPressure">
           <BP bpDate="07-07" systolic="110" diastolic="70" pulse="90" />
-        </Link>
-        <Link href="/daily/bloodGlucose">
+        </Grid.Link>
+        <Grid.Link href="/daily/bloodGlucose">
           <BG bgDate="TODAY" glucose="145" />
-        </Link>
+        </Grid.Link>
         <Grid.ItemFull>
-          <Link href="/daily/meal">
+          <Grid.Link href="/daily/meal">
             <Card>
               <Card.Header icon={<Salad />} title="식사 다이어리" />
               <Card.Body noTopPadding>
@@ -96,13 +96,13 @@ export default function Home(){
                 />
               </Card.Body>
             </Card>
-          </Link>
+          </Grid.Link>
         </Grid.ItemFull>
       </Grid>
 
-      <Link href="/daily/weight">
+      <Grid.Link href="/daily/weight">
         <Weight current="57.9" goal="55.0" />
-      </Link>
+      </Grid.Link>
 
       <Card>
         <Card.Header icon={<ShieldCheck />} title="데일리 쉴드 생성" />

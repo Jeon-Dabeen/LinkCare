@@ -1,0 +1,9 @@
+
+
+.basicValues{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+

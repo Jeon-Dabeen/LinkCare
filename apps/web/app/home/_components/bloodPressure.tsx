@@ -4,6 +4,7 @@ import { HeartPulse } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 
 import Card from "@/app/_components/ui/Card"
+import GaugeChart from "@/app/_components/ui/chart/guageChart";
 
 
 type BpProps = {
@@ -26,8 +27,13 @@ export default function BP({
         icon={<HeartPulse />}
         right={bpDate}
       />
-      <Card.Body>
-        <div>chart</div>
+      <Card.Body noTopPadding>
+        <GaugeChart 
+          key="caution"
+          levels={["low", "normal", "caution", "warning", "danger"]}
+          status="caution"
+          value="주의"
+        />
         <div className={clsx(
           commonStyle.dataWrapper,
           commonStyle.jfCenter

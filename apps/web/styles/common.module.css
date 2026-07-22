@@ -69,6 +69,24 @@
 .jfCenter{
   justify-content: center;
 }
+.jfEnd{
+  justify-content: flex-end;
+}
+
+.atCenter{
+  align-items: center;
+}
+.atStart{
+  align-items: flex-start;
+}
+.atEnd{
+  align-items: flex-end;
+}
+
+.fdColumn{
+  flex-direction: column;
+  gap: 4px;
+}
 
 
 

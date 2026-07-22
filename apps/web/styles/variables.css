@@ -16,12 +16,14 @@
   --color-card-bg: #F4EDE3;
 
   --color-success: #7FAE95;
+  --color-success-light: #abd5bf;
   --color-success-hover: #6A9B7F;
   --color-success-active: #5A7F66;
   --color-warning: #D8A557;
   --color-warning-hover: #C08E40;
   --color-warning-active: #A8772A;
   --color-error: #CB7568;
+  --color-error-light: #e8a298;
   --color-error-hover: #B05A4D;
   --color-error-active: #964A3F;
   --color-info: #8FA0C0;

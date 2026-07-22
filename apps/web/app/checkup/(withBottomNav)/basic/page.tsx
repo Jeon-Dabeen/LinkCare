@@ -1,15 +1,17 @@
 'use client';
 
-import { Ear, Eye, HeartPulse, Hospital } from "lucide-react";
+import { useRef, useState } from "react";
+
+import clsx from "clsx";
+import { Ear, Eye, Hospital } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 
 import Tabs from "@/app/_components/ui/Tabs";
 import Card from "@/app/_components/ui/Card";
 import { ButtonQuestion } from "@/app/_components/ui/Button";
 import StatusTag from "@/app/_components/ui/StatusTag";
-import clsx from "clsx";
 import Tooltip from "@/app/_components/ui/ToolTip";
-import { useRef, useState } from "react";
+import GaugeChart from "@/app/_components/ui/chart/guageChart";
 
 export default function Page(){
 
@@ -59,12 +61,23 @@ export default function Page(){
                 />
               }
             />
-            <Card.Body>
-              <Card.Grid>
-                <div>
-                  22.4 BMI &&&&
-                  chart
-                </div>
+            <Card.Body noTopPadding>
+              <Card.Grid columns={1}>
+                <Card.Item>
+                    <GaugeChart 
+                      key="warning"
+                      levels={["low", "normal", "warning", "danger"]}
+                      status="warning"
+                      value="위험"
+                    />
+                    <div className={clsx(
+                      commonStyle.dataWrapper,
+                      commonStyle.jfCenter
+                    )}>
+                      <span className={commonStyle.dataValue}>22.4</span>
+                      <span className={commonStyle.dataUnit}>BMI</span>
+                    </div>
+                </Card.Item>
               </Card.Grid>
               <Card.Grid columns={3} topDivider leftDivider>
                 <Card.Item title="키">
