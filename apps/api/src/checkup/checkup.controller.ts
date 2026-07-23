@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Param, UseInterceptors, UploadedFile } fro
 import { CheckupService } from "./checkup.service";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { pdfUploadOptions } from "../config/pdf.upload.config";
+import { pdfUploadOptions } from "../config/upload.config";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { RenameFileInterceptor } from "../common/interceptors/rename.file.interceptor";
 
 @ApiTags("CheckUp")
 @Controller("checkup")
@@ -12,7 +13,7 @@ export class CheckupController {
 
   @ApiOperation({ summary: "PDF 업로드" })
   @Post("/upload")
-  @UseInterceptors(FileInterceptor("file", pdfUploadOptions))
+  @UseInterceptors(FileInterceptor("file", pdfUploadOptions), RenameFileInterceptor)
   uploadPdf(@UploadedFile() file: Express.Multer.File) {
     return this.checkupService.uploadPdf(file);
   }

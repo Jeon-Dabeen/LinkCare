@@ -1,19 +1,18 @@
 import { BadRequestException } from "@nestjs/common";
-import { diskStorage } from "multer";
+import { memoryStorage } from "multer";
 
-export const UPLOAD_DIR = "uploads";
+const PDF_ALLOWED_MIME = "application/pdf";
 
-const ALLOWED_MIME = "application/pdf";
-
-export const MAX_FILE_SIZE = 200 * 1024;
+export const PDF_MAX_FILE_SIZE = 200 * 1024;
 
 export const pdfUploadOptions = {
+  storage: memoryStorage(),
   fileFilter: (_req, file, callback) => {
-    if (!ALLOWED_MIME.includes(file.mimetype)) {
+    if (!PDF_ALLOWED_MIME.includes(file.mimetype)) {
       callback(new BadRequestException("PDF 파일이 아닙니다."), false);
       return;
     }
     callback(null, true);
   },
-  limits: { fileSize: MAX_FILE_SIZE },
+  limits: { fileSize: PDF_MAX_FILE_SIZE },
 };

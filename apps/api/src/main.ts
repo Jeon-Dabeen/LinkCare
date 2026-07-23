@@ -4,12 +4,8 @@ import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { logger } from "./config/logger";
 import { AllExceptionsFilter } from "./common/filters/http-exception.filter";
-import { mkdirSync } from "fs";
-import { UPLOAD_DIR } from "./config/pdf.upload.config";
 
 async function bootstrap() {
-  mkdirSync(UPLOAD_DIR, { recursive: true });
-
   const app = await NestFactory.create(AppModule);
 
   app.enableCors(); // cors
