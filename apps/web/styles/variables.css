@@ -145,9 +145,17 @@
   --color-disabled: #E0E0E0;
 
 
-  /*  */
+  /* water */
   --color-water-none: #E5E5E5;
   --color-water-active: #81CCE2;
+
+  /* chart */
+  --chart-color-1: #5748c5;
+  --chart-color-2: #dd8f0a;
+  --chart-color-3: #378e57;
+  --chart-color-4: #367ad4;
+  --chart-line-color: #D9D9DD;
+  --chart-line-dark: #B2B2BA;
 }
 
 [data-theme="dark"] {
