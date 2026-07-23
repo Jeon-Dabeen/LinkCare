@@ -6,11 +6,12 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
-import { CheckupResponseDto, DashboardResponseDto } from "./dto/checkup.dto";
+import { CheckupAssessmentDto, DashboardResponseDto } from "./dto/checkup.dto";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { PrismaService } from "../prisma/prisma.service";
 import { logger } from "../config/logger";
 import { AzureDiService } from "../integrations/azure-di/azure-di.service";
+import { CheckupEvaluator } from "../integrations/evaluator/checkup-evaluator";
 
 @Injectable()
 export class CheckupService {
@@ -73,27 +74,26 @@ export class CheckupService {
   }
 
   async create(createCheckupDto: CreateCheckupDto) {
-    logger.debug(`checkup - ${this.create.name} start`);
+    logger.info(
+      `CheckupService create started. createCheckupDto: ${createCheckupDto.checkup_history.length}`,
+    );
 
     const userId = 1; // 임시 유저 아이디
     const gender = "female"; // 임시 유저 성별
 
-    const checkupList = createCheckupDto.checkupList;
+    const checkupHistory = createCheckupDto.checkup_history;
 
     try {
       return await this.prisma.$transaction(async (tx) => {
-        logger.debug(`checkup - ${this.create.name} transaction start`);
-        const results: CheckupResponseDto[] = [];
+        logger.debug(`Checkup create transaction started.`);
+        let count = 0; // 변경사항 카운트 변수
+        const results: CheckupAssessmentDto[] = [];
 
-        let count = 0;
-
-        logger.debug(`checkup - ${this.create.name} 검진 결과 등록 start`);
-        for (const checkup of checkupList) {
-          const { checkUpDate, ...data } = checkup;
-          const year = Number(checkUpDate.substring(0, 4));
-
+        for (const history of checkupHistory) {
+          const { checkup_year, checkup_date, ...checkupValues } = history;
+          const dateStr = checkup_date.split("/");
           const exists = await tx.checkUp.findUnique({
-            where: { userId_year: { userId, year } },
+            where: { userId_year: { userId, year: checkup_year } },
           });
 
           // 이미 DB에 저장된 검진 결과를 등록할 경우
@@ -102,73 +102,58 @@ export class CheckupService {
           }
           count++;
 
-          const result = await tx.checkUp.create({
-            data: { userId, year, checkUpDate: new Date(checkUpDate), ...data },
+          logger.debug(`Checkup create started.`);
+          const checkup = await tx.checkUp.create({
+            data: {
+              userId,
+              year: checkup_year,
+              checkUpDate: new Date(checkup_year, +dateStr[0], +dateStr[1]),
+              ...checkupValues,
+            },
           });
+          logger.debug(`Checkup create ended.`);
 
+          logger.debug(`Checkup evaluate started.`);
+          const { height, weight, visionLeft, visionRight, hearing, ...values } = history;
+          logger.debug(`History data: ${values}`);
+          const evaluateCheckup = CheckupEvaluator.evaluateList([values], gender);
+          logger.debug(`Evaluate data: ${evaluateCheckup}`);
+          const checkupStatus = evaluateCheckup.checkup_status[0];
+          const result = await tx.checkupAssessment.create({
+            data: {
+              checkUpId: checkup.id,
+              waist: checkupStatus.waist.status,
+              bmi: checkupStatus.bmi.status,
+              bp: `sys:${checkupStatus.bp_systolic.status}/dia:${checkupStatus.bp_diastolic.status}`,
+              urine_protein: checkupStatus.urine_protein.status,
+              hemoglobin: checkupStatus.hemoglobin.status,
+              fbg: checkupStatus.fbg.status,
+              creatinine: checkupStatus.creatinine.status,
+              egfr: checkupStatus.egfr.status,
+              ast: checkupStatus.ast.status,
+              alt: checkupStatus.alt.status,
+              ygtp: checkupStatus.ygtp.status,
+            },
+          });
           results.push(result);
-        } // end of for
-        logger.debug(`checkup - ${this.create.name} 검진 결과 등록 end`);
-
-        if (count === 0) throw new ConflictException("이미 존재하는 검진 결과");
-
-        for (const result of results) {
-          // result에 있는 값으로 riskRange.json 데이터 값 비교
+          logger.debug(`Checkup evaluate ended.`);
         } // end of for
 
-        logger.debug(`checkup - ${this.create.name} transaction end`);
-        return results;
+        if (count === 0) {
+          logger.error("Checkup create Error: 409 - 모두 저장된 검진 결과");
+          throw new ConflictException("모든 검진 결과가 이미 저장되어 있습니다.");
+        }
+
+        logger.debug(`Checkup create transaction ended.`);
+        return { result: "success", code: 201, data: results };
       });
+    } catch (e) {
+      logger.error(e);
     } finally {
-      logger.debug(`checkup - ${this.create.name} end`);
+      logger.info(
+        `CheckupService create ended. createCheckupDto: ${createCheckupDto.checkup_history.length}`,
+      );
     }
-
-    // if (checkUpList.length > 1) {
-    //   // 여러개 등록
-    //   logger.debug(`checkup - ${this.create.name} 여러개 등록`);
-    //   return this.prisma.$transaction(async (tx) => {
-    //     logger.debug(`checkup - ${this.create.name} transaction start`);
-
-    //     const results: CheckupResponse[] = [];
-
-    //     for (const checkUp of checkUpList) {
-    //       const year = Number(checkUp.checkUpDate.substring(0, 4));
-
-    //       const exists = await this.prisma.checkUp.findUnique({
-    //         where: { userId_year: { userId, year } },
-    //       });
-
-    //       if (exists) throw new ConflictException("이미 존재하는 검진 결과");
-
-    //       const { checkUpDate, ...data } = checkUp;
-
-    //       const result = await this.prisma.checkUp.create({
-    //         data: { userId, year, checkUpDate: new Date(checkUpDate), ...data },
-    //       });
-
-    //       results.push(result);
-    //     } // end of for
-    //     return results;
-    //   });
-    // } else {
-    //   // 한개 등록
-    //   logger.debug(`checkup - ${this.create.name} 한개 등록`);
-
-    //   const checkUpDto: CheckupDto = checkUpList[0];
-    //   const year = Number(checkUpDto.checkUpDate.substring(0, 4));
-
-    //   const exists = await this.prisma.checkUp.findUnique({
-    //     where: { userId_year: { userId, year } },
-    //   });
-
-    //   if (exists) throw new ConflictException("이미 존재하는 검진 결과");
-
-    //   const { checkUpDate, ...data } = checkUpDto;
-
-    //   return this.prisma.checkUp.create({
-    //     data: { userId, year, checkUpDate: new Date(checkUpDate), ...data },
-    //   });
-    // }
   }
 
   async findAll() {

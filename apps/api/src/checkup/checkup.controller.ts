@@ -17,6 +17,7 @@ export class CheckupController {
     return this.checkupService.uploadPdf(file);
   }
 
+  @ApiOperation({ summary: "검진 결과 확인 후 등록" })
   @Post()
   create(@Body() createCheckupDto: CreateCheckupDto) {
     return this.checkupService.create(createCheckupDto);

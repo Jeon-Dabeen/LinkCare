@@ -2,32 +2,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsDecimal, IsInt, IsObject, IsOptional, IsString, Min, MinLength } from "class-validator";
 
-export class CheckupResponseDto {
-  height: number | null;
-  weight: number | null;
-  waist: number | null;
-  bmi: number | null;
-  visionLeft: number | null;
-  visionRight: number | null;
-  hearing: string | null;
-  bp_systolic: number | null;
-  bp_diastolic: number | null;
-  urine_protein: string | null;
-  hemoglobin: number | null;
-  fbg: number | null;
-  creatinine: number | null;
-  egfr: number | null;
-  ast: number | null;
-  alt: number | null;
-  ygtp: number | null;
-  year: number | null;
-  checkUpDate: Date;
-  isShow: boolean;
-  createdAt: Date;
-  id: number;
-  userId: number;
-}
-
 export class DashboardResponseDto {
   @IsInt()
   @Min(1)
@@ -59,41 +33,41 @@ export class BodyMetricsDto {
   @IsOptional()
   @IsDecimal({ force_decimal: true, decimal_digits: "1" })
   @Min(1.0)
-  height?: number;
+  height: number | null;
 
   @ApiProperty({ example: 50.0 })
   @IsOptional()
   @IsDecimal({ force_decimal: true, decimal_digits: "1" })
   @Min(1.0)
-  weight?: number;
+  weight: number | null;
 
   @ApiProperty({ example: 81.0 })
   @IsOptional()
   @IsDecimal({ force_decimal: true, decimal_digits: "1" })
   @Min(1.0)
-  waist?: number;
+  waist: number | null;
 
   @ApiProperty({ example: 21.9 })
   @IsOptional()
   @IsDecimal({ force_decimal: true, decimal_digits: "1" })
   @Min(1.0)
-  bmi?: number;
+  bmi: number | null;
 
   @ApiProperty({ example: 0.7 })
   @IsOptional()
   @IsDecimal({ force_decimal: true, decimal_digits: "1" })
-  visionLeft?: number;
+  visionLeft: number | null;
 
   @ApiProperty({ example: 0.2 })
   @IsOptional()
   @IsDecimal({ force_decimal: true, decimal_digits: "1" })
-  visionRight?: number;
+  visionRight: number | null;
 
   @ApiProperty({ example: "정상/정상" })
   @IsOptional()
   @IsString()
   @MinLength(1)
-  hearing?: string;
+  hearing: string | null;
 }
 
 export class BloodPressureDto {
@@ -101,13 +75,13 @@ export class BloodPressureDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-  bp_systolic?: number;
+  bp_systolic: number | null;
 
   @ApiProperty({ example: 70 })
   @IsOptional()
   @IsInt()
   @Min(1)
-  bp_diastolic?: number;
+  bp_diastolic: number | null;
 }
 
 export class DiabetesAnemiaDto {
@@ -115,12 +89,12 @@ export class DiabetesAnemiaDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-  fbg?: number;
+  fbg: number | null;
 
   @ApiProperty({ example: 13.4 })
   @IsOptional()
   @IsDecimal({ force_decimal: true, decimal_digits: "1" })
-  hemoglobin?: number;
+  hemoglobin: number | null;
 }
 
 export class LiverDto {
@@ -128,19 +102,19 @@ export class LiverDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-  ast?: number;
+  ast: number | null;
 
   @ApiProperty({ example: 17 })
   @IsOptional()
   @IsInt()
   @Min(1)
-  alt?: number;
+  alt: number | null;
 
   @ApiProperty({ example: 14 })
   @IsOptional()
   @IsInt()
   @Min(1)
-  ygtp?: number;
+  ygtp: number | null;
 }
 
 export class KidneyDto {
@@ -148,16 +122,71 @@ export class KidneyDto {
   @IsOptional()
   @IsString()
   @MinLength(1)
-  urine_protein?: string;
+  urine_protein: string | null;
 
   @ApiProperty({ example: 0.58 })
   @IsOptional()
   @IsDecimal({ force_decimal: true, decimal_digits: "2" })
-  creatinine?: number;
+  @Min(0.01)
+  creatinine: number | null;
 
   @ApiProperty({ example: 98 })
   @IsOptional()
   @IsInt()
   @Min(1)
-  egfr?: number;
+  egfr: number | null;
+}
+
+export class CheckupAssessmentDto {
+  @IsInt()
+  @Min(1)
+  id: number;
+
+  @IsInt()
+  @Min(1)
+  checkUpId: number;
+
+  @IsString()
+  @MinLength(1)
+  waist: string;
+
+  @IsString()
+  @MinLength(1)
+  bmi: string;
+
+  @IsString()
+  @MinLength(1)
+  bp: string;
+
+  @IsString()
+  @MinLength(1)
+  urine_protein: string;
+
+  @IsString()
+  @MinLength(1)
+  hemoglobin: string;
+
+  @IsString()
+  @MinLength(1)
+  fbg: string;
+
+  @IsString()
+  @MinLength(1)
+  creatinine: string;
+
+  @IsString()
+  @MinLength(1)
+  egfr: string;
+
+  @IsString()
+  @MinLength(1)
+  ast: string;
+
+  @IsString()
+  @MinLength(1)
+  alt: string;
+
+  @IsString()
+  @MinLength(1)
+  ygtp: string;
 }
