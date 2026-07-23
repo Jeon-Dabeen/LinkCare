@@ -1,15 +1,19 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { AzureKeyCredential, DocumentAnalysisClient } from "@azure/ai-form-recognizer";
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
-import { DocumentObjectField } from "@azure/ai-form-recognizer";
 import { logger } from "../../config/logger";
+import { AiAdvisorService } from "../ai-advisor/ai-advisor.service";
+import { CheckupEvaluator } from "../evaluator/checkup-evaluator";
 
 @Injectable()
 export class AzureDiService implements OnModuleInit {
   private client: DocumentAnalysisClient;
   private fileStorage: string;
 
+  constructor(private readonly aiAdvisorService: AiAdvisorService) {}
+
   onModuleInit() {
+    logger.info("AzureDiService initialized");
     const endpoint = process.env.AZURE_DI_ENDPOINT;
     const apiKey = process.env.AZURE_DI_KEY;
     const storageInput = process.env.AZURE_STORAGE_INPUT;
