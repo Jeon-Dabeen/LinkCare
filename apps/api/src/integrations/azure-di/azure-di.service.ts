@@ -3,8 +3,6 @@ import { AzureKeyCredential, DocumentAnalysisClient } from "@azure/ai-form-recog
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { logger } from "../../config/logger";
 import { AiAdvisorService } from "../ai-advisor/ai-advisor.service";
-import { CheckupEvaluator } from "../evaluator/checkup-evaluator";
-
 @Injectable()
 export class AzureDiService implements OnModuleInit {
   private client: DocumentAnalysisClient;
