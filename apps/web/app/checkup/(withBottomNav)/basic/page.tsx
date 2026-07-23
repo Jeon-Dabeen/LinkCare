@@ -12,6 +12,7 @@ import { ButtonQuestion } from "@/app/_components/ui/Button";
 import StatusTag from "@/app/_components/ui/StatusTag";
 import Tooltip from "@/app/_components/ui/ToolTip";
 import GaugeChart from "@/app/_components/ui/chart/guageChart";
+import LineChart from "@/app/_components/ui/chart/lineChart";
 
 export default function Page(){
 
@@ -142,7 +143,24 @@ export default function Page(){
       
       <Card>
         <Card.Body>
-          <div>chart 들어갈거예용</div>
+          <LineChart
+            labels={["2022", "2024", "2026"]}
+            datasets={[
+              {
+                label: "체중",
+                data: [72, 70, 68],
+                unit: "kg",
+              },
+              {
+                label: "허리둘레",
+                data: [88, 84, 81],
+                unit: "cm",
+              },
+            ]}
+            gridCount={4}
+            min={55}
+            max={150}
+          />
           <div className={commonStyle.infoBox}>체중과 허리둘레 버튼을 클릭하면 각각의 그래프를 껐다켰다 할 수 있어요!</div>
         </Card.Body>
       </Card>

@@ -25,9 +25,9 @@ export default function BG({
       />
       <Card.Body noTopPadding>
         <GaugeChart 
-          key="danger"
+          key="warning"
           levels={["low", "normal", "warning", "danger"]}
-          status="danger"
+          status="warning"
           value="위험"
         />
         <div className={clsx(
