@@ -64,13 +64,14 @@ export default function Home(){
   return (
     <section className={commonStyle.mainContent}>
       <div className={styles.greetingWrapper}>
-        <p className={styles.greeting}>오늘도 반가워요</p>
+        <p className={styles.greeting}>오늘도 반가워요,</p>
         <p className={styles.nickname}>
           <strong>하늘을 나는 코끼리</strong>님!
         </p>
         <div className={styles.aiComment}>
-          협압이 안정적으로 유지되고 있어요, 이렇게만 유지하면 30대 건강한 몸이
-          부럽지 않아요.
+          오늘은 2시간 크로스핏을 하셨는데 식사를 거의 못 하셔서 회복이 부족할 수 있어요.
+          운동 뒤에는 단백질과 탄수화물이 함께 있는 가벼운 식사로 몸을 채워보시는 것을 권장해요.
+          이전처럼 혈압이 매우 높게 적힌 점이 걱정돼요. 다시 정확히 재보시고, 두통·어지러움·가슴통증이 있으면 병원에 문의해보세요.
         </div>
       </div>
 
@@ -89,7 +90,7 @@ export default function Home(){
                 <Meal
                   imageUrl="/images/food_sample/cheesy-tokbokki.jpg"
                   mealType={getMealTypeLabel("breakfast")}
-                  foodName="프렌치토스트"
+                  foodName="프렌치토스트, 오렌지쥬스"
                   foodCalorie={1100}
                   todayCalorie={780}
                   goalCalorie={1800}
@@ -125,7 +126,7 @@ export default function Home(){
                   id="water"
                   checked={true}
                   onChange={() => {}}
-                  icon={<SportShoe />}
+                  icon={<GlassWater />}
                   title="수분섭취"
                   value="6"
                   unit="cups"
@@ -134,7 +135,7 @@ export default function Home(){
                   id="supplement"
                   checked={false}
                   onChange={() => {}}
-                  icon={<SportShoe />}
+                  icon={<PillBottle/>}
                   title="영양제"
                   value="비타민C, 오메가3, 프로바이오틱스"
                 />
