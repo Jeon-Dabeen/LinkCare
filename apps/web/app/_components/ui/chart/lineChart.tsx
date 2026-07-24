@@ -30,7 +30,7 @@ ChartJS.register(
 
 type LineChartDataset = {
   label: string;
-  data: number[];
+  data: (number | null)[];
   unit?: string;
   yAxisID?: string;
 };
