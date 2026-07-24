@@ -16,9 +16,6 @@ export class CreateWeightDto {
   height?: number;
 
   @IsOptional()
-  @IsNumber({
-    maxDecimalPlaces: 2,
-  })
   @Min(0)
   @Max(250)
   @IsNumber({maxDecimalPlaces:2})

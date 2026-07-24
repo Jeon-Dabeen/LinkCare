@@ -57,21 +57,30 @@ export class WeightService {
       const heightMeter = heightSave / 100;
       bmi = Number((weight / (heightMeter * heightMeter)).toFixed(1));
     }
+    //목표체중이 이번요청에 있는지, 없으면 프로필 목표체중을 사용
+    const goalWeightSave = goalWeight ?? profile.goalWeight;
 
     let goalWeightState = profile.goalWeightState;
 
-    //1.이번 POST에서 목표체중을 같이 입력한 경우
-    if (goalWeight != null) {
-      goalWeightState = this.getGoalWeightState(weight, goalWeight);
+    //goalWeightState 계산
+    if (goalWeightSave != null) {
+      //증량,감량등 상태가 아직 정해지지 않은 경우
+      if (!goalWeightState) {
+        goalWeightState = this.getGoalWeightState(weight, goalWeightSave);
+      }
+      //상태가 정해진 회원이 목표에 도달한 경우
+      else if (
+        (goalWeightState === "+" && weight >= goalWeightSave) ||
+        (goalWeightState === "-" && weight <= goalWeightSave)
+      ) {
+        goalWeightState = "0";
+      }
     }
-    //2.목표체중만 PATCH로 먼저 저장했고 아직 state는 없는 경우
-    //저장된 목표체중과 요청으로 들어온 체중으로 state 채워줌
-    else if (profile.goalWeight != null && profile.goalWeightState == null) {
-      goalWeightState = this.getGoalWeightState(weight, profile.goalWeight);
-    }
+    //기존db상태와 새로 계산한것 비교
+    const stateChanged = goalWeightState !== profile.goalWeightState;
 
-    //profile에 값 저장
-    if (height != null || goalWeight != null) {
+    //키,목표체중이 있는 상태로 state가 기존과 다르다면 업데이트
+    if (height != null || goalWeight != null || stateChanged) {
       await this.prisma.profile.update({
         where: {
           id: profile.id,
@@ -83,18 +92,7 @@ export class WeightService {
         },
       });
     }
-    //PATCH로 목표체중은 등록된 회원이 첫 체중 입력시
-    else if (profile.goalWeight != null && profile.goalWeightState == null) {
-      await this.prisma.profile.update({
-        where: {
-          id: profile.id,
-        },
-        data: {
-          goalWeightState,
-        },
-      });
-    }
-    
+
     const createdToddayWeight = await this.prisma.weight.create({
       data: {
         userId,
@@ -104,7 +102,12 @@ export class WeightService {
       },
     });
 
-    return createdToddayWeight;
+    return {
+      ...createdToddayWeight,
+      height: height ?? profile.height,
+      goalWeight: goalWeight ?? profile.goalWeight,
+      goalWeightState,
+    };
   }
   //7일 조회
   async findWeekWeight(userId: number, weightDate: string) {
