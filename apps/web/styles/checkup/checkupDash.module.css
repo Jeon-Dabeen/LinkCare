@@ -7,3 +7,35 @@
   gap: var(--spacing-sm);
 }
 
+
+.dataList{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-box-inner) var(--spacing-box-inner);
+  height: calc(100% - 60px);
+}
+
+.dataItem{
+  display: flex;
+  align-items: center;
+}
+
+.dataItem ~ .dataItem{
+  margin-top: 10px;
+}
+
+.label{
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-light);
+}
+
+.value{
+  text-align: right;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import clsx from "clsx";
 
-import { BookHeart, CirclePlus, Droplet, FlaskRound, HeartPulse, MessageSquareCheck, Ruler } from "lucide-react"
+import { Bean, BookHeart, CirclePlus, Droplet, FlaskRound, HeartPulse, MessageSquareCheck, Ruler } from "lucide-react"
 import commonStyle from "@/styles/common.module.css";
 import styles from "@/styles/checkup/checkupDash.module.css";
 
@@ -11,6 +11,7 @@ import Grid from "@/app/_components/ui/Grid";
 import Card from "@/app/_components/ui/Card";
 import StatusTag from "@/app/_components/ui/StatusTag";
 import GaugeChart from "@/app/_components/ui/chart/guageChart";
+import BarChart from "@/app/_components/ui/chart/barChart";
 
 
 export default function Page(){
@@ -99,56 +100,108 @@ export default function Page(){
           </Link>
         </Grid.ItemFull>
 
-
-        <Link href="/checkup/basic">
-          <Card>
-            <Card.Header 
-              icon={<Droplet />}
-              title="빈혈/혈당"
-            />
-            <Card.Body>
-              빈혈 11, 혈당 60
-            </Card.Body>
-          </Card>
-        </Link>
-
-        <Link href="/checkup/basic">
-          <Card>
-            <Card.Header 
-              icon={<Ruler />}
-              title="신장"
-            />
-            <Card.Body>
-              170cm
-            </Card.Body>
-          </Card>
-        </Link>
-
-        <Link href="/checkup/basic">
-          <Card>
-            <Card.Header 
-              icon={<FlaskRound />}
-              title="간"
-            />
-            <Card.Body>
-              ALT : 32, AST: 60
-            </Card.Body>
-            <StatusTag status="normal" label="정상" />
-          </Card>
-        </Link>
-
-        <Link href="/checkup/basic">
+        <Grid.Link href="/checkup/basic">
           <Card>
             <Card.Header 
               icon={<HeartPulse />}
               title="혈압"
             />
-            <Card.Body>
-              110/70mmHg 90bpm
+            <Card.Body noTopPadding>
+              <GaugeChart 
+                key="caution"
+                levels={["low", "normal", "caution", "warning", "danger"]}
+                status="caution"
+                value="주의"
+              />
+              <div className={clsx(
+                commonStyle.dataWrapper,
+                commonStyle.jfCenter
+              )}>
+                <span className={commonStyle.dataValue}>110</span>
+                <span className={commonStyle.dataSeparate}>/</span>
+                <span className={commonStyle.dataValue}>70</span>
+                <span className={commonStyle.dataUnit}>mmHg </span>
+                <span className={commonStyle.dataValue}>90</span>
+                <span className={commonStyle.dataUnit}>bpm</span>
+              </div>
             </Card.Body>
             <StatusTag status="warning" label="위험" />
           </Card>
-        </Link>
+        </Grid.Link>
+
+
+        <Grid.Link href="/checkup/basic">
+          <Card>
+            <Card.Header 
+              icon={<Droplet />}
+              title="빈혈/혈당"
+            />
+            <div className={styles.dataList}>
+              <dl className={styles.dataItem}>
+                <dt className={styles.label}>빈혈</dt>
+                <dd className={styles.value}>11</dd>
+              </dl>
+              <BarChart level="normal" position={45}/>
+              <dl className={styles.dataItem}>
+                <dt className={styles.label}>혈당</dt>
+                <dd className={styles.value}>60</dd>
+              </dl>
+              <BarChart level="normal" position={45}/>
+            </div>
+          </Card>
+        </Grid.Link>
+
+        <Grid.Link href="/checkup/basic">
+          <Card>
+            <Card.Header 
+              icon={<Bean />}
+              title="신장"
+            />
+            <div className={styles.dataList}>
+              <dl className={styles.dataItem}>
+                <dt className={styles.label}>여과율</dt>
+                <dd className={styles.value}>11</dd>
+              </dl>
+              <BarChart level="normal" position={45}/>
+              <Card.Grid columns={1}>
+                <Card.Item title="요단백">
+                  <div className={commonStyle.dataWrapper}>
+                    <span className={commonStyle.dataValue}>음성</span>
+                  </div>
+                </Card.Item>
+              </Card.Grid>
+            </div>
+          </Card>
+        </Grid.Link>
+
+        <Grid.Link href="/checkup/basic">
+          <Card>
+            <Card.Header 
+              icon={<FlaskRound />}
+              title="간"
+            />
+            <div className={styles.dataList}>
+              <dl className={styles.dataItem}>
+                <dt className={styles.label}>ALT</dt>
+                <dd className={styles.value}>32</dd>
+              </dl>
+              <BarChart level="caution" position={45}/>
+              <Card.Grid columns={2} leftDivider>
+                <Card.Item title="AST">
+                  <div className={commonStyle.dataWrapper}>
+                    <span className={commonStyle.dataValue}>27</span>
+                  </div>
+                </Card.Item>
+                <Card.Item title="y-GTP">
+                  <div className={commonStyle.dataWrapper}>
+                    <span className={commonStyle.dataValue}>45</span>
+                  </div>
+                </Card.Item>
+              </Card.Grid>
+            </div>
+            <StatusTag status="caution" label="주의" />
+          </Card>
+        </Grid.Link>
 
 
       </Grid>
