@@ -90,6 +90,8 @@ export default function SampleLink() {
         <li><Link href="/daily/bloodPressure">혈압</Link></li>
         <li><Link href="/daily/writeWeight">체중 입력</Link></li>
         <li><Link href="/daily/weight">체중</Link></li>
+        <li><Link href="/daily/bloodGlucose">혈당</Link></li>
+        <li><Link href="/daily/writeBg">혈당 입력</Link></li>
       </ul>
 
       <p>- meal -</p>
