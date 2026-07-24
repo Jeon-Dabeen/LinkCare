@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, UseInterceptors, UploadedFile } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseInterceptors,
+  UploadedFile,
+  Query,
+  ParseArrayPipe,
+} from "@nestjs/common";
 import { CheckupService } from "./checkup.service";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -30,8 +39,49 @@ export class CheckupController {
     return this.checkupService.findAll();
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.checkupService.findOne(+id);
+  @ApiOperation({ summary: "검진 결과 최근 3개 데이터 조회" })
+  @Get("/years")
+  findYears() {
+    return this.checkupService.findYears();
+  }
+
+  @ApiOperation({ summary: "신체 지표 데이터 조회" })
+  @Get("/body-metrics")
+  findBodyMetrics(
+    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
+  ) {
+    return this.checkupService.findBodyMetrics(years);
+  }
+
+  @ApiOperation({ summary: "혈압 데이터 조회" })
+  @Get("/blood-pressure")
+  findBloodPressure(
+    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
+  ) {
+    return this.checkupService.findBloodPressure(years);
+  }
+
+  @ApiOperation({ summary: "혈당 & 빈혈 데이터 조회" })
+  @Get("/diabetes-anemia")
+  findDiabetesAnemia(
+    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
+  ) {
+    return this.checkupService.findDiabetesAnemia(years);
+  }
+
+  @ApiOperation({ summary: "간 데이터 조회" })
+  @Get("/liver")
+  findLiver(
+    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
+  ) {
+    return this.checkupService.findLiver(years);
+  }
+
+  @ApiOperation({ summary: "신장 데이터 조회" })
+  @Get("/kidney")
+  findKidney(
+    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
+  ) {
+    return this.checkupService.findKidney(years);
   }
 }

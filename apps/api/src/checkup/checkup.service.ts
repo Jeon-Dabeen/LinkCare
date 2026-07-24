@@ -12,6 +12,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { logger } from "../config/logger";
 import { AzureDiService } from "../integrations/azure-di/azure-di.service";
 import { CheckupEvaluator } from "../integrations/evaluator/checkup-evaluator";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class CheckupService {
@@ -221,7 +222,172 @@ export class CheckupService {
     return { result: "success", code: 200, data: dashboardResponseDto };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} checkup`;
+  async findYears() {
+    logger.info(`CheckupService findYear started.`);
+    const userId = 1; // 임시 유저 아이디
+
+    const checkup = await this.prisma.checkUp.findMany({
+      where: { userId, isShow: true },
+      select: { year: true },
+      take: 3,
+      orderBy: { year: "desc" },
+    });
+
+    logger.info(`CheckupService findYear ended.`);
+    return { result: "success", code: 200, data: checkup.map((years) => years.year) };
+  }
+
+  async findBodyMetrics(years: number[]) {
+    logger.info(`CheckupService findBodyMetrics started. years: ${years}`);
+    const userId = 1; // 임시 유저 아이디
+
+    const bodyMetrics = await this.findValuesByYear(
+      userId,
+      years,
+      {
+        id: true,
+        height: true,
+        weight: true,
+        waist: true,
+        bmi: true,
+        visionLeft: true,
+        visionRight: true,
+        hearing: true,
+        CheckupAssessment: {
+          select: {
+            id: true,
+            waist: true,
+            bmi: true,
+          },
+        },
+      },
+      "신체 지표",
+    );
+
+    logger.info(`CheckupService findBodyMetrics ended. years: ${years}`);
+    return { result: "success", code: 200, data: bodyMetrics };
+  }
+
+  async findBloodPressure(years: number[]) {
+    logger.info(`CheckupService findBloodPressure started. years: ${years}`);
+    const userId = 1; // 임시 유저 아이디
+
+    const bloodPressure = await this.findValuesByYear(
+      userId,
+      years,
+      {
+        id: true,
+        bp_systolic: true,
+        bp_diastolic: true,
+        CheckupAssessment: {
+          select: {
+            id: true,
+            bp: true,
+          },
+        },
+      },
+      "혈압 수치",
+    );
+
+    logger.info(`CheckupService findBloodPressure ended. years: ${years}`);
+    return { result: "success", code: 200, data: bloodPressure };
+  }
+
+  async findDiabetesAnemia(years: number[]) {
+    logger.info(`CheckupService findDiabetesAnemia started. years: ${years}`);
+    const userId = 1; // 임시 유저 아이디
+
+    const diabetesAnemia = await this.findValuesByYear(
+      userId,
+      years,
+      {
+        id: true,
+        fbg: true,
+        hemoglobin: true,
+        CheckupAssessment: {
+          select: {
+            id: true,
+            fbg: true,
+            hemoglobin: true,
+          },
+        },
+      },
+      "혈당 수치나 빈혈 수치",
+    );
+
+    logger.info(`CheckupService findDiabetesAnemia ended. years: ${years}`);
+    return { result: "success", code: 200, data: diabetesAnemia };
+  }
+
+  async findLiver(years: number[]) {
+    logger.info(`CheckupService findLiver started. years: ${years}`);
+    const userId = 1; // 임시 유저 아이디
+
+    const liver = await this.findValuesByYear(
+      userId,
+      years,
+      {
+        id: true,
+        ast: true,
+        alt: true,
+        ygtp: true,
+        CheckupAssessment: {
+          select: {
+            id: true,
+            ast: true,
+            alt: true,
+            ygtp: true,
+          },
+        },
+      },
+      "간 수치",
+    );
+
+    logger.info(`CheckupService findLiver ended. years: ${years}`);
+    return { result: "success", code: 200, data: liver };
+  }
+
+  async findKidney(years: number[]) {
+    logger.info(`CheckupService findKidney started. years: ${years}`);
+    const userId = 1; // 임시 유저 아이디
+
+    const kidney = await this.findValuesByYear(
+      userId,
+      years,
+      {
+        id: true,
+        urine_protein: true,
+        creatinine: true,
+        egfr: true,
+        CheckupAssessment: {
+          select: {
+            id: true,
+            urine_protein: true,
+            creatinine: true,
+            egfr: true,
+          },
+        },
+      },
+      "신장 수치",
+    );
+
+    logger.info(`CheckupService findKidney ended. years: ${years}`);
+    return { result: "success", code: 200, data: kidney };
+  }
+
+  private async findValuesByYear<T extends Prisma.CheckUpSelect>(
+    userId: number,
+    years: number[],
+    select: T,
+    errorMessage: string,
+  ) {
+    const data = await this.prisma.checkUp.findMany({
+      where: { userId, year: { in: years }, isShow: true },
+      select,
+    });
+
+    if (data.length === 0)
+      throw new NotFoundException(`사용자의 ${years}년도 ${errorMessage}를 찾을 수 없습니다.`);
+    return data;
   }
 }
