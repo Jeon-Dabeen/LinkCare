@@ -7,149 +7,164 @@ import { UpdateWeightProfileDto } from "./dto/update-weight-profile-dto";
 export class WeightService {
   constructor(private readonly prisma: PrismaService) {}
 
-  //추가
-  //ai들 검증 결과 prisma가 날짜를 utc 형태로 전달하고 date 부분 처리 과정에서 1일전으로 저장될 위험이 있다고함
-  //이부분 문제를 없애기 위해 asia/seoul 기준 날짜를 추출하여야함. 그리고 자정으로 함
-
-  private getToday(): Date {
-    const now = new Date();
-    const koreaTimeString = now.toLocaleDateString("en-Ca", {
-      timeZone: "Asia/Seoul",
-    });
-    const today = new Date(`${koreaTimeString}T00:00:00.000Z`);
-    return today;
+  private toDate(date: string): Date {
+    return new Date(`${date}T00:00:00.000Z`);
   }
-
-  //트랜잭션은 아직 안했음 고민해봐야함
-
+  //목표체중 증량, 감량 회원 구분
+  private getGoalWeightState(weight: number, goalWeight: number): string {
+    if (weight > goalWeight) {
+      return "-";
+    }
+    if (weight < goalWeight) {
+      return "+";
+    }
+    return "0"; //유지회원
+  }
+  //체중 기록
   async createWeight(userId: number, createWeightDto: CreateWeightDto) {
-    const { weight, height, goalWeight } = createWeightDto;
-    const today = this.getToday();
+    const { weight, height, goalWeight, weightDate } = createWeightDto;
 
-    //프론트상 메인에서 넘기는 데이터로 오늘 기록여부를 파악하겠지만 일단 api상으로도
-    //오늘 기록을 확인하기
+    const date = this.toDate(weightDate);
+
     const existTodayWeight = await this.prisma.weight.findFirst({
       where: {
         userId,
-        weightDate: today,
+        weightDate: date,
       },
     });
+
     if (existTodayWeight) {
-      throw new ConflictException("오늘 이미 체중이 등록 되었습니다.");
+      throw new ConflictException("해당 날짜에 체중이 이미 등록되어 있어요.");
     }
 
-    //user의 profile을 조회한다.
+    //사용자의 프로필 조회
     const profile = await this.prisma.profile.findFirst({
       where: {
         userId,
       },
     });
 
-    //회원가입시 프로필은 생겨야함 일단막아
     if (!profile) {
       throw new NotFoundException("사용자 프로필을 찾을수 없음");
     }
 
-    // bmi 계산하기 위한 키, 이번에 들어온 키가 있으면 그걸로 체중 계산을 해야하므로 만듬
+    //bmi 계산용 키, 요청값 우선
     const heightSave = height ?? profile.height;
-    // 좌항 ?? 우항   좌항이 없으면  우항을 써라
 
-    //profile.height은 db에 있는 height. height는 방금 입력받은애
-    //입력받은 키가 있다면 그걸 쓰고, 없다면 db껄 쓰기 둘다 없으면 그냥 null
-
-    let bmi: number | null = null; //키가 없다면 bmi는 null
+    let bmi: number | null = null;
 
     if (heightSave != null) {
       const heightMeter = heightSave / 100;
-
       bmi = Number((weight / (heightMeter * heightMeter)).toFixed(1));
     }
+    //목표체중이 이번요청에 있는지, 없으면 프로필 목표체중을 사용
+    const goalWeightSave = goalWeight ?? profile.goalWeight;
 
-    //키와 목표체중이 중 하나라도 요청에 같이 들어온다면?
-    //bmi계산도 다 했고 들어온걸 db에 저장하긴 해야지..
-    if (height != null || goalWeight != null) {
+    let goalWeightState = profile.goalWeightState;
+
+    //goalWeightState 계산
+    if (goalWeightSave != null) {
+      //증량,감량등 상태가 아직 정해지지 않은 경우
+      if (!goalWeightState) {
+        goalWeightState = this.getGoalWeightState(weight, goalWeightSave);
+      }
+      //상태가 정해진 회원이 목표에 도달한 경우
+      else if (
+        (goalWeightState === "+" && weight >= goalWeightSave) ||
+        (goalWeightState === "-" && weight <= goalWeightSave)
+      ) {
+        goalWeightState = "0";
+      }
+    }
+    //기존db상태와 새로 계산한것 비교
+    const stateChanged = goalWeightState !== profile.goalWeightState;
+
+    //키,목표체중이 있는 상태로 state가 기존과 다르다면 업데이트
+    if (height != null || goalWeight != null || stateChanged) {
       await this.prisma.profile.update({
         where: {
           id: profile.id,
         },
         data: {
-          //요청값이 있다면 요청값 쓰고 없다면 기존값을 유지
           height: height ?? profile.height,
           goalWeight: goalWeight ?? profile.goalWeight,
+          goalWeightState,
         },
       });
     }
 
-    //오늘의 체중 저장
-    //키는 없다면 그냥 bmi null로 저장하자( 수정될 수 있음)
-    const createToddayWeight = await this.prisma.weight.create({
+    const createdToddayWeight = await this.prisma.weight.create({
       data: {
         userId,
         weight,
         bmi,
-        weightDate: today,
+        weightDate: date,
       },
     });
 
-    return createToddayWeight;
+    return {
+      ...createdToddayWeight,
+      height: height ?? profile.height,
+      goalWeight: goalWeight ?? profile.goalWeight,
+      goalWeightState,
+    };
   }
+  //7일 조회
+  async findWeekWeight(userId: number, weightDate: string) {
+    const endDate = this.toDate(weightDate);
 
-  async findWeekWeight(userId: number) {
-    const endDay = this.getToday(); //오늘 포함 7일을 보는거니 오늘포함+6일전 기록들 을 조회해야함 마지막날은 오늘임
+    const startDate = new Date(endDate);
 
-    const startDay = new Date(endDay); //끝날이 사실상 오늘이라 이렇게 했음 그래프 그리기용이니까 마지막날이 오늘이다.
+    startDate.setUTCDate(startDate.getUTCDate() - 6);
 
-    startDay.setUTCDate(startDay.getUTCDate() - 6); //setDate였는데... 시간대 수정하면서 getUTCDate()를 쓰라고 해서 바꿨는데 좀더 확인해봐야함
-
-    //여러개의 기록을 조회 범위를 계산한 startDay~endDay까지
-    //가져올 데이터는 일자, 기록된 체중,기록된 bmi
-    //asc로 한 이유는 오래된 데이터를 왼쪽에두고 7일간을 보려고 한것
-
-
-    //promise.all은 한번에 가져온다 순차적 x
-    //프로파일에 목표체중과 키는 한번만, 기록은 범위로
     const [profile, weights] = await Promise.all([
       this.prisma.profile.findFirst({
-        where:{
+        where: {
           userId,
         },
-        select:{
-          height:true,
-          goalWeight:true,
+        select: {
+          height: true,
+          goalWeight: true,
+          goalWeightState: true,
         },
       }),
       this.prisma.weight.findMany({
-        where:{
+        where: {
           userId,
-          weightDate:{
-            gte:startDay,
-            lte:endDay,
+          weightDate: {
+            gte: startDate,
+            lte: endDate,
           },
         },
-        select:{
-          weightDate:true,
-          weight:true,
-          bmi:true,
+        select: {
+          weightDate: true,
+          weight: true,
+          bmi: true,
         },
-        orderBy:{weightDate:'asc'}
-      })
-    ])
-    return {profile,weights};
+        orderBy: { weightDate: "asc" },
+      }),
+    ]);
+    return { profile, weights };
   }
 
-  //알아보니까 이번달 기록만 보는것도 성능상 범위를 지정해서 하는게 맞다고 함.
+  async findMonthWeight(userId: number, date: string) {
+    //프론트에서 받은 날짜
+    const selectedDate = this.toDate(date);
 
-  async findMonthWeight(userId: number, year: number, month: number) {
-    const thisMonth = new Date(Date.UTC(year, month - 1, 1));
-    //프론트로부터 받은 year, month로 선택한 달의 1일을 만든다.
-    //javascript월 번호는 0부터 시작이므로
+    const year = selectedDate.getUTCFullYear();
+    const month = selectedDate.getUTCMonth();
 
-    const nextMonth = new Date(Date.UTC(year, month, 1));
+    //해당 달 1일
+    const thisMonth = new Date(Date.UTC(year, month, 1));
+
+    //다음달 1일
+    const nextMonth = new Date(Date.UTC(year, month + 1, 1));
 
     return this.prisma.weight.findMany({
       where: {
         userId,
         weightDate: {
+          //선택된 달의 1일 이상
           gte: thisMonth,
           lt: nextMonth,
         },
@@ -163,9 +178,6 @@ export class WeightService {
       },
     });
   }
-
-  //키 목표체중 update
-  //profile에 키와 목표체중을 수정하고 싶은 경우..
   async updateWeightProfile(userId: number, dto: UpdateWeightProfileDto) {
     const { height, goalWeight } = dto;
 
@@ -174,12 +186,32 @@ export class WeightService {
         userId,
       },
     });
-
     if (!profile) {
-      throw new NotFoundException("프로파일을 못찾은 경우 일단막음 ");
+      throw new NotFoundException("사용자 프로필을 찾을수 없어요.");
     }
 
-    //있으면 수정해주고 없으면 그냥 유지....
+    let goalWeightState = profile.goalWeightState;
+
+    //목표 체중이 patch로 들어온경우 state를 다시 계산하여 저장
+    if (goalWeight != null) {
+      const latestWeight = await this.prisma.weight.findFirst({
+        where: {
+          userId,
+        },
+        orderBy: {
+          weightDate: "desc",
+        },
+      });
+      //마지막 체중기록이 조회된 경우
+      if (latestWeight) {
+        goalWeightState = this.getGoalWeightState(latestWeight.weight, goalWeight);
+      }
+      //체중 기록이 하나도 없었던 경우 POST에서 체중 입력시 계산
+      else {
+        goalWeightState = null;
+      }
+    }
+
     const result = await this.prisma.profile.update({
       where: {
         id: profile.id,
@@ -187,6 +219,7 @@ export class WeightService {
       data: {
         height: height ?? profile.height,
         goalWeight: goalWeight ?? profile.goalWeight,
+        goalWeightState,
       },
     });
     return result;
