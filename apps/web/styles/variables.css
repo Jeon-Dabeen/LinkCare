@@ -32,18 +32,23 @@
 
   /* status */
   --color-low: #6F9FC9;
+  --color-low-light: #8DB5D8;
   --color-low-hover: #5A8BB8;
   --color-low-active: #49789F;
   --color-normal: #7FAE95;
+  --color-normal-light: #9BC5AA;
   --color-normal-hover: #6A9B7F;
   --color-normal-active: #5A7F66;
   --color-caution: #D8C36A;
+  --color-caution-light: #E6D78F;
   --color-caution-hover: #C5AE4F;
   --color-caution-active: #AA9540;
   --color-warning: #D99555;
+  --color-warning-light: #E6B27F;
   --color-warning-hover: #C57E3F;
   --color-warning-active: #A9692E;
   --color-danger: #CB7568;
+  --color-danger-light: #DE958B;
   --color-danger-hover: #B05A4D;
   --color-danger-active: #964A3F;
 
