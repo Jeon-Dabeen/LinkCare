@@ -1,0 +1,38 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from "@nestjs/common";
+import { DailyShieldService } from "./daily-shield.service";
+import { CreateDailyShieldDto } from "./dto/create-daily-shield.dto";
+import { UpdateDailyShieldDto } from "./dto/update-daily-shield.dto";
+import { ApiOperation, ApiQuery } from "@nestjs/swagger";
+import { logger } from "../config/logger";
+
+@Controller("daily-shield")
+export class DailyShieldController {
+  constructor(private readonly dailyShieldService: DailyShieldService) {}
+
+  @ApiOperation({ summary: "데일리 쉴드 등록" })
+  @Post()
+  // @Post(":userId")
+  // create(@Param("userId") userId: string, @Body() dto: CreateDailyShieldDto) {
+  create(@Body() dto: CreateDailyShieldDto) {
+    return this.dailyShieldService.create(1, dto);
+  }
+
+  @ApiOperation({ summary: "데일리 쉴드 조회" })
+  @ApiQuery({ name: "dailyDate", required: true, example: "2026-07-22" })
+  @Get(":userId")
+  findOne(
+    @Param("userId") userId: string, 
+    @Query('dailyDate') dailyDate: string
+  ) {
+    logger.debug(`DailyShieldController findOne ${userId}`);
+    return this.dailyShieldService.findOne(+userId, dailyDate);
+  }
+
+  @ApiOperation({ summary: "데일리 쉴드 업데이트" })
+  @Patch()
+  // @Patch(":id")
+  // update(@Param("id") id: string, @Body() dto: UpdateDailyShieldDto) {
+  update(@Body() dto: UpdateDailyShieldDto) {
+    return this.dailyShieldService.update(1, dto);
+  }
+}
