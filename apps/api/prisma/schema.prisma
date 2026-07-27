@@ -150,9 +150,9 @@ model MealFood {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Profile {
   id              Int       @id(map: "PK_PROFILE") @default(autoincrement())
-  userId          Int
+  userId          Int       @unique(map: "UK_PROFILE_USER")
   gender          String?
-  nickName        String?
+  nickName        String?   @unique(map: "UK_PROFILE_NICKNAME")
   birthDate       DateTime? @db.Date
   height          Float?    @db.Real
   goalWeight      Float?    @db.Real
@@ -175,7 +175,7 @@ model User {
   CheckUp       CheckUp[]
   DailyShield   DailyShield[]
   Meal          Meal[]
-  Profile       Profile[]
+  Profile       Profile?
   Weight        Weight[]
 }
 
