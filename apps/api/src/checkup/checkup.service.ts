@@ -13,12 +13,14 @@ import { logger } from "../config/logger";
 import { AzureDiService } from "../integrations/azure-di/azure-di.service";
 import { CheckupEvaluator } from "../integrations/evaluator/checkup-evaluator";
 import { Prisma } from "@prisma/client";
+import { AiAdvisorService } from "../integrations/ai-advisor/ai-advisor.service";
 
 @Injectable()
 export class CheckupService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly azureDiService: AzureDiService,
+    private readonly aiAdvisorService: AiAdvisorService,
   ) {}
 
   async uploadPdf(file: Express.Multer.File) {
@@ -84,77 +86,96 @@ export class CheckupService {
 
     const checkupHistory = createCheckupDto.checkup_history;
 
-    try {
-      return await this.prisma.$transaction(async (tx) => {
-        logger.debug(`Checkup create transaction started.`);
-        let count = 0; // 변경사항 카운트 변수
-        const results: CheckupAssessmentDto[] = [];
+    const results = await this.prisma.$transaction(async (tx) => {
+      logger.debug(`Checkup create transaction started.`);
+      let count = 0; // 변경사항 카운트 변수
+      const results: { checkupId: number; checkupAssessment: CheckupAssessmentDto }[] = [];
 
-        for (const history of checkupHistory) {
-          const { checkup_year, checkup_date, ...checkupValues } = history;
-          const dateStr = checkup_date.split("/");
-          const exists = await tx.checkUp.findUnique({
-            where: { userId_year: { userId, year: checkup_year } },
-          });
+      for (const history of checkupHistory) {
+        const { checkup_year, checkup_date, ...checkupValues } = history;
+        const dateStr = checkup_date.split("/");
+        const exists = await tx.checkUp.findUnique({
+          where: { userId_year: { userId, year: checkup_year } },
+        });
 
-          // 이미 DB에 저장된 검진 결과를 등록할 경우
-          if (exists) {
-            continue;
-          }
-          count++;
-
-          logger.debug(`Checkup create started.`);
-          const checkup = await tx.checkUp.create({
-            data: {
-              userId,
-              year: checkup_year,
-              checkUpDate: new Date(checkup_year, +dateStr[0], +dateStr[1]),
-              ...checkupValues,
-            },
-          });
-          logger.debug(`Checkup create ended.`);
-
-          logger.debug(`Checkup evaluate started.`);
-          const { height, weight, visionLeft, visionRight, hearing, ...values } = history;
-          logger.debug(`History data: ${values}`);
-          const evaluateCheckup = CheckupEvaluator.evaluateList([values], gender);
-          logger.debug(`Evaluate data: ${evaluateCheckup}`);
-          const checkupStatus = evaluateCheckup.checkup_status[0];
-          const result = await tx.checkupAssessment.create({
-            data: {
-              checkUpId: checkup.id,
-              waist: checkupStatus.waist.status,
-              bmi: checkupStatus.bmi.status,
-              bp: `sys:${checkupStatus.bp_systolic.status}/dia:${checkupStatus.bp_diastolic.status}`,
-              urine_protein: checkupStatus.urine_protein.status,
-              hemoglobin: checkupStatus.hemoglobin.status,
-              fbg: checkupStatus.fbg.status,
-              creatinine: checkupStatus.creatinine.status,
-              egfr: checkupStatus.egfr.status,
-              ast: checkupStatus.ast.status,
-              alt: checkupStatus.alt.status,
-              ygtp: checkupStatus.ygtp.status,
-            },
-          });
-          results.push(result);
-          logger.debug(`Checkup evaluate ended.`);
-        } // end of for
-
-        if (count === 0) {
-          logger.error("Checkup create Error: 409 - 모두 저장된 검진 결과");
-          throw new ConflictException("모든 검진 결과가 이미 저장되어 있습니다.");
+        // 이미 DB에 저장된 검진 결과를 등록할 경우
+        if (exists) {
+          continue;
         }
+        count++;
 
-        logger.debug(`Checkup create transaction ended.`);
-        return { result: "success", code: 201, data: results };
-      });
-    } catch (e) {
-      logger.error(e);
-    } finally {
-      logger.info(
-        `CheckupService create ended. createCheckupDto: ${createCheckupDto.checkup_history.length}`,
-      );
-    }
+        logger.debug(`Checkup create started.`);
+        const checkup = await tx.checkUp.create({
+          data: {
+            userId,
+            year: checkup_year,
+            checkUpDate: new Date(checkup_year, +dateStr[0], +dateStr[1]),
+            ...checkupValues,
+          },
+        });
+        logger.debug(`Checkup create ended.`);
+
+        logger.debug(`Checkup evaluate started.`);
+        const { height, weight, visionLeft, visionRight, hearing, ...values } = history;
+        logger.debug(`History data: ${values}`);
+        const evaluateCheckup = CheckupEvaluator.evaluateList([values], gender);
+        logger.debug(`Evaluate data: ${evaluateCheckup}`);
+        const checkupStatus = evaluateCheckup.checkup_status[0];
+        const checkupAssessment = await tx.checkupAssessment.create({
+          data: {
+            checkUpId: checkup.id,
+            waist: checkupStatus.waist.status,
+            bmi: checkupStatus.bmi.status,
+            bp: `sys:${checkupStatus.bp_systolic.status}/dia:${checkupStatus.bp_diastolic.status}`,
+            urine_protein: checkupStatus.urine_protein.status,
+            hemoglobin: checkupStatus.hemoglobin.status,
+            fbg: checkupStatus.fbg.status,
+            creatinine: checkupStatus.creatinine.status,
+            egfr: checkupStatus.egfr.status,
+            ast: checkupStatus.ast.status,
+            alt: checkupStatus.alt.status,
+            ygtp: checkupStatus.ygtp.status,
+          },
+        });
+        results.push({ checkupId: checkup.id, checkupAssessment });
+        logger.debug(`Checkup evaluate ended.`);
+      } // end of for
+
+      if (count === 0) {
+        logger.error("Checkup create Error: 409 - 모두 저장된 검진 결과");
+        throw new ConflictException("모든 검진 결과가 이미 저장되어 있습니다.");
+      }
+
+      logger.debug(`Checkup create transaction ended.`);
+      return results;
+    });
+
+    Promise.all(
+      results.map(({ checkupId, checkupAssessment }) => {
+        this.generateCheckupAdvice(checkupId, checkupAssessment).catch((e) => {
+          logger.error(`Failed saving AI comment checkupId: ${checkupId}, ${e.message}`);
+        });
+      }),
+    );
+
+    logger.info(
+      `CheckupService create ended. createCheckupDto: ${createCheckupDto.checkup_history.length}`,
+    );
+    return { result: "success", code: 201, data: results };
+  }
+
+  async generateCheckupAdvice(checkupId: number, checkupAssessment: CheckupAssessmentDto) {
+    logger.info(`CheckupService generateCheckupAdvice started. checkupId: ${checkupId}`);
+    const result = await this.aiAdvisorService.generateCheckupAdvice(checkupAssessment);
+    if (!result.success) logger.error(`다시 에이전트한테 코멘트 받아 와`);
+
+    logger.debug("Put AI comment in Database started.");
+    const comment = await this.prisma.checkUpComment.create({
+      data: { checkUpId: checkupId, comment: result.advice },
+    });
+    logger.debug(`AI comment: ${comment}`);
+    logger.debug("Put AI comment in Database ended.");
+    logger.info(`CheckupService generateCheckupAdvice ended. checkupId: ${checkupId}`);
   }
 
   async findAll() {
