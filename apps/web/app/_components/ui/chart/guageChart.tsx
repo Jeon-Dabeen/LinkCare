@@ -43,7 +43,8 @@ export default function GaugeChart({ status, levels, value }: GaugeChartProps) {
   }, [levels]);
 
   const currentIndex = status == null ? -1 : levels.indexOf(status);
-
+console.log("status:", status);
+console.log("currentIndex:", currentIndex);
   // 배경색 배열 생성 (CSS 변수를 읽어오기 전이라면 기본 처리)
   const backgroundColor = useMemo(() => {
     return levels.map((level, index) => {
