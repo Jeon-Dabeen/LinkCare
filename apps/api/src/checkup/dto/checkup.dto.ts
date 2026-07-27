@@ -26,6 +26,14 @@ export class DashboardResponseDto {
   @IsObject()
   @Type(() => KidneyDto)
   kidney: KidneyDto;
+
+  @IsObject()
+  @Type(() => AssessmentDto)
+  assessment: AssessmentDto;
+
+  @IsObject()
+  @Type(() => AICommentDto)
+  aiComment: AICommentDto;
 }
 
 export class BodyMetricsDto {
@@ -137,7 +145,7 @@ export class KidneyDto {
   egfr: number | null;
 }
 
-export class CheckupAssessmentDto {
+export class CheckupAssessmentResponseDto {
   @IsInt()
   @Min(1)
   id: number;
@@ -189,4 +197,41 @@ export class CheckupAssessmentDto {
   @IsString()
   @MinLength(1)
   ygtp: string;
+}
+
+export class AssessmentDto {
+  @IsInt()
+  @Min(1)
+  id: number;
+
+  @IsString()
+  @MinLength(1)
+  bmi: string;
+
+  @IsString()
+  @MinLength(1)
+  bp: string;
+
+  @IsString()
+  @MinLength(1)
+  hemoglobin: string;
+
+  @IsString()
+  @MinLength(1)
+  fbg: string;
+
+  @IsString()
+  @MinLength(1)
+  egfr: string;
+
+  @IsString()
+  @MinLength(1)
+  alt: string;
+}
+
+export class AICommentDto {
+  @IsInt()
+  @Min(1)
+  id: number;
+  comment: string;
 }

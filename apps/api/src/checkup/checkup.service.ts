@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
-import { CheckupAssessmentDto, DashboardResponseDto } from "./dto/checkup.dto";
+import { CheckupAssessmentResponseDto, DashboardResponseDto } from "./dto/checkup.dto";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { PrismaService } from "../prisma/prisma.service";
 import { logger } from "../config/logger";
@@ -89,7 +89,7 @@ export class CheckupService {
     const results = await this.prisma.$transaction(async (tx) => {
       logger.debug(`Checkup create transaction started.`);
       let count = 0; // 변경사항 카운트 변수
-      const results: { checkupId: number; checkupAssessment: CheckupAssessmentDto }[] = [];
+      const results: { checkupId: number; checkupAssessment: CheckupAssessmentResponseDto }[] = [];
 
       for (const history of checkupHistory) {
         const { checkup_year, checkup_date, ...checkupValues } = history;
@@ -164,7 +164,7 @@ export class CheckupService {
     return { result: "success", code: 201, data: results };
   }
 
-  async generateCheckupAdvice(checkupId: number, checkupAssessment: CheckupAssessmentDto) {
+  async generateCheckupAdvice(checkupId: number, checkupAssessment: CheckupAssessmentResponseDto) {
     logger.info(`CheckupService generateCheckupAdvice started. checkupId: ${checkupId}`);
     const result = await this.aiAdvisorService.generateCheckupAdvice(checkupAssessment);
     if (!result.success) logger.error(`다시 에이전트한테 코멘트 받아 와`);
@@ -203,9 +203,26 @@ export class CheckupService {
         alt: true,
         ygtp: true,
         year: true,
+        CheckupAssessment: {
+          select: {
+            id: true,
+            bmi: true,
+            bp: true,
+            hemoglobin: true,
+            fbg: true,
+            egfr: true,
+            alt: true,
+          },
+        },
+        CheckUpComment: {
+          select: {
+            id: true,
+            comment: true,
+          },
+        },
       },
       orderBy: { year: "desc" },
-      where: { userId },
+      where: { userId, isShow: true },
     });
     if (!checkup) throw new NotFoundException(`검진 결과를 찾을 수 없음`);
     logger.debug(`find Checkup result: userId ${checkup.id} year ${checkup.year}`);
@@ -228,6 +245,8 @@ export class CheckupService {
       urine_protein,
       creatinine,
       egfr,
+      CheckupAssessment,
+      CheckUpComment,
     } = checkup;
 
     const dashboardResponseDto: DashboardResponseDto = {
@@ -237,6 +256,19 @@ export class CheckupService {
       diabetes_anemia: { fbg, hemoglobin },
       liver: { ast, alt, ygtp },
       kidney: { urine_protein, creatinine, egfr },
+      assessment: {
+        id: CheckupAssessment[0].id,
+        bmi: CheckupAssessment[0].bmi,
+        bp: CheckupAssessment[0].bp,
+        hemoglobin: CheckupAssessment[0].hemoglobin,
+        fbg: CheckupAssessment[0].fbg,
+        egfr: CheckupAssessment[0].egfr,
+        alt: CheckupAssessment[0].alt,
+      },
+      aiComment: {
+        id: CheckUpComment[0].id,
+        comment: CheckUpComment[0].comment,
+      },
     };
 
     logger.info(`CheckupService findAll ended.`);
