@@ -314,6 +314,10 @@ ALTER TABLE "Meal" ADD CONSTRAINT "UK_MEAL_USER_DATE_TYPE" UNIQUE ("userId", "me
 
 ALTER TABLE "DailyShield" ADD CONSTRAINT "UK_SHIELD_USER_DATE" UNIQUE ("userId", "dailyDate");
 
+ALTER TABLE "Profile" ADD CONSTRAINT "UK_PROFILE_USER" UNIQUE ("userId");
+
+ALTER TABLE "Profile" ADD CONSTRAINT "UK_PROFILE_NICKNAME" UNIQUE ("nickName");
+
 
 --** updateAt trigger **--
 -- updateAt 공용 함수 생성 (DB에 단 한 번만 생성)
