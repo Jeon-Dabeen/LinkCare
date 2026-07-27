@@ -24,10 +24,8 @@ import StepIconSelector from "./_components/stepIconSelector";
 import StepSelector from "./_components/stepSelector";
 import Button from "../_components/ui/Button";
 
-
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 
-// 
 type DailyShieldState = {
   feel: number | null
   energy: number | null
@@ -41,6 +39,20 @@ type DailyShieldState = {
   dailyDate: string
 }
 
+// mock data
+const initialShieldData: DailyShieldState = {
+  feel: 0,
+  energy: 0,
+  isExercise: false,
+  exerciseTime: '0',
+  exerciseType: '',
+  isWater: false,
+  waterCup: 0,
+  isSupplement: false,
+  supplementType: '',
+  dailyDate: '2026-07-22'
+};
+
 type Action =
   | { type: 'SET_FEEL'; value: number }
   | { type: 'SET_ENERGY'; value: number }
@@ -52,14 +64,75 @@ type Action =
   | { type: 'TOGGLE_SUPPLEMENT' }
   | { type: 'SET_SUPPLEMENT_TYPE'; value: string }
 
-
-
-export default function Home(){
-
-  const {baseDate, formattedDate} = useBaseDate();
+export default function Home() {
+  const { baseDate, formattedDate } = useBaseDate();
   console.log(baseDate, formattedDate);
 
-  const [water, setWater] = useState(5);
+  // 1. 데일리 쉴드
+  // 현재 진행 중인 단계 상태 추가 (기본값: 1단계)
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  // 전체 데일리 쉴드 폼
+  const [formData, setFormData] = useState<DailyShieldState>(initialShieldData);
+  
+  // 다음 단계로 이동하는 함수
+  const handleNextStep = () => {
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  // 단일 값 변경 핸들러 (기분, 에너지, 운동시간 등)
+  const handleFieldChange = <K extends keyof DailyShieldState>(
+    field: K,
+    value: DailyShieldState[K]
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // 빠른 생성 토글 핸들러 (운동 / 수분 / 영양제 On/Off)
+  const handleQuickToggle = (
+    field: 'isExercise' | 'isWater' | 'isSupplement'
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+  };
+
+  // 다중 선택 토글 핸들러 (운동 종류, 영양제 종류 - 쉼표로 구반되는 문자열)
+  const handleMultiSelectToggle = (
+    field: 'exerciseType' | 'supplementType',
+    itemLabel: string
+  ) => {
+    setFormData((prev) => {
+      // 쉼표로 구분된 문자열을 배열로 변환
+      const currentList = prev[field]
+        ? prev[field].split(',').map((s) => s.trim())
+        : [];
+
+      const exists = currentList.includes(itemLabel);
+      const newList = exists
+        ? currentList.filter((item) => item !== itemLabel)
+        : [...currentList, itemLabel];
+
+      return {
+        ...prev,
+        [field]: newList.join(', '), // 다시 "걷기, 달리기" 형태로 합성
+      };
+    });
+  };
+
+  // 제출 (백엔드 전송)
+  const handleSubmit = () => {
+    console.log('백엔드로 전송할 데이터:', { dailyShield: formData });
+    // TODO: fetch or axios API Call
+  };
+
+  // 헬퍼: 특정 항목이 선택되었는지 체크하는 함수
+  const isSelectedType = (
+    field: 'exerciseType' | 'supplementType',
+    label: string
+  ) => {
+    return formData[field]?.split(',').map((s) => s.trim()).includes(label) ?? false;
+  };
 
   return (
     <section className={commonStyle.mainContent}>
@@ -115,347 +188,217 @@ export default function Home(){
               <div className={styles.quickWrapper}>
                 <QuickSelectCard
                   id="exercise"
-                  checked={false}
-                  onChange={() => {}}
+                  checked={formData.isExercise}
+                  onChange={() => handleQuickToggle('isExercise')}
                   icon={<SportShoe />}
                   title="운동"
-                  value="30"
+                  value={formData.exerciseTime || '0'}
                   unit="min"
                 />
                 <QuickSelectCard
                   id="water"
-                  checked={true}
-                  onChange={() => {}}
+                  checked={formData.isWater}
+                  onChange={() => handleQuickToggle('isWater')}
                   icon={<GlassWater />}
                   title="수분섭취"
-                  value="6"
+                  value={String(formData.waterCup)}
                   unit="cups"
                 />
                 <QuickSelectCard
                   id="supplement"
-                  checked={false}
-                  onChange={() => {}}
-                  icon={<PillBottle/>}
+                  checked={formData.isSupplement}
+                  onChange={() => handleQuickToggle('isSupplement')}
+                  icon={<PillBottle />}
                   title="영양제"
-                  value="비타민C, 오메가3, 프로바이오틱스"
+                  value={formData.supplementType || ''}
                 />
               </div>
             </article>
             <article className={styles.shieldWrapper}>
               <p className={styles.shieldTitle}>맞춤 생성</p>
-              <div className={styles.customWrapper}>
-                <CustomStep question="오늘의 기분은 어떠세요?">
-                  <CustomStep.Item>
-                    <div className={styles.customItems}>
-                      <StepIconSelector
-                        name="feel"
-                        id="feel01"
-                        checked={false}
-                        value="1"
-                        icon={<Angry />}
-                        label="힘듦"
-                        onChange={() => {}}
-                      />
-                      <StepIconSelector
-                        name="feel"
-                        id="feel02"
-                        checked={true}
-                        value="2"
-                        icon={<Frown />}
-                        label="별로"
-                        onChange={() => {}}
-                      />
-                      <StepIconSelector
-                        name="feel"
-                        id="feel03"
-                        checked={false}
-                        value="3"
-                        icon={<Meh />}
-                        label="보통"
-                        onChange={() => {}}
-                      />
-                      <StepIconSelector
-                        name="feel"
-                        id="feel04"
-                        checked={false}
-                        value="4"
-                        icon={<Smile />}
-                        label="좋음"
-                        onChange={() => {}}
-                      />
-                      <StepIconSelector
-                        name="feel"
-                        id="feel05"
-                        checked={false}
-                        value="5"
-                        icon={<Laugh />}
-                        label="최고"
-                        onChange={() => {}}
-                      />
-                    </div>
-                  </CustomStep.Item>
-                </CustomStep>
-                <CustomStep question="에너지 레벨">
-                  <CustomStep.Item>
-                    <div className={styles.customItemsRow}>
-                      <StepIconSelector
-                        name="energy"
-                        id="energy01"
-                        checked={false}
-                        value="1"
-                        icon={<BatteryWarning />}
-                        label="지침"
-                        onChange={() => {}}
-                      />
-                      <StepIconSelector
-                        name="energy"
-                        id="energy02"
-                        checked={true}
-                        value="2"
-                        icon={<BatteryLow />}
-                        label="부족"
-                        onChange={() => {}}
-                      />
-                      <StepIconSelector
-                        name="energy"
-                        id="energy03"
-                        checked={false}
-                        value="3"
-                        icon={<BatteryFull />}
-                        label="충분"
-                        onChange={() => {}}
-                      />
-                      <StepIconSelector
-                        name="energy"
-                        id="energy04"
-                        checked={false}
-                        value="4"
-                        icon={<BatteryCharging />}
-                        label="활력"
-                        onChange={() => {}}
-                      />
-                    </div>
-                  </CustomStep.Item>
-                </CustomStep>
-                <div className={styles.customButton}>
-                  <Button type="button" round>
-                    다음
-                  </Button>
+              {/* Step 1: 기분 & 에너지 */}
+              {currentStep === 1 && (
+                <div className={styles.customWrapper}>
+                  {/* 기분 질문 (항상 보임) */}
+                  <CustomStep question="오늘의 기분은 어떠세요?">
+                    <CustomStep.Item>
+                      <div className={styles.customItems}>
+                        {[
+                          { val: 1, icon: <Angry />, label: '힘듦' },
+                          { val: 2, icon: <Frown />, label: '별로' },
+                          { val: 3, icon: <Meh />, label: '보통' },
+                          { val: 4, icon: <Smile />, label: '좋음' },
+                          { val: 5, icon: <Laugh />, label: '최고' },
+                        ].map((item) => (
+                          <StepIconSelector
+                            key={item.val}
+                            name="feel"
+                            id={`feel0${item.val}`}
+                            checked={formData.feel === item.val}
+                            value={String(item.val)}
+                            icon={item.icon}
+                            label={item.label}
+                            onChange={() => handleFieldChange('feel', item.val)}
+                          />
+                        ))}
+                      </div>
+                    </CustomStep.Item>
+                  </CustomStep>
+
+                  {(formData.feel ?? 0) > 0 && (
+                    <>
+                      <CustomStep question="에너지 레벨">
+                        <CustomStep.Item>
+                          <div className={styles.customItemsRow}>
+                            {[
+                              { val: 1, icon: <BatteryWarning />, label: '지침' },
+                              { val: 2, icon: <BatteryLow />, label: '부족' },
+                              { val: 3, icon: <BatteryFull />, label: '충분' },
+                              { val: 4, icon: <BatteryCharging />, label: '활력' },
+                            ].map((item) => (
+                              <StepIconSelector
+                                key={item.val}
+                                name="energy"
+                                id={`energy0${item.val}`}
+                                checked={formData.energy === item.val}
+                                value={String(item.val)}
+                                icon={item.icon}
+                                label={item.label}
+                                onChange={() => handleFieldChange('energy', item.val)}
+                              />
+                            ))}
+                          </div>
+                        </CustomStep.Item>
+                      </CustomStep>
+
+                      <div className={styles.customButton}>
+                        <Button
+                          type="button"
+                          round
+                          disabled={formData.energy === 0} // 선택 안 하면 버튼 비활성화 (선택 사항)
+                          onClick={handleNextStep}
+                        >
+                          다음
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
-              <div className={styles.customWrapper}>
-                <CustomStep question="물이 필요한 만큼 수분 충전하세요">
-                  <CustomStep.Item icon={<GlassWater />} title="오늘 마신 물">
-                    <div>
-                      <WaterSelector
-                        value={water}
-                        max={10}
-                        onChange={setWater}
-                      />
-                    </div>
-                  </CustomStep.Item>
-                </CustomStep>
-                <div className={styles.customButton}>
-                  <Button type="button" round>
-                    다음
-                  </Button>
+              )}
+
+              {/* Step 2: 수분 충전 */}
+              {currentStep === 2 && (
+                <div className={styles.customWrapper}>
+                  <CustomStep question="물이 필요한 만큼 수분 충전하세요">
+                    <CustomStep.Item icon={<GlassWater />} title="오늘 마신 물">
+                      <div>
+                        <WaterSelector
+                          value={formData.waterCup || 0}
+                          max={10}
+                          onChange={(newCup) => handleFieldChange('waterCup', newCup)}
+                        />
+                      </div>
+                    </CustomStep.Item>
+                  </CustomStep>
+                  <div className={styles.customButton}>
+                    <Button type="button" round onClick={handleNextStep}>
+                      다음
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.customWrapper}>
-                <CustomStep question="면역력에는 운동이 필수죠!">
-                  <CustomStep.Item
-                    icon={<Dumbbell />}
-                    title="운동을 얼마나 하셨나요?"
-                  >
-                    <div className={styles.customItems}>
-                      <StepSelector
-                        type="radio"
-                        name="exersiseTime"
-                        id="exTime0"
-                        checked={false}
-                        value="t0"
-                        label="0"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        type="radio"
-                        name="exersiseTime"
-                        id="exTime30"
-                        checked={true}
-                        value="t30"
-                        label="30분"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        type="radio"
-                        name="exersiseTime"
-                        id="exTime60"
-                        checked={false}
-                        value="t60"
-                        label="1시간"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        type="radio"
-                        name="exersiseTime"
-                        id="exTime120"
-                        checked={false}
-                        value="t120"
-                        label="2시간"
-                        onChange={() => {}}
-                      />
-                    </div>
-                  </CustomStep.Item>
-                  <CustomStep.Item
-                    icon={<Volleyball />}
-                    title="어떤 운동을 하셨나요?"
-                  >
-                    <div className={styles.customItems}>
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType01"
-                        checked={false}
-                        value="exType01"
-                        label="걷기"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType02"
-                        checked={true}
-                        value="exType02"
-                        label="달리기"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType03"
-                        checked={false}
-                        value="exType03"
-                        label="요가"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType04"
-                        checked={false}
-                        value="exType04"
-                        label="스트레칭"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType05"
-                        checked={true}
-                        value="exType05"
-                        label="필라테스"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType06"
-                        checked={false}
-                        value="exType06"
-                        label="수영"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType07"
-                        checked={false}
-                        value="exType07"
-                        label="헬스"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType08"
-                        checked={false}
-                        value="exType08"
-                        label="크로스핏"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType09"
-                        checked={false}
-                        value="exType09"
-                        label="자전거"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="exersiseType"
-                        id="exType10"
-                        checked={false}
-                        value="exType10"
-                        label="기타"
-                        onChange={() => {}}
-                      />
-                    </div>
-                  </CustomStep.Item>
-                </CustomStep>
-                <div className={styles.customButton}>
-                  <Button type="button" round>
-                    다음
-                  </Button>
+              )}
+
+              {/* Step 3: 운동 정보 */}
+              {currentStep === 3 && (
+                <div className={styles.customWrapper}>
+                  <CustomStep question="면역력에는 운동이 필수죠!">
+                    <CustomStep.Item
+                      icon={<Dumbbell />}
+                      title="운동을 얼마나 하셨나요?"
+                    >
+                      <div className={styles.customItems}>
+                        {[
+                          { val: '0', label: '0' },
+                          { val: '30', label: '30분' },
+                          { val: '60', label: '1시간' },
+                          { val: '120', label: '2시간' },
+                        ].map((time) => (
+                          <StepSelector
+                            key={time.val}
+                            type="radio"
+                            name="exerciseTime"
+                            id={`exTime${time.val}`}
+                            checked={formData.exerciseTime === time.val}
+                            value={time.val}
+                            label={time.label}
+                            onChange={() => handleFieldChange('exerciseTime', time.val)}
+                          />
+                        ))}
+                      </div>
+                    </CustomStep.Item>
+                    <CustomStep.Item
+                      icon={<Volleyball />}
+                      title="어떤 운동을 하셨나요?"
+                    >
+                      <div className={styles.customItems}>
+                        {[
+                          '걷기', '달리기', '요가', '스트레칭', '필라테스',
+                          '수영', '헬스', '크로스핏', '자전거', '기타'
+                        ].map((type, idx) => (
+                          <StepSelector
+                            key={type}
+                            name="exerciseType"
+                            id={`exType0${idx + 1}`}
+                            checked={isSelectedType('exerciseType', type)}
+                            value={type}
+                            label={type}
+                            onChange={() => handleMultiSelectToggle('exerciseType', type)}
+                          />
+                        ))}
+                      </div>
+                    </CustomStep.Item>
+                  </CustomStep>
+                  <div className={styles.customButton}>
+                    <Button type="button" round onClick={handleNextStep}>
+                      다음
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.customWrapper}>
-                <CustomStep>
-                  <CustomStep.Item
-                    icon={<PillBottle />}
-                    title="영양제로 보충해요"
-                  >
-                    <div className={styles.customItems}>
-                      <StepSelector
-                        name="supplementType"
-                        id="spType01"
-                        checked={false}
-                        value="spType01"
-                        label="종합비타민"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="supplementType"
-                        id="spType02"
-                        checked={true}
-                        value="spType02"
-                        label="비타민C"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="supplementType"
-                        id="spType03"
-                        checked={false}
-                        value="spType03"
-                        label="프로바이오틱스(유산균)"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="supplementType"
-                        id="spType04"
-                        checked={true}
-                        value="spType04"
-                        label="코엔자임Q10"
-                        onChange={() => {}}
-                      />
-                      <StepSelector
-                        name="supplementType"
-                        id="spType05"
-                        checked={false}
-                        value="spType05"
-                        label="멜라토닌"
-                        onChange={() => {}}
-                      />
-                    </div>
-                  </CustomStep.Item>
-                </CustomStep>
-                <div className={styles.customButton}>
-                  <Button type="button" full>
-                    데일리 쉴드 업데이트
-                  </Button>
+              )}
+
+              {/* Step 4: 영양제 정보 */}
+              {currentStep === 4 && (
+                <div className={styles.customWrapper}>
+                  <CustomStep>
+                    <CustomStep.Item
+                      icon={<PillBottle />}
+                      title="영양제로 보충해요"
+                    >
+                      <div className={styles.customItems}>
+                        {[
+                          '종합비타민', '비타민C', '비타민D', 'MSM', '콘드로이친', '프로바이오틱스(유산균)',
+                          '코엔자임Q10', '멜라토닌'
+                        ].map((supp, idx) => (
+                          <StepSelector
+                            key={supp}
+                            name="supplementType"
+                            id={`spType0${idx + 1}`}
+                            checked={isSelectedType('supplementType', supp)}
+                            value={supp}
+                            label={supp}
+                            onChange={() => handleMultiSelectToggle('supplementType', supp)}
+                          />
+                        ))}
+                      </div>
+                    </CustomStep.Item>
+                  </CustomStep>
+                  <div className={styles.customButton}>
+                    <Button type="button" full onClick={handleSubmit}>
+                      데일리 쉴드 업데이트
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </article>
           </div>
         </Card.Body>
