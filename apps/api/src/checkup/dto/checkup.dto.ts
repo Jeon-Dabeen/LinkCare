@@ -214,6 +214,10 @@ export class AssessmentDto {
 
   @IsString()
   @MinLength(1)
+  urine_protein: string;
+
+  @IsString()
+  @MinLength(1)
   hemoglobin: string;
 
   @IsString()
@@ -226,7 +230,15 @@ export class AssessmentDto {
 
   @IsString()
   @MinLength(1)
+  ast: string;
+
+  @IsString()
+  @MinLength(1)
   alt: string;
+
+  @IsString()
+  @MinLength(1)
+  ygtp: string;
 }
 
 export class AICommentDto {
