@@ -29,10 +29,8 @@ export class DailyShieldController {
   }
 
   @ApiOperation({ summary: "데일리 쉴드 업데이트" })
-  @Patch()
-  // @Patch(":id")
-  // update(@Param("id") id: string, @Body() dto: UpdateDailyShieldDto) {
-  update(@Body() dto: UpdateDailyShieldDto) {
-    return this.dailyShieldService.update(1, dto);
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() dto: UpdateDailyShieldDto) {
+    return this.dailyShieldService.update(+id, dto);
   }
 }

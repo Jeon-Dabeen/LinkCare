@@ -56,7 +56,6 @@ type Action =
 
 export default function DailyShield() {
   const { baseDate, formattedDate } = useBaseDate();
-  console.log(`baseDate: ${baseDate}, formattedDate: ${formattedDate}`);
 
   // 데일리 쉴드
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -67,7 +66,7 @@ export default function DailyShield() {
   const userId = 1;
   const targetDate = formattedDate;
 
-  // 1. [공통] 데일리 쉴드 데이터 재조회 함수 (독립 선언)
+  // 1. [공통] 데일리 쉴드 데이터 재조회 함수
   const fetchDailyShield = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -192,7 +191,7 @@ export default function DailyShield() {
     id: number,
     payload: Omit<DailyShieldState, 'id' | 'lastExerciseTime' | 'lastExerciseType' | 'lastWaterCup' | 'lastSupplementType'>
   ) => {
-    const response = await fetch(`http://localhost:3001/daily-shield`, {
+    const response = await fetch(`http://localhost:3001/daily-shield/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -289,7 +288,6 @@ export default function DailyShield() {
   // 현재 진행률 (0, 1, 2, 3, 4)
   const progressValue = getProgressValue();
 
-  // 
   // [수정] 버튼 클릭 시
   const handleStartEdit = () => {
     setIsEditing(true);

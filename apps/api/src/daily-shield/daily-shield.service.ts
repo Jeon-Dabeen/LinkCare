@@ -73,6 +73,7 @@ export class DailyShieldService {
 
   update(id: number, dto: UpdateDailyShieldDto) {
     logger.info(`DailyShieldService update. id=${id}`);
+    logger.debug(`UpdateDailyShieldDto: ${JSON.stringify(dto)}`)
     const { dailyDate, ...updateData } = dto;
 
     return this.prisma.dailyShield.update({
