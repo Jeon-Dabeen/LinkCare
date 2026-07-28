@@ -6,22 +6,17 @@ import { X } from "lucide-react";
 import clsx from "clsx";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  type?: string;
   variant?: "primary" | "secondary" | "outline" | "text-primary" | "text-secondary" | "text-tertiary";
   size?: "small" | "medium" | "large";
   full?: boolean,
   round?: boolean
 };
 
-type ButtonIconColor = "primary" | "secondary" | "tertiary" | "textLight";
-
-type ButtonIconProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  color?: ButtonIconColor,
-  children: ReactNode;
-}
-
 
 // default
 export default function Button({
+  type = "button",
   children,
   className,
   variant = "primary",
@@ -32,6 +27,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
+      type={type}
       className={clsx(
         styles.button,
         styles[variant],
@@ -54,6 +50,7 @@ export function ButtonClose({
 }){
   return (
     <button
+      type="button"
       className={`
         ${styles.buttonClose}
       `}
@@ -68,6 +65,14 @@ export function ButtonClose({
 
 
 // 아이콘 버튼
+type ButtonIconColor = "primary" | "secondary" | "tertiary" | "textLight";
+
+type ButtonIconProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  type?: string;
+  color?: ButtonIconColor,
+  children: ReactNode;
+}
+
 const colorClass = {
   primary: styles.iconPrimary,
   secondary: styles.iconSecondary,
@@ -76,12 +81,14 @@ const colorClass = {
 } as const;
 
 export function ButtonIcon ({
+  type = "button",
   color = "textLight",
   children,
   ...props
 }: ButtonIconProps){
   return (
     <button
+      type={type}
       className={clsx(
         styles.buttonIcon,
         colorClass[color]
@@ -95,7 +102,7 @@ export function ButtonIcon ({
 
 
 
-// 
+// 물음표 버튼
 type ButtonQuestionProps = 
   ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -108,6 +115,7 @@ export const ButtonQuestion = forwardRef<
 }, ref){
   return (
     <button
+      type="button"
       className={styles.buttonQuestion}
       ref={ref}
       {...props}

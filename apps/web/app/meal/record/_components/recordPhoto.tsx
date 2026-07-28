@@ -9,10 +9,12 @@ import styles from "@/styles/meal/recordPhoto.module.css"
 
 type RecordPhotoProps = {
   imageUrl?: string;
+  onClick?: () => void;
 }
 
 export default function RecordPhoto({
   imageUrl,
+  onClick,
 }: RecordPhotoProps){
 
 
@@ -22,9 +24,11 @@ export default function RecordPhoto({
   return (
     <div className={styles.wrapper}>
 
-      <button type="button" className={styles.button}>
-        <Plus/>
-      </button>
+      {onClick && 
+        <button type="button" className={styles.button} onClick={onClick}>
+          <Plus/>
+        </button>
+      }
 
       {imageUrl && 
         <div className={styles.photo}>

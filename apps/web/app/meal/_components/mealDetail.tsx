@@ -26,12 +26,14 @@ export default function MealDetail({
 // MealList
 type MealListProps = {
   type: string;
+  isToday: boolean;
   onClick?: () => void;
   children: ReactNode;
 }
 
 export function MealList({
   type,
+  isToday,
   onClick,
   children
 }: MealListProps){
@@ -41,7 +43,7 @@ export function MealList({
     <div className={styles.listWrapper}>
       <div className={styles.listHeader}>
         <p className={styles.type}>{type}</p>
-        {onClick &&
+        {isToday &&
           <Button 
             variant="text-tertiary"
             size="small"
