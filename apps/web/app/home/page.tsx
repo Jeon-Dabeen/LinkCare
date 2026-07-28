@@ -47,7 +47,7 @@ export default function Home() {
               <Card.Body noTopPadding>
                 <Meal
                   imageUrl="/images/food_sample/cheesy-tokbokki.jpg"
-                  mealType={getMealTypeLabel("breakfast")}
+                  mealType={getMealTypeLabel("BREAKFAST")}
                   foodName="프렌치토스트, 오렌지쥬스"
                   foodCalorie={1100}
                   todayCalorie={780}
