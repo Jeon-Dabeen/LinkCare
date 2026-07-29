@@ -26,14 +26,14 @@ export default function MealDetail({
 // MealList
 type MealListProps = {
   type: string;
-  isToday: boolean;
+  canModify: boolean;
   onClick?: () => void;
   children: ReactNode;
 }
 
 export function MealList({
   type,
-  isToday,
+  canModify,
   onClick,
   children
 }: MealListProps){
@@ -43,7 +43,7 @@ export function MealList({
     <div className={styles.listWrapper}>
       <div className={styles.listHeader}>
         <p className={styles.type}>{type}</p>
-        {isToday &&
+        {canModify &&
           <Button 
             variant="text-tertiary"
             size="small"
@@ -64,7 +64,7 @@ export function MealList({
 // MealItem
 type MealItemProps = {
   name: string,
-  calorie: string
+  calorie: number
 }
 
 export function MealItem({
@@ -76,7 +76,7 @@ export function MealItem({
   return (
     <li className={styles.item}>
       <p className={styles.foodName}>{name}</p>
-      <p className={styles.unitCalorie}><strong>{calorie}</strong>kcal</p>
+      <p className={styles.unitCalorie}><strong>{calorie.toLocaleString()}</strong>kcal</p>
     </li>
   )
 }

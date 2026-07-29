@@ -8,7 +8,8 @@ import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
 import { MealQueryDto } from './dto/query-meal.dto';
 
-import { calculateDefaultGoalCalorie } from './common/nutrition'
+import { calculateDefaultGoalCalorie } from './common/nutrition';
+import { isSameDate } from './common/date';
 
 // Meal과 MealFood가 include된 반환 타입 정의
 type MealWithFoods = Prisma.MealGetPayload<{
@@ -43,7 +44,7 @@ export class MealService {
     let meals: MealWithFoods[] = [];
 
     // date와 baseDate가 같을 때만 '없을 때 자동 생성' 로직 실행
-    if(baseDate && date === baseDate){
+    if(baseDate && isSameDate(date, baseDate)){
       console.log('---생성 로직(ensureAndGetDateMeal) 실행!---');
       meals = await this.ensureAndGetDateMeal(userId, mealDate);
     }else{
@@ -54,10 +55,7 @@ export class MealService {
 
     const result = meals;
     logger.info(`MealService findMeal ended.`);
-    return {
-      result: true,
-      data: result,
-    };
+    return result;
   }
 
 
@@ -156,7 +154,7 @@ export class MealService {
 
     }catch(error){{
       console.error(error);
-      throw new InternalServerErrorException('식사 데이터 생성 및 조회 중 오류가 발생했습니다.');
+      throw new InternalServerErrorException('식사 데이터 생성 및 조회 중 오류가 발생했어요');
     }}
   }
 
@@ -175,15 +173,13 @@ export class MealService {
     const formatBaseDate = this.toDate(dto.baseDate);
 
     // 요청한 날짜가 오늘(baseDate)이 맞는지 검증
-    if(meal.mealDate !== formatBaseDate){
-      throw new BadRequestException(`오늘 날짜의 식사만 수정할 수 있습니다.`)
+    if(!isSameDate(meal.mealDate, formatBaseDate)){
+      throw new BadRequestException(`${meal.mealDate} ${formatBaseDate}  오늘 날짜의 식사만 수정할 수 있어요`)
     }
     
-    // 이미 등록된 음식이 있으면 SKIPPED로 변경 불가
-    if(dto.mealStatus === 'SKIPPED'){
-      if(meal.MealFood.length > 0 || meal.mealStatus === 'COMPLETE'){
-        throw new BadRequestException(`이미 등록된 음식이 있어 안 먹었어요 상태로 변경할 수 없습니다.`)
-      }
+    // 이미 등록된 음식이 있으면 변경 불가
+    if(meal.MealFood.length > 0 || meal.mealStatus === 'COMPLETE'){
+      throw new BadRequestException(`이미 등록된 음식이 있어 상태를 변경할 수 없어요`)
     }
 
     const result = await this.prisma.meal.update({
@@ -194,10 +190,7 @@ export class MealService {
     })
 
     logger.info(`MealService updateMealState ended.`);
-    return {
-      result: true,
-      data: result,
-    };
+    return result;
   }
 
   // mealFood 찾기
@@ -208,7 +201,7 @@ export class MealService {
         MealFood: true,
       },
     });
-    if(!meal) throw new NotFoundException(`식사 데이터를 찾을 수 없습니다`);
+    if(!meal) throw new NotFoundException(`식사 데이터를 찾을 수 없어요`);
     return meal;
   }
 
@@ -258,12 +251,7 @@ export class MealService {
         })
       ]);
       logger.info(`MealService updateGoalCalorie ended.`);
-      return {
-        result: true,
-        data: {
-          goalCalorie: goalCalorie
-        }
-      };
+      return {goalCalorie: goalCalorie};
     }catch(error){
       logger.error(`목표 칼로리 수정 중 에러 발생: ${error}`, );
     }
@@ -279,13 +267,19 @@ export class MealService {
       where: {mealId}
     })
 
-    if(!result) throw new NotFoundException(`해당 식사 내용을 찾을 수 없습니다`);
+    const meal = await this.prisma.meal.findUnique({
+      where: {id: mealId}
+    })
+
+    if(!result || !meal) throw new NotFoundException(`해당 식사 내용을 찾을 수 없어요`);
 
     logger.info(`MealService findMealFoodbyMealId ended.`);
     return {
-      result: true,
-      data: result,
-    };
+        mealId,
+        mealDate: meal.mealDate,
+        photoUrl: meal.photoUrl,
+        mealFood: result,
+      };
   }
 
 
@@ -311,7 +305,7 @@ export class MealService {
           await tx.mealFood.createMany({
             data: dto.foods.map(food => ({
               mealId,
-              FoodName: food.foodName,
+              foodName: food.foodName,
               calorie: food.calorie,
             }))
           })
@@ -327,12 +321,7 @@ export class MealService {
       });
 
       logger.info(`MealService recordMealFoodItems ended.`);
-      return {
-        result: true,
-        data: {
-          mealId
-        }
-      };
+      return { mealId };
     }catch(error){
       logger.error(`MealFood 등록 중 에러 발생: ${error}`, );
     }

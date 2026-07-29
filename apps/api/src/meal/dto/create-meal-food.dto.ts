@@ -10,7 +10,7 @@ export class MealFoodDto {
   @ApiProperty({ example: "수제비" })
   @IsString()
   @MinLength(1)
-  FoodName: string;
+  foodName: string;
 
 
   @ApiProperty({example: 950})

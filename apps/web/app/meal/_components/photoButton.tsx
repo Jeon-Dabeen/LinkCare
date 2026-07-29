@@ -14,6 +14,7 @@ type PhotoButtonProps = {
   imageUrl?: string | null;
   canModify?: boolean;
   onClick?: () => void;
+  isSkipped?: boolean;
 }
 
 
@@ -21,7 +22,8 @@ export default function PhotoButton({
   label,
   imageUrl,
   canModify = true,
-  onClick
+  onClick,
+  isSkipped,
 }: PhotoButtonProps) {
 
 

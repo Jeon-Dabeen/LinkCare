@@ -47,6 +47,7 @@
 }
 
 .unitCalorie strong{
+  margin-right: 2px;
   font-weight: 700;
   color: var(--color-primary);
 }

@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Put, UseInterceptors } from '@nestjs/common';
+import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
 import { MealService } from './meal.service';
 import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
@@ -8,6 +9,7 @@ import { mealstatus } from '@prisma/client';
 import { CreateMealFoodDto } from './dto/create-meal-food.dto';
 
 @Controller('meal')
+@UseInterceptors(TransformInterceptor)
 export class MealController {
   constructor(private readonly mealService: MealService) {}
 
@@ -53,7 +55,6 @@ export class MealController {
     @Param('mealId', ParseIntPipe) mealId: number,
     @Body() dto: CreateMealFoodDto[],
   ){
-    console.log(dto);
     return this.mealService.recordMealFoodItems(mealId, dto);
   }
 
