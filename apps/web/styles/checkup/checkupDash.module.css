@@ -1,14 +1,11 @@
-
-
-.basicValues{
+.basicValues {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: var(--spacing-sm);
 }
 
-
-.dataList{
+.dataList {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -17,25 +14,35 @@
   height: calc(100% - 60px);
 }
 
-.dataItem{
+.dataItem {
   display: flex;
   align-items: center;
 }
 
-.dataItem ~ .dataItem{
+.dataItem ~ .dataItem {
   margin-top: 10px;
 }
 
-.label{
+.mainItemLabel {
+  flex: 1;
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-light);
+}
+
+.label {
   flex: 1;
   font-size: var(--font-size-sm);
   font-weight: 700;
   color: var(--color-text-light);
 }
 
-.value{
+.value {
   text-align: right;
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
+.aiComment {
+  font-size: var(--font-size-md);
+}
