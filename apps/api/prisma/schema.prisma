@@ -139,7 +139,7 @@ model Meal {
 model MealFood {
   id       Int    @id(map: "PK_MEALFOOD") @default(autoincrement())
   mealId   Int
-  foodName String
+  FoodName String
   calorie  Int
   Meal     Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Meal_TO_MealFood_1")
 }
@@ -170,6 +170,7 @@ model User {
   BloodGlucose  BloodGlucose[]
   BloodPressure BloodPressure[]
   CheckUp       CheckUp[]
+  DailyComment  DailyComment[]
   DailyShield   DailyShield[]
   Meal          Meal[]
   Profile       Profile?
@@ -187,6 +188,17 @@ model Weight {
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_Weight_1")
 
   @@unique([userId, weightDate], map: "UK_WEIGHT_USER_DATE")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model DailyComment {
+  id        Int       @id(map: "PK_DAILYCOMMENT") @default(autoincrement())
+  userId    Int
+  dailyDate String?
+  comment   String?
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime? @default(now()) @db.Timestamptz(6)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_User_TO_DailyComment_1")
 }
 
 enum dayperiod {
