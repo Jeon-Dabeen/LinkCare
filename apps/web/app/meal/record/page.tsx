@@ -11,7 +11,7 @@ import formStyle from "@/styles/components/form.module.css";
 import styles from "@/styles/meal/record.module.css";
 
 
-import { MealFoodResponse } from "@/types/meal";
+import { MealFoodItem, MealFoodResponse } from "@/types/meal";
 import { apiFetch } from "../_api/apiFetch";
 
 import Button from "@/app/_components/ui/Button";
@@ -48,7 +48,7 @@ export default function MealRecord() {
   const mealId = searchParams.get('mealId');
 
   // 오늘 날짜인지 확인
-  const isToday = (date === formattedDate);
+  let isToday = (date === formattedDate);
 
 
   // 뒤로가기 or 목록화면으로 이동 함수
@@ -63,10 +63,13 @@ export default function MealRecord() {
   }
 
   // 식사 상세 데이터 상태(fetch로 받아온 데이터)
-  const [recordDatas, setRecordDatas] = useState<MealFoodResponse[] | null>(null);
+  const [recordDatas, setRecordDatas] = useState<MealFoodItem[] | null>([]);
 
   // 식사 상세 데이터(화면 편집용 데이터)
   const [foodItems, setFoodItems] = useState<TempFoodItemType[]>([]);
+
+  // mealId로 받아온 mealDate
+  const [thisMealDate, setMealDate] = useState('');
 
   // 기록가능 여부 상테
   const [recordMode, setRecordMode] = useState<RecordModeType | null>(null);
@@ -84,27 +87,44 @@ export default function MealRecord() {
     };
     const fetchMealFood = async () => {
       try{
-        const data = await apiFetch<MealFoodResponse[]>(`/meal/record/${mealId}`);
-        setRecordDatas(data);
+        const result = await apiFetch<MealFoodResponse>(`/meal/record/${mealId}`);
+        const data = result.data;
+        setRecordDatas(data.mealFood);
         setFoodItems(
-          data.map(item => ({
+          data.mealFood.map(item => ({
             id: item.id,
-            foodName: item.FoodName,
+            foodName: item.foodName,
             calorie: item.calorie ?? null
           }))
         );
         console.log('recordDatas', data)
 
-        const hasData = data.length > 0;
+        const hasData = data.mealFood.length > 0;
+        const mealDate = data.mealDate?.slice(0, 10) ?? date;
+        isToday = (mealDate === formattedDate);
 
         if(isToday){
-          hasData ? setRecordMode('EDIT') : setRecordMode('CREATE');
+          if(hasData){
+            setRecordMode('EDIT');
+          }else{
+            setRecordMode('CREATE');
+            // 등록 상태일 때 기본 아이템 1개 표시
+            setFoodItems([
+              {
+                foodName: "",
+                calorie: null,
+              }
+            ])
+          }
         }else{
           hasData ? setRecordMode('READONLY') : setRecordMode('EMPTY');
         }
 
       }catch(error){
-        console.error(`식사 상세 데이터 로드 실패: `, error);
+        if(error instanceof Error){
+          console.error('식사 상세 데이터 로드 실패: ', error.message);
+          alert(error.message);
+        }
       }finally{
         setIsLoading(false);
       }
@@ -126,10 +146,6 @@ export default function MealRecord() {
     )
   }
 
-  // 등록 상태일 때 기본 아이템 1개 표시
-  if(recordMode == 'CREATE'){
-    
-  }
 
   // 아이템 추가 버튼 함수
   const addFoodItem = () => {
@@ -215,12 +231,13 @@ export default function MealRecord() {
       // 화면 이동
       router.replace('/meal');
     }catch(error){
-      console.log(error);
-      alert('저장에 실패했어요')
+      if(error instanceof Error){
+        console.error('저장에 실패했어요: ', error.message);
+        alert(error.message);
+      }
     }
   }
 
-  // 수정 버튼 함수
 
   return (
     <section className={commonStyle.mainContent}>

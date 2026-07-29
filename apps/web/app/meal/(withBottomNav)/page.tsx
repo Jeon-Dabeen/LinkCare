@@ -44,11 +44,14 @@ export default function Page({
   const fetchMeal = useCallback(async() => {
     if(!selectedDate) return;
     try{
-      const data = await apiFetch<MealItem[]>(`/meal?date=${selectedDate}&baseDate=${formattedDate}`);
-      setMealData(data);
-      console.log('=== data ===', data)
+      const response = await apiFetch<MealItem[]>(`/meal?date=${selectedDate}&baseDate=${formattedDate}`);
+      setMealData(response.data);
+      console.log('=== data ===', response.data)
     }catch(error){
-      console.error('식사 데이터 로드 실패: ', error);
+      if(error instanceof Error){
+        console.error('식사 데이터 로드 실패: ', error.message);
+        alert(error.message);
+      }
     }
   }, [selectedDate, formattedDate])
 
@@ -75,36 +78,6 @@ export default function Page({
 
   // 목표 칼로리
   const goalCalorie = breakfast?.goalCalorie ?? 2000;
-
-
-
-  /***
-   * 안먹었어요 버튼
-   */
-  async function handleToggleSkip(mealId: number, currentState: string, mealFoodCount: number = 0){
-    if(currentState !== 'SKIPPED' && mealFoodCount > 0){
-      return;
-    }
-
-    // 이미 안먹음 상태면 취소, 아니면 SKIPPED로 변경
-    const nextStatus = currentState === 'SKIPPED' ? 'PENDING' : 'SKIPPED';
-
-    try{
-      await apiFetch(`meal/${mealId}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          mealStatus: nextStatus,
-          baseDate: formattedDate,
-        })
-      });
-
-      // 화면 데이터를 최신화하기 위해 다시 불러오기
-      fetchMeal();
-    }catch(error){
-      console.log('안먹었어요 상태 변경 error', error);
-      alert('안먹었어요 상태 변경 실패')
-    }
-  }
 
 
   /***
@@ -177,7 +150,6 @@ export default function Page({
         </Grid.ItemFull>
 
         <Grid.ItemFull>
-
           <MealDetailList 
             mealsList={mealsList}
             isToday={isToday}

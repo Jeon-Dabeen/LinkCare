@@ -139,7 +139,7 @@ model Meal {
 model MealFood {
   id       Int    @id(map: "PK_MEALFOOD") @default(autoincrement())
   mealId   Int
-  FoodName String
+  foodName String
   calorie  Int
   Meal     Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Meal_TO_MealFood_1")
 }

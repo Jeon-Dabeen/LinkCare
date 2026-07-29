@@ -8,6 +8,7 @@ import PhotoButton from "./photoButton";
 import { MealItem } from "@/types/meal";
 import { apiFetch } from "../_api/apiFetch";
 import MealDetail from "./mealDetail";
+import { getMealTypeLabel } from "@/types/mealType";
 
 
 
@@ -27,36 +28,39 @@ export default function MealDetailList({
   const lunch = mealsList.find((m) => m.mealType === 'LUNCH');
   const dinner = mealsList.find((m) => m.mealType === 'DINNER');
 
+  const renderDetailList = (
+    labelKey: 'BREAKFAST' | 'LUNCH' | 'DINNER',
+    title: string,
+    meal?: MealItem,
+  )=> {
+    // 음식이 없으면 렌더링하지 않음
+    if(!meal || !meal.MealFood || meal.MealFood.length === 0) return null;
+
+    // 수정 가능 조건 : 오늘이면서 SKIPPED 상태가 아닐 때만 클릭 허용
+    const isSkippped = meal.mealStatus === 'SKIPPED';
+    const canModify = isToday && !isSkippped;
+    const handleClick = canModify ? () => onNavRecord(labelKey, meal.id) : undefined;
+
+    return (
+      <MealDetail.List 
+        key={labelKey}
+        type={title} 
+        canModify={canModify}
+        onClick={handleClick}
+      >
+        {meal.MealFood.map((food) => (
+          <MealDetail.Item key={food.id} name={food.foodName} calorie={food.calorie} />
+        ))}
+      </MealDetail.List>
+    )
+  }
 
 
   return (
     <MealDetail>
-      {breakfast && breakfast.MealFood.length > 0 && 
-        <MealDetail.List type="아침" isToday={isToday}
-          onClick={isToday && breakfast.mealStatus !== 'SKIPPED'
-            ? () => onNavRecord('BREAKFAST', breakfast.id)
-            : undefined
-          }
-        >
-          {breakfast.MealFood.map((food) => (
-            <MealDetail.Item key={food.id} name={food.FoodName} calorie={food.calorie.toString()} />
-          ))}
-        </MealDetail.List>
-      }
-      {lunch && lunch.MealFood.length > 0 && 
-        <MealDetail.List type="점심" isToday={isToday} onClick={()=>{}}>
-          {lunch.MealFood.map((food) => (
-            <MealDetail.Item key={food.id} name={food.FoodName} calorie={food.calorie.toString()} />
-          ))}
-        </MealDetail.List>
-      }
-      {dinner && dinner.MealFood.length > 0 && 
-        <MealDetail.List type="저녁" isToday={isToday} onClick={()=>{}}>
-          {dinner.MealFood.map((food) => (
-            <MealDetail.Item key={food.id} name={food.FoodName} calorie={food.calorie.toString()} />
-          ))}
-        </MealDetail.List>
-      }
+      {renderDetailList('BREAKFAST', getMealTypeLabel('BREAKFAST'), breakfast)}
+      {renderDetailList('LUNCH', getMealTypeLabel('LUNCH'), lunch)}
+      {renderDetailList('DINNER', getMealTypeLabel('DINNER'), dinner)}
     </MealDetail>
   )
 }
