@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -25,7 +23,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Legend
+  Legend,
 );
 
 type LineChartDataset = {
@@ -46,10 +44,8 @@ type LineChartProps = {
   showYAxisTicks?: boolean;
 };
 
-
 // CSS 변수를 못 가져왔을 때 대비용 기본 색상
 const DEFAULT_COLORS = ["#6557d0", "#dd8f0a", "#34b162", "#3172c7"];
-
 
 export default function LineChart({
   labels,
@@ -60,7 +56,6 @@ export default function LineChart({
   max,
   showYAxisTicks = false,
 }: LineChartProps) {
-
   const chartRef = useRef<ChartJS<"line"> | null>(null);
 
   const [colors, setColors] = useState<string[]>([]);
@@ -71,17 +66,16 @@ export default function LineChart({
     fontFamily: "inherit",
   });
   const [hiddenMap, setHiddenMap] = useState<boolean[]>(
-    datasets.map(() => false)
+    datasets.map(() => false),
   );
-
 
   useEffect(() => {
     const style = getComputedStyle(document.documentElement);
 
     setColors(
       Array.from({ length: 4 }, (_, i) =>
-        style.getPropertyValue(`--chart-color-${i + 1}`).trim()
-      )
+        style.getPropertyValue(`--chart-color-${i + 1}`).trim(),
+      ),
     );
 
     setChartStyle({
@@ -92,20 +86,60 @@ export default function LineChart({
     });
   }, []);
 
+  //플러그인추가
+  const valueLabelPlugin = useMemo<Plugin<"line">>(
+    () => ({
+      id: "valueLabel",
+
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+          const meta = chart.getDatasetMeta(datasetIndex);
+
+          if (meta.hidden) {
+            return;
+          }
+
+          meta.data.forEach((point, pointIndex) => {
+            const value = dataset.data[pointIndex];
+
+            // 기록이 없는 날짜는 표시하지 않음
+            if (value == null) {
+              return;
+            }
+
+            ctx.save();
+            ctx.fillStyle = chartStyle.textColor;
+            ctx.font = `12px ${chartStyle.fontFamily || "Pretendard"}`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "bottom";
+
+            // 점 위에 체중 숫자만 표시
+            ctx.fillText(String(value), point.x, point.y - 8);
+
+            ctx.restore();
+          });
+        });
+      },
+    }),
+    [chartStyle],
+  );
+
   // 데이터셋에 들어있는 단위(unit) 목록 및 축별 단위 매핑
   const { uniqueUnits, yAxisUnits } = useMemo(() => {
-      const units = Array.from(
-        new Set(datasets.map((d) => d.unit).filter(Boolean) as string[])
-      );
+    const units = Array.from(
+      new Set(datasets.map((d) => d.unit).filter(Boolean) as string[]),
+    );
 
-      // 축 ID별 단위 매핑 (예시: { y: "kg", y1: "cm" })
-      const axisUnits: { y?: string; y1?: string } = {
-        y: units[0] || "",
-        y1: units[1] || "",
-      };
+    // 축 ID별 단위 매핑 (예시: { y: "kg", y1: "cm" })
+    const axisUnits: { y?: string; y1?: string } = {
+      y: units[0] || "",
+      y1: units[1] || "",
+    };
 
-      return { uniqueUnits: units, yAxisUnits: axisUnits };
-    }, [datasets]);
+    return { uniqueUnits: units, yAxisUnits: axisUnits };
+  }, [datasets]);
 
   // 다중 Y축 사용 여부 (단위가 2개 이상일 때)
   const isMultiAxis = uniqueUnits.length > 1;
@@ -113,39 +147,41 @@ export default function LineChart({
   // Chart.js Data 생성
   const data = useMemo(
     () => ({
-    labels,
-    datasets: datasets.map((dataset, index) => {
-      const color = colors[index] || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+      labels,
+      datasets: datasets.map((dataset, index) => {
+        const color =
+          colors[index] || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
 
-      // 수동 지정된 yAxisID가 없으면 단위에 따라 y 또는 y1로 자동 매핑
-      let yAxisID = dataset.yAxisID;
-      if (!yAxisID) {
-        if (isMultiAxis && dataset.unit) {
-          const unitIndex = uniqueUnits.indexOf(dataset.unit);
-          yAxisID = unitIndex === 0 ? "y" : "y1";
-        } else {
-          yAxisID = "y";
+        // 수동 지정된 yAxisID가 없으면 단위에 따라 y 또는 y1로 자동 매핑
+        let yAxisID = dataset.yAxisID;
+        if (!yAxisID) {
+          if (isMultiAxis && dataset.unit) {
+            const unitIndex = uniqueUnits.indexOf(dataset.unit);
+            yAxisID = unitIndex === 0 ? "y" : "y1";
+          } else {
+            yAxisID = "y";
+          }
         }
-      }
 
-
-      return {
-        label: dataset.label,
-        data: dataset.data,
-        yAxisID, // Y축 식별자 연결
-        borderColor: color,
-        backgroundColor: color,
-        pointBackgroundColor: color,
-        pointBorderColor: color,
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        borderWidth: 2,
-        tension: 0.35,
-        fill: false,
-      };
+        return {
+          label: dataset.label,
+          data: dataset.data,
+          yAxisID, // Y축 식별자 연결
+          borderColor: color,
+          backgroundColor: color,
+          pointBackgroundColor: color,
+          pointBorderColor: color,
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 2,
+          tension: 0.35,
+          fill: false,
+          spanGaps: true,
+        };
+      }),
     }),
-  }), [labels, datasets, colors]
+    [labels, datasets, colors],
   );
 
   // Chart.js Options 설정
@@ -215,14 +251,14 @@ export default function LineChart({
                 ? chartStyle.borderColor
                 : chartStyle.gridColor;
             },
-          },   
+          },
           bounds: "ticks",
           ticks: {
             display: showYAxisTicks,
             color: chartStyle.textColor,
             font: {
               family: chartStyle.fontFamily || "Pretendard",
-              size: 15
+              size: 15,
             },
             count: gridCount,
             // Y축 눈금 값 뒤에 unit 붙이기
@@ -283,23 +319,23 @@ export default function LineChart({
           : {}),
       },
     }),
-    [chartStyle, datasets, isMultiAxis, yAxisUnits]
+    [chartStyle, datasets, isMultiAxis, yAxisUnits],
   );
 
-const toggleDataset = (index: number) => {
-  const chart = chartRef.current;
-  if (!chart) return;
+  const toggleDataset = (index: number) => {
+    const chart = chartRef.current;
+    if (!chart) return;
 
-  const nextHidden = !hiddenMap[index];
-  chart.setDatasetVisibility(index, !nextHidden);
-  chart.update();
+    const nextHidden = !hiddenMap[index];
+    chart.setDatasetVisibility(index, !nextHidden);
+    chart.update();
 
-  setHiddenMap((prev) => {
-    const copy = [...prev];
-    copy[index] = nextHidden;
-    return copy;
-  });
-};
+    setHiddenMap((prev) => {
+      const copy = [...prev];
+      copy[index] = nextHidden;
+      return copy;
+    });
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -307,38 +343,40 @@ const toggleDataset = (index: number) => {
         {datasets.map((d, i) => {
           const hidden = hiddenMap[i];
           return (
-            <button 
-              key={`label${i}`} onClick={() => toggleDataset(i)}
-              className={clsx(
-                styles.legendButton,
-                hidden && styles.hidden
-              )}
+            <button
+              key={`label${i}`}
+              onClick={() => toggleDataset(i)}
+              className={clsx(styles.legendButton, hidden && styles.hidden)}
             >
-              <span 
-                className={clsx(
-                  styles.legendIcon
-                )}
+              <span
+                className={clsx(styles.legendIcon)}
                 style={{
-                  backgroundColor: DEFAULT_COLORS[i]
+                  backgroundColor: DEFAULT_COLORS[i],
                 }}
               >
-                <i style={{
-                  borderColor: DEFAULT_COLORS[i]}}></i>
+                <i
+                  style={{
+                    borderColor: DEFAULT_COLORS[i],
+                  }}
+                ></i>
               </span>
-              <span className={styles.text}>
-                {d.label}
-              </span>
+              <span className={styles.text}>{d.label}</span>
             </button>
           );
         })}
       </div>
       <div className={styles.chartWrapper}>
-        <Line ref={chartRef} data={data} options={options} style={{height: "150px"}} />
+        <Line
+          ref={chartRef}
+          data={data}
+          options={options}
+          plugins={[valueLabelPlugin]}
+          style={{ height: "150px" }}
+        />
       </div>
     </div>
   );
 }
-
 
 export const dashedGridPlugin: Plugin<"line"> = {
   id: "dashedGrid",

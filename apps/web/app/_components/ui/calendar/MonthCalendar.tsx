@@ -42,7 +42,7 @@ export default function MonthCalendar({
   const [currentMonth, setCurrentMonth] = useState<Dayjs>(initialMonth);
 
   // 이동 가능한 월 범위
-  const minMonth = baseDate.subtract(3, "month").startOf("month");
+  const minMonth = baseDate.subtract(2, "month").startOf("month");
   const maxMonth = baseDate.startOf("month");
 
   const isFirstMonth = currentMonth.isSame(minMonth, "month");

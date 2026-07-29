@@ -147,6 +147,8 @@ export class WeightService {
     return { profile, weights };
   }
 
+  //월간 bmi 조회
+  //현재 월을 포함한 3개월
   async findMonthWeight(userId: number, date: string) {
     //프론트에서 받은 날짜
     const selectedDate = this.toDate(date);
@@ -154,8 +156,8 @@ export class WeightService {
     const year = selectedDate.getUTCFullYear();
     const month = selectedDate.getUTCMonth();
 
-    //해당 달 1일
-    const thisMonth = new Date(Date.UTC(year, month, 1));
+    //3달전의 1일
+    const threeMonthAgo =new Date(Date.UTC(year,month-2,1));
 
     //다음달 1일
     const nextMonth = new Date(Date.UTC(year, month + 1, 1));
@@ -165,7 +167,7 @@ export class WeightService {
         userId,
         weightDate: {
           //선택된 달의 1일 이상
-          gte: thisMonth,
+          gte: threeMonthAgo,
           lt: nextMonth,
         },
       },

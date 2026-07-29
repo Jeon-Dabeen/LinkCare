@@ -3,14 +3,18 @@ import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, HeartPulse, Pencil } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
-import formStyle from "@/styles/components/form.module.css";
 import dashStyle from "@/styles/daily/dash.module.css";
 import Card from "@/app/_components/ui/Card";
-import Button, { ButtonIcon } from "@/app/_components/ui/Button";
-import BottomSheet from "@/app/_components/ui/BottomSheet";
-import Input from "@/app/_components/ui/Input";
 import WeightRegisterForm from "../../_components/WeightRegisterForm";
 import StatePage from "@/app/_components/ui/StatePage";
+import { StatusType } from "@/types/statusType";
+import GaugeChart from "@/app/_components/ui/chart/guageChart";
+import WeightWeekChart from "../../_components/WeightWeekChart";
+import MonthCalendar from "@/app/_components/ui/calendar/MonthCalendar";
+import WeightBottomSheet from "../../_components/WeightBottomSheet";
+import HeightBottomSheet from "../../_components/HeightBottomSheet";
+import GoalWeightInputBottomSheet from "../../_components/GoalWeightBottomSheet";
+import { ButtonIcon } from "@/app/_components/ui/Button";
 
 interface WeightProfile {
   height: number | null;
@@ -25,17 +29,33 @@ interface WeightRecord {
   bmi: number | null;
 }
 
+interface CreateWeightResponse extends WeightRecord {
+  height: number | null;
+  goalWeight: number | null;
+  goalWeightState: "-" | "+" | "0" | null;
+}
+
 interface WeekWeightResponse {
   profile: WeightProfile;
   weights: WeightRecord[];
 }
 
+//달력
 interface MonthWeightRecord {
   weightDate: string;
   bmi: number | null;
 }
 
+//달력용 데이터
+type CalendarData = {
+  [date: string]: {
+    status: StatusType;
+  };
+};
+
 const USER_ID = 1;
+
+const BMI_LEVELS: StatusType[] = ["low", "normal", "caution", "danger"];
 
 //기존 주간 list에 오늘 체중기록 추가, 오래된날짜부터
 function addTodayWeekRecord(
@@ -57,12 +77,48 @@ function addTodayMonthRecord(
   );
 }
 
+//임시 bmi 기준 함수 (만들어주실것)
+function getBmiStatus(bmi: number | null): StatusType | undefined {
+  if (bmi == null) {
+    return undefined;
+  }
+  if (bmi < 18.5) {
+    return "low";
+  }
+
+  if (bmi < 23) {
+    return "normal";
+  }
+  if (bmi < 25) {
+    return "caution";
+  }
+  return "danger";
+}
+//달력용 데이터
+function makeCalendarData(records: MonthWeightRecord[]) {
+  const result: CalendarData = {};
+
+  records.forEach((record) => {
+    const status = getBmiStatus(record.bmi);
+
+    if (!status) {
+      return;
+    }
+    //포멧변환
+    const date = record.weightDate.slice(0, 10);
+
+    result[date] = { status };
+  });
+  return result;
+}
+
 export default function Page() {
-  const { formattedDate } = useBaseDate(); //날짜
+  const { formattedDate, baseDate } = useBaseDate(); //날짜
 
   //에러
   const [weekError, setWeekError] = useState<string | null>(null);
-
+  const [monthError,setMonthError]=useState<string|null>(null);
+  
   //받아오는 데이터들
   const [profile, setProfile] = useState<WeightProfile | null>(null);
   const [weekWeights, setWeekWeights] = useState<WeightRecord[]>([]);
@@ -77,8 +133,7 @@ export default function Page() {
   const [newWeight, setNewWeight] = useState("");
   const [newHeight, setNewHeight] = useState("");
   const [newGoalWeight, setNewGoalWeight] = useState("");
-  const [weightError, setWeightError] = useState<string | null>(null);
-
+  
   //로딩
   const [weekLoading, setWeekLoading] = useState(true);
   const [monthLoading, setMonthLoading] = useState(true);
@@ -114,6 +169,7 @@ export default function Page() {
   //월간조회
   useEffect(() => {
     setMonthLoading(true);
+    setMonthError(null);
 
     const fetchMonthWeights = async () => {
       try {
@@ -127,6 +183,7 @@ export default function Page() {
         setMonthWeights(data);
       } catch (error) {
         console.error("월간 BMI 조회 오류:", error);
+        setMonthError("BMI 기록을 불러오지 못했어요.")
       } finally {
         setMonthLoading(false);
       }
@@ -134,11 +191,9 @@ export default function Page() {
     fetchMonthWeights();
   }, [formattedDate]);
 
-  //주간과 월간중 하나라도 로딩중이면 true
-  const isLoading = weekLoading || monthLoading;
-
-  //로딩화면
-  if (isLoading) {
+  //로딩
+  //7일로딩
+  if (weekLoading) {
     return (
       <StatePage
         open={true}
@@ -166,6 +221,11 @@ export default function Page() {
     (day) => day.weightDate.slice(0, 10) === formattedDate,
   );
 
+  //bmi차트
+  const bmiStatus = getBmiStatus(todayWeight?.bmi ?? null);
+
+  //월간bmi를 달력데이터로 변경
+  const calendarData = makeCalendarData(monthWeights);
   //입력폼 띄울지 여부
   const needsRegister = !todayWeight;
 
@@ -198,7 +258,7 @@ export default function Page() {
         goalMessage = `목표까지 -${untilGoal}kg`;
       }
       if (goalWeightState === "+") {
-        goalMessage = `목표까지 + ${untilGoal}kg`;
+        goalMessage = `목표까지 +${untilGoal}kg`;
       }
       if (goalWeightState === "0") {
         goalMessage = "목표달성";
@@ -224,17 +284,17 @@ export default function Page() {
               bmi: result.bmi,
             }),
           );
-          (setMonthWeights((prev) =>
+          setMonthWeights((prev) =>
             addTodayMonthRecord(prev, {
               weightDate: result.weightDate,
               bmi: result.bmi,
             }),
-          ),
-            setProfile({
-              height: result.height,
-              goalWeight: result.goalWeight,
-              goalWeightState: result.goalWeightState,
-            }));
+          );
+          setProfile({
+            height: result.height,
+            goalWeight: result.goalWeight,
+            goalWeightState: result.goalWeightState,
+          });
         }}
       />
     );
@@ -268,7 +328,7 @@ export default function Page() {
       if (!response.ok) {
         throw new Error(`체중 등록 실패:${response.status}`);
       }
-      const result: WeightRecord = await response.json();
+      const result: CreateWeightResponse = await response.json();
 
       //바텀시트로 오늘 체중 입력시 주간 기록에 추가
       setWeekWeights((prev) =>
@@ -284,6 +344,13 @@ export default function Page() {
           bmi: result.bmi,
         }),
       );
+
+      //오늘 체중으로 변경된 목표 상태 반영
+      setProfile({
+        height: result.height,
+        goalWeight: result.goalWeight,
+        goalWeightState: result.goalWeightState,
+      });
       //입력한 값을 초기화
       setNewWeight("");
       //바텀시트 닫아주기
@@ -391,7 +458,13 @@ export default function Page() {
                 </div>
               )}
             </div>
-            <div>bmi 차트가 들어갈 자리에요오:{todayWeight?.bmi ?? "-"}</div>
+            <div>
+              <GaugeChart
+                levels={BMI_LEVELS}
+                status={bmiStatus}
+                value={<span>{todayWeight?.bmi ?? "-"}</span>}
+              />
+            </div>
           </Card.Grid>
           <Card.Grid topDivider leftDivider>
             <Card.Item title="키">
@@ -423,7 +496,9 @@ export default function Page() {
       <Card>
         <Card.Header title="이번 주 체중 추이" />
         <Card.Body>
-          <Card.Grid columns={1}>체중 차트</Card.Grid>
+          <Card.Grid columns={1}>
+            <WeightWeekChart baseDate={baseDate} weights={weekWeights} />
+          </Card.Grid>
           <Card.Grid columns={2} topDivider leftDivider>
             <Card.Item title="WeightGap">
               <div className={commonStyle.dataWrapper}>
@@ -449,93 +524,43 @@ export default function Page() {
         </Card.Body>
       </Card>
 
-      <div>달력.......</div>
+      <div>
+       <Card>
+  <Card.Header title="BMI 기록" />
 
-      <BottomSheet
-        open={openTodayWeight}
-        title="체중"
-        onClose={() => setOpenTodayWeight(false)}
-      >
-        <div className={formStyle.formWrapper}>
-          <div className={formStyle.formGroup}>
-            <Input
-              unit="kg"
-              type="number"
-              id="newWeight"
-              name="newWeight"
-              value={newWeight}
-              onChange={(event) => setNewWeight(event.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="button"
-            variant="primary"
-            size="large"
-            onClick={handleCreateTodayWeight}
-            disabled={newWeight === ""}
-          >
-            기록
-          </Button>
-        </div>
-      </BottomSheet>
+  <Card.Body>
+    {monthLoading ? (
+      <p>BMI 기록을 불러오고 있어요.</p>
+    ) : monthError ? (
+      <p>{monthError}</p>
+    ) : (
+      <MonthCalendar data={calendarData} />
+    )}
+  </Card.Body>
+</Card>
+      </div>
+<WeightBottomSheet
+  open={openTodayWeight}
+  value={newWeight}
+  onChange={setNewWeight}
+  onClose={() => setOpenTodayWeight(false)}
+  onSubmit={handleCreateTodayWeight}
+/>
 
-      <BottomSheet
-        open={openHeight}
-        title="키"
-        onClose={() => setOpenHeight(false)}
-      >
-        <div className={formStyle.formWrapper}>
-          <div className={formStyle.formGroup}>
-            <Input
-              unit="cm"
-              type="number"
-              id="newHeight"
-              name="newHeight"
-              value={newHeight}
-              onChange={(event) => setNewHeight(event.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="button"
-            variant="primary"
-            size="large"
-            onClick={handleUpdateHeight}
-            disabled={newHeight === ""}
-          >
-            기록
-          </Button>
-        </div>
-      </BottomSheet>
-
-      <BottomSheet
-        open={openGoal}
-        title="목표 체중"
-        onClose={() => setOpenGoal(false)}
-      >
-        <div className={formStyle.formWrapper}>
-          <div className={formStyle.formGroup}>
-            <Input
-              unit="kg"
-              type="number"
-              id="goalWeight"
-              name={newGoalWeight}
-              onChange={(event) => setNewGoalWeight(event.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="button"
-            variant="primary"
-            size="large"
-            onClick={handleUpdateGoalWeight}
-            disabled={newGoalWeight === ""}
-          >
-            기록
-          </Button>
-        </div>
-      </BottomSheet>
+    <HeightBottomSheet
+  open={openHeight}
+  value={newHeight}
+  onChange={setNewHeight}
+  onClose={() => setOpenHeight(false)}
+  onSubmit={handleUpdateHeight}
+/>
+<GoalWeightInputBottomSheet
+  open={openGoal}
+  value={newGoalWeight}
+  onChange={setNewGoalWeight}
+  onClose={() => setOpenGoal(false)}
+  onSubmit={handleUpdateGoalWeight}
+/>
     </section>
   );
 }
