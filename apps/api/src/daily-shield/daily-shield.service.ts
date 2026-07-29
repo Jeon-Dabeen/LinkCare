@@ -58,8 +58,8 @@ export class DailyShieldService {
       dailyDate: todayRecord?.dailyDate ?? dailyDate,
 
       // 빠른 생성용 (어제/최근 데이터)
-      // 한번도 입력하지 않은 사용자의 경우 default: t30, 걷기, 8, 종합비타민
-      lastExerciseTime: lastRecord?.exerciseTime ?? "t30",
+      // 한번도 입력하지 않은 사용자의 경우 default: 30, 걷기, 8, 종합비타민
+      lastExerciseTime: lastRecord?.exerciseTime ?? "30",
       lastExerciseType: lastRecord?.exerciseType ?? "걷기",
       lastWaterCup: lastRecord?.waterCup ?? 8,
       lastSupplementType: lastRecord?.supplementType ?? "종합비타민",

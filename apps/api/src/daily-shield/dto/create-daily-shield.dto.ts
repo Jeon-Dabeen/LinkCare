@@ -20,11 +20,8 @@ export class CreateDailyShieldDto {
   @IsOptional()
   energy: number;
 
-  @ApiProperty({
-    example: "t60",
-    enum: exercisetime,
-  })
-  @IsEnum(exercisetime)
+  @ApiProperty({ example: "60" })
+  @IsString()
   @IsOptional()
   exerciseTime: exercisetime;
 
