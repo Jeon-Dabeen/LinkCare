@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsInt, IsOptional, IsString, Min, MinLength } from "class-validator";
-import { exercisetime } from "@prisma/client";
+import { IsInt, IsOptional, IsString, Min, MinLength } from "class-validator";
 
 export class CreateDailyShieldDto {
   @ApiProperty({ example: "2026-07-27" })
@@ -23,7 +22,7 @@ export class CreateDailyShieldDto {
   @ApiProperty({ example: "60" })
   @IsString()
   @IsOptional()
-  exerciseTime: exercisetime;
+  exerciseTime: string;
 
   @ApiProperty({ example: "걷기" })
   @IsString()
