@@ -7,9 +7,11 @@ import { CheckupModule } from "./checkup/checkup.module";
 import { WeightModule } from "./weight/weight.module";
 import { DailyShieldModule } from './daily-shield/daily-shield.module';
 import { MealModule } from './meal/meal.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [PrismaModule, CheckupModule, IntegrationsModule, WeightModule, DailyShieldModule, MealModule],
+  imports: [PrismaModule, CheckupModule, IntegrationsModule, WeightModule, DailyShieldModule, MealModule, AuthModule, UserModule],
   controllers: [AppController],
   providers: [AppService],
 })

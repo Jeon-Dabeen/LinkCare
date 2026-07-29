@@ -24,3 +24,8 @@ pnpm add @azure/ai-projects @azure/identity
 pnpm add @azure/core-auth
 //web 달력, 차트
 pnpm add dayjs chart.js react-chartjs-2
+// auth 로그인
+pnpm i @nestjs/jwt@11 @nestjs/passport@11 passport@0.7 passport-jwt@4 bcrypt@6
+pnpm i -D @types/passport-jwt@4 @types/bcrypt@6
+pnpm i uuid
+pnpm i -D @types/uuid
