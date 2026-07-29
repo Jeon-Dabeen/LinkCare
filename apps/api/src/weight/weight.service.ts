@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from "@nestjs/common
 import { CreateWeightDto } from "./dto/create-weight.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { UpdateWeightProfileDto } from "./dto/update-weight-profile-dto";
+import { logger } from "../config/logger";
 
 @Injectable()
 export class WeightService {
@@ -15,6 +16,7 @@ export class WeightService {
     if (weight > goalWeight) {
       return "-";
     }
+
     if (weight < goalWeight) {
       return "+";
     }
@@ -22,7 +24,12 @@ export class WeightService {
   }
   //체중 기록
   async createWeight(userId: number, createWeightDto: CreateWeightDto) {
+    logger.info(`WeightService createWeight started. userId=${userId}`);
+
     const { weight, height, goalWeight, weightDate } = createWeightDto;
+    logger.debug(
+      `createWeight: weight=${weight} height=${height} goalWeight=${goalWeight} weightDate=${weightDate}`,
+    );
 
     const date = this.toDate(weightDate);
 
@@ -57,9 +64,9 @@ export class WeightService {
       const heightMeter = heightSave / 100;
       bmi = Number((weight / (heightMeter * heightMeter)).toFixed(1));
     }
+
     //목표체중이 이번요청에 있는지, 없으면 프로필 목표체중을 사용
     const goalWeightSave = goalWeight ?? profile.goalWeight;
-
     let goalWeightState = profile.goalWeightState;
 
     //goalWeightState 계산
@@ -76,6 +83,7 @@ export class WeightService {
         goalWeightState = "0";
       }
     }
+
     //기존db상태와 새로 계산한것 비교
     const stateChanged = goalWeightState !== profile.goalWeightState;
 
@@ -102,6 +110,8 @@ export class WeightService {
       },
     });
 
+    logger.debug(`createdToddayWeight: ${createdToddayWeight}`);
+    logger.info(`WeightService createWeight ended. userId=${userId}`);
     return {
       ...createdToddayWeight,
       height: height ?? profile.height,
@@ -109,8 +119,15 @@ export class WeightService {
       goalWeightState,
     };
   }
-  //7일 조회
+
+  /**
+   * 7일 조회
+   * @param userId
+   * @param weightDate
+   * @returns
+   */
   async findWeekWeight(userId: number, weightDate: string) {
+    logger.info(`WeightService findWeekWeight started. userId=${userId}`);
     const endDate = this.toDate(weightDate);
 
     const startDate = new Date(endDate);
@@ -144,23 +161,24 @@ export class WeightService {
         orderBy: { weightDate: "asc" },
       }),
     ]);
+
+    logger.info(
+      `WeightService findWeekWeight ended. userId=${userId}, profile=${profile}, weights=${weights}`,
+    );
     return { profile, weights };
   }
 
   //월간 bmi 조회
   //현재 월을 포함한 3개월
   async findMonthWeight(userId: number, date: string) {
-    //프론트에서 받은 날짜
-    const selectedDate = this.toDate(date);
+    logger.info(`WeightService findMonthWeight started. userId=${userId}`);
+
+    const selectedDate = this.toDate(date); //프론트에서 받은 날짜
 
     const year = selectedDate.getUTCFullYear();
     const month = selectedDate.getUTCMonth();
-
-    //3달전의 1일
-    const threeMonthAgo =new Date(Date.UTC(year,month-2,1));
-
-    //다음달 1일
-    const nextMonth = new Date(Date.UTC(year, month + 1, 1));
+    const threeMonthAgo = new Date(Date.UTC(year, month - 2, 1)); //3달전의 1일
+    const nextMonth = new Date(Date.UTC(year, month + 1, 1)); //다음달 1일
 
     return this.prisma.weight.findMany({
       where: {
@@ -171,23 +189,26 @@ export class WeightService {
           lt: nextMonth,
         },
       },
-      select: {
-        weightDate: true,
-        bmi: true,
-      },
-      orderBy: {
-        weightDate: "asc",
-      },
+      select: { weightDate: true, bmi: true },
+      orderBy: { weightDate: "asc" },
     });
   }
+
+  /**
+   * 프로필의 키와 목표체중 수정
+   * @param userId
+   * @param dto
+   * @returns
+   */
   async updateWeightProfile(userId: number, dto: UpdateWeightProfileDto) {
+    logger.info(`WeightService updateWeightProfile started. userId=${userId}`);
+
     const { height, goalWeight } = dto;
 
     const profile = await this.prisma.profile.findFirst({
-      where: {
-        userId,
-      },
+      where: { userId },
     });
+
     if (!profile) {
       throw new NotFoundException("사용자 프로필을 찾을수 없어요.");
     }
@@ -197,13 +218,10 @@ export class WeightService {
     //목표 체중이 patch로 들어온경우 state를 다시 계산하여 저장
     if (goalWeight != null) {
       const latestWeight = await this.prisma.weight.findFirst({
-        where: {
-          userId,
-        },
-        orderBy: {
-          weightDate: "desc",
-        },
+        where: { userId },
+        orderBy: { weightDate: "desc" },
       });
+
       //마지막 체중기록이 조회된 경우
       if (latestWeight) {
         goalWeightState = this.getGoalWeightState(latestWeight.weight, goalWeight);
@@ -224,6 +242,10 @@ export class WeightService {
         goalWeightState,
       },
     });
+
+    logger.debug(`updateWeightProfile result: ${result}`);
+    logger.info(`WeightService updateWeightProfile started. userId=${userId}`);
+
     return result;
   }
 }
