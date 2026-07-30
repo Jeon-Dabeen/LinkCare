@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { UserService } from '../user/user.service';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { logger } from '../config/logger';
+import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/common";
+import { RegisterDto } from "./dto/register.dto";
+import { LoginDto } from "./dto/login.dto";
+import { UserService } from "../user/user.service";
+import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
+import { logger } from "../config/logger";
 
 @Injectable()
 export class AuthService {
@@ -15,8 +15,8 @@ export class AuthService {
 
   /**
    * 회원가입
-   * @param dto 
-   * @returns 
+   * @param dto
+   * @returns
    */
   async register(dto: RegisterDto) {
     logger.info(`AuthService register started. user=${dto.email}`);
@@ -24,13 +24,13 @@ export class AuthService {
     const exists = await this.userService.findByEmail(dto.email);
 
     if (exists) {
-      throw new ConflictException('이미 가입된 이메일 입니다.');
+      throw new ConflictException("이미 가입된 이메일 입니다.");
     }
 
     const hashed = await bcrypt.hash(dto.password, 10);
     const user = await this.userService.createUser({
       email: dto.email,
-      password: hashed
+      password: hashed,
     });
 
     const { password, ...result } = user; // 비밀번호를 빼고 나머지 데이터 반환 위함
@@ -41,29 +41,32 @@ export class AuthService {
 
   /**
    * 로그인
-   * @param dto 
-   * @returns 
+   * @param dto
+   * @returns
    */
   async login(dto: LoginDto) {
+    logger.info(`AuthService login started.`);
+
     const user = await this.userService.findByEmail(dto.email);
 
-    // TODO: loginCnt +1 로직
-
     if (!user) {
-      throw new UnauthorizedException('이메일 또는 비번이 틀려요.');
+      throw new UnauthorizedException("이메일 또는 비번이 틀려요.");
     }
 
     const isRight = await bcrypt.compare(dto.password, user.password);
 
     if (!isRight) {
-      throw new UnauthorizedException('이메일 또는 비번이 틀려요.');
+      throw new UnauthorizedException("이메일 또는 비번이 틀려요.");
     }
 
+    // TODO: loginCnt +1 로직
+    
     const payload = {
       sub: user.id,
       email: user.email,
     };
 
+    logger.info(`AuthService login ended.`);
     return {
       access_token: this.jwtService.sign(payload),
     };

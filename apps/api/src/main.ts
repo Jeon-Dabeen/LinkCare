@@ -4,11 +4,13 @@ import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { logger } from "./config/logger";
 import { AllExceptionsFilter } from "./common/filters/http-exception.filter";
+import cookieParser from "cookie-parser";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors(); // cors
+  app.use(cookieParser());
+  app.enableCors({ origin: process.env.WEB_SERVER_URL, credentials: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // 글로벌 예외 필터 (모든 에러 인터셉터)

@@ -29,3 +29,5 @@ pnpm i @nestjs/jwt@11 @nestjs/passport@11 passport@0.7 passport-jwt@4 bcrypt@6
 pnpm i -D @types/passport-jwt@4 @types/bcrypt@6
 pnpm i uuid
 pnpm i -D @types/uuid
+pnpm add cookie-parser
+pnpm add -D @types/cookie-parser
