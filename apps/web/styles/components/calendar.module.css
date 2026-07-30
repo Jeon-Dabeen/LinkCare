@@ -55,6 +55,9 @@
 }
 
 .daybutton{
+  position: relative;
+  overflow: hidden;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,4 +106,30 @@
 .danger {
   color: var(--color-text-inverse);
   background: var(--color-danger);
+}
+
+
+.splitHalf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 0;
+}
+
+.leftHalf {
+  left: 0;
+}
+
+.rightHalf {
+  right: 0;
+}
+
+.dayNumber {
+  position: relative;
+  z-index: 1;
+}
+
+.split {
+  color: var(--color-text-inverse);
 }

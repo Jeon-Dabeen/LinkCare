@@ -10,9 +10,11 @@ import { MealModule } from './meal/meal.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { GreetModule } from './greet/greet.module';
+import { BloodGlucoseModule } from "./blood-glucose/blood-glucose.module";
+
 
 @Module({
-  imports: [PrismaModule, CheckupModule, IntegrationsModule, WeightModule, DailyShieldModule, MealModule, AuthModule, UserModule, GreetModule],
+  imports: [PrismaModule, CheckupModule, IntegrationsModule, WeightModule, DailyShieldModule, MealModule, AuthModule, UserModule, GreetModule, BloodGlucoseModule],
   controllers: [AppController],
   providers: [AppService],
 })
