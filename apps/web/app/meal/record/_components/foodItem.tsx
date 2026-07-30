@@ -1,11 +1,9 @@
 
-
 import { CircleXIcon } from "lucide-react";
 import styles from "@/styles/meal/record.module.css";
 
 import { ButtonIcon } from "@/app/_components/ui/Button";
 import Input from "@/app/_components/ui/Input";
-
 
 interface FoodItemProps {
   id?: number;
@@ -20,7 +18,6 @@ interface FoodItemProps {
 }
 
 export default function FoodItem({
-  id,
   foodName,
   calorie,
   canModify = false,

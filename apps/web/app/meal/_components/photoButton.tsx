@@ -1,13 +1,8 @@
 
-import { ReactNode } from "react";
-import Image from "next/image";
-
 import styles from "@/styles/meal/photoButton.module.css";
 
 import { MealType, getMealTypeLabel } from "@/types/mealType";
-import { Plus, Scan, Utensils } from "lucide-react";
-import clsx from "clsx";
-
+import { BeefOff, PaperBag, Plus } from "lucide-react";
 
 type PhotoButtonProps = {
   label: MealType;
@@ -17,7 +12,6 @@ type PhotoButtonProps = {
   isSkipped?: boolean;
 }
 
-
 export default function PhotoButton({
   label,
   imageUrl,
@@ -26,7 +20,6 @@ export default function PhotoButton({
   isSkipped,
 }: PhotoButtonProps) {
 
-
   return(
     <div className={styles.wrapper}>
       {canModify ? (
@@ -34,18 +27,16 @@ export default function PhotoButton({
             <span className={styles.label}>{getMealTypeLabel(label)}</span>
             <Plus/>
           </button>
-        ):(
-          <div></div>
-        )
+        ):
+          isSkipped 
+            ? <div className={styles.notModify}><BeefOff /></div>
+            : (<div className={styles.notModify}><PaperBag /></div>)
       }
       {imageUrl && 
         <div className={styles.photo}>
-          <Image src={imageUrl} alt={`${label} 사진`} width={100} height={100} />
+          <img src={imageUrl} alt={`${label} 사진`} width={100} height={100} />
         </div>
       }
     </div>
   )
 }
-
-
-

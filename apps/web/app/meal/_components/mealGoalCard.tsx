@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-
 import { Goal, Pencil } from "lucide-react";
 import styles from "@/styles/meal/meal.module.css";
 import commonStyle from "@/styles/common.module.css";
@@ -16,7 +15,6 @@ import Input from "@/app/_components/ui/Input";
 import { apiFetch } from "../_api/apiFetch";
 import { GoalCalorieResponse } from "@/types/meal";
 
-
 interface MealGoalCardProps {
   totalCalorie: number;
   goalCalorie: number;
@@ -29,11 +27,9 @@ export default function MealGoalCard({
   onRefresh,
 }: MealGoalCardProps){
 
-  
   // 목표칼로리 수정용 상태
   const [openGoal, setOpenGoal] = useState(false);
   const [inputGoalCalorie, setinputGoalCalorie] = useState<number>(2000);
-
 
   // 바텀시트 열 때 현재 목표 칼로리로 초기화
   function handleOpenGoal() {
@@ -75,7 +71,6 @@ export default function MealGoalCard({
     }
   }
     
-
   return (
     <>
       <Card variant="color">
@@ -96,8 +91,6 @@ export default function MealGoalCard({
           <Progress value={totalCalorie} max={goalCalorie} />
         </Card.Body>
       </Card>
-
-
 
       {/* bottomSheet */}
       <BottomSheet

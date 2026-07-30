@@ -1,10 +1,8 @@
 
-
-import Button, { ButtonIcon } from "@/app/_components/ui/Button";
+import Button from "@/app/_components/ui/Button";
 import styles from "@/styles/meal/mealDetail.module.css";
 import { Pencil } from "lucide-react";
 import { ReactNode } from "react";
-
 
 type MealDetailProps = {
   children: ReactNode;
@@ -14,14 +12,12 @@ export default function MealDetail({
   children
 }: MealDetailProps){
 
-
   return (
     <article className={styles.wrapper}>
       {children}
     </article>
   )
 }
-
 
 // MealList
 type MealListProps = {
@@ -37,7 +33,6 @@ export function MealList({
   onClick,
   children
 }: MealListProps){
-
 
   return (
     <div className={styles.listWrapper}>
@@ -60,7 +55,6 @@ export function MealList({
   )
 }
 
-
 // MealItem
 type MealItemProps = {
   name: string,
@@ -72,7 +66,6 @@ export function MealItem({
   calorie
 }: MealItemProps){
 
-
   return (
     <li className={styles.item}>
       <p className={styles.foodName}>{name}</p>
@@ -81,8 +74,5 @@ export function MealItem({
   )
 }
 
-
 MealDetail.List = MealList;
 MealDetail.Item = MealItem;
-
-
