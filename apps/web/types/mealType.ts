@@ -2,6 +2,7 @@
 // MealType
 export type MealType = "BREAKFAST" | "LUNCH" | "DINNER";
 
+
 // 프론트(소문자) -> 백엔드(대문자) 변환
 export function toUpperMealType(type: string): MealType {
   return type.toUpperCase() as MealType;
@@ -13,9 +14,9 @@ export function toLowerMealType(type: MealType | string): string {
 }
 
 const mealTypeLabel = {
-  breakfast: "아침",
-  lunch: "점심",
-  dinner: "저녁",
+  BREAKFAST: "아침",
+  LUNCH: "점심",
+  DINNER: "저녁",
 } as const;
 
 export function getMealTypeLabel(mealType?: MealType | null) {
