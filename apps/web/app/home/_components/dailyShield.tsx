@@ -46,7 +46,7 @@ const ENERGY_OPTIONS = [
 ];
 
 const EXERCISE_TIME_OPTIONS = [
-  { val: '10', label: '10' },
+  { val: '10', label: '10분' },
   { val: '30', label: '30분' },
   { val: '60', label: '1시간' },
   { val: '120', label: '2시간' },
@@ -98,6 +98,7 @@ const createDailyShield = async (payload: ShieldPayload) => {
   const response = await fetch(API_BASE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: "include",
     body: JSON.stringify(payload),
   });
   if (!response.ok) throw new Error(`생성 실패 (Status: ${response.status})`);
@@ -110,6 +111,7 @@ const updateDailyShield = async (id: number, payload: ShieldPayload) => {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
+    credentials: "include",
     body: JSON.stringify(payload),
   });
   if (!response.ok) throw new Error(`수정 실패 (Status: ${response.status})`);
@@ -128,7 +130,6 @@ export default function DailyShield() {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const progressValue = useMemo(() => calculateProgress(formData), [formData]);
 
-  const userId = 1;
   const targetDate = formattedDate;
 
   // 1. [공통] 데일리 쉴드 데이터 재조회 함수
@@ -136,8 +137,11 @@ export default function DailyShield() {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `${API_BASE_URL}/${userId}?dailyDate=${targetDate}`
-      );
+        `${API_BASE_URL}?dailyDate=${targetDate}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
 
       if (!response.ok) {
         throw new Error('데이터를 불러오는데 실패했습니다.');
@@ -153,7 +157,7 @@ export default function DailyShield() {
     } finally {
       setIsLoading(false);
     }
-  }, [userId, targetDate]);
+  }, [targetDate]);
 
   // 날짜(formattedDate) 변경 시 자동 최초 조회
   useEffect(() => {
