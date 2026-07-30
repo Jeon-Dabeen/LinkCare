@@ -92,7 +92,7 @@ const calculateProgress = (formData: DailyShieldState): number => {
 };
 
 // API 함수
-const API_BASE_URL = 'http://localhost:3001/daily-shield';
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/daily-shield`;
 
 const createDailyShield = async (payload: ShieldPayload) => {
   const response = await fetch(API_BASE_URL, {
