@@ -22,7 +22,7 @@ npm i -D @types/multer
 pnpm add @azure/ai-form-recognizer
 pnpm add @azure/ai-projects @azure/identity
 pnpm add @azure/core-auth
-//web 달력, 차트
+// web 달력, 차트
 pnpm add dayjs chart.js react-chartjs-2
 // auth 로그인
 pnpm i @nestjs/jwt@11 @nestjs/passport@11 passport@0.7 passport-jwt@4 bcrypt@6
@@ -31,3 +31,7 @@ pnpm i uuid
 pnpm i -D @types/uuid
 pnpm add cookie-parser
 pnpm add -D @types/cookie-parser
+// web 구글 제미나이
+pnpm add @google/genai
+// api 이미지 처리 라이브러리
+pnpm add sharp

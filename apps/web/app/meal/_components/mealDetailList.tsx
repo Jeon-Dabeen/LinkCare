@@ -10,8 +10,6 @@ import { apiFetch } from "../_api/apiFetch";
 import MealDetail from "./mealDetail";
 import { getMealTypeLabel } from "@/types/mealType";
 
-
-
 interface MealDetailListProps {
   mealsList: MealItem[];
   isToday: boolean;
@@ -49,12 +47,11 @@ export default function MealDetailList({
         onClick={handleClick}
       >
         {meal.MealFood.map((food) => (
-          <MealDetail.Item key={food.id} name={food.foodName} calorie={food.calorie} />
+          <MealDetail.Item key={food.id} name={food.FoodName} calorie={food.calorie} />
         ))}
       </MealDetail.List>
     )
   }
-
 
   return (
     <MealDetail>

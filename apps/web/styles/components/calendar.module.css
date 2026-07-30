@@ -71,6 +71,10 @@
   color: var(--color-text-primary);
   background-color: var(--calender-selected-bg);
 }
+.today{
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
 
 .disabled{
   opacity: 0.3;
