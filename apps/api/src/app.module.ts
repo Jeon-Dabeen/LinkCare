@@ -9,9 +9,10 @@ import { DailyShieldModule } from './daily-shield/daily-shield.module';
 import { MealModule } from './meal/meal.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { GreetModule } from './greet/greet.module';
 
 @Module({
-  imports: [PrismaModule, CheckupModule, IntegrationsModule, WeightModule, DailyShieldModule, MealModule, AuthModule, UserModule],
+  imports: [PrismaModule, CheckupModule, IntegrationsModule, WeightModule, DailyShieldModule, MealModule, AuthModule, UserModule, GreetModule],
   controllers: [AppController],
   providers: [AppService],
 })
