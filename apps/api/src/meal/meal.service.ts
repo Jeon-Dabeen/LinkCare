@@ -3,6 +3,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { logger } from "../config/logger";
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, mealtype, mealstatus } from "@prisma/client";
+import { BlobServiceClient } from "@azure/storage-blob";
 
 import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
@@ -34,7 +35,7 @@ export class MealService {
 
     const mealDate = this.toDate(date);
 
-    // 🔍 디버깅용 로그 (터미널에서 꼭 확인해보세요!)
+    // 디버깅용 로그 (터미널에서 꼭 확인해보세요!)
     console.log('====================================');
     console.log(`[findMeal] date: "baseDate: "${baseDate}"`);
     console.log(`[findMeal] 조건 검사 (baseDate === date):`, baseDate === date);
@@ -174,7 +175,7 @@ export class MealService {
 
     // 요청한 날짜가 오늘(baseDate)이 맞는지 검증
     if(!isSameDate(meal.mealDate, formatBaseDate)){
-      throw new BadRequestException(`${meal.mealDate} ${formatBaseDate}  오늘 날짜의 식사만 수정할 수 있어요`)
+      throw new BadRequestException(`오늘 날짜의 식사만 수정할 수 있어요`)
     }
     
     // 이미 등록된 음식이 있으면 변경 불가
@@ -225,6 +226,7 @@ export class MealService {
     const profile = await this.prisma.profile.findFirst({
       where: {userId},
     });
+
     if(!profile){
       throw new NotFoundException(`사용자 프로필을 찾을 수 없어요`)
     }
@@ -260,12 +262,10 @@ export class MealService {
 
 
   // 식사 상세 기록 조회
-  async findMealFoodbyMealId(mealId){
-    logger.info(`MealService findMealFoodbyMealId started. ${mealId}`);
+  async findMealFoodDetail(mealId){
+    logger.info(`MealService findMealFoodDetail started. ${mealId}`);
 
-    const result = await this.prisma.mealFood.findMany({
-      where: {mealId}
-    })
+    const result = await this.findMealFoodByMealId(mealId);
 
     const meal = await this.prisma.meal.findUnique({
       where: {id: mealId}
@@ -273,7 +273,7 @@ export class MealService {
 
     if(!result || !meal) throw new NotFoundException(`해당 식사 내용을 찾을 수 없어요`);
 
-    logger.info(`MealService findMealFoodbyMealId ended.`);
+    logger.info(`MealService findMealFoodDetail ended.`);
     return {
         mealId,
         mealDate: meal.mealDate,
@@ -283,8 +283,16 @@ export class MealService {
   }
 
 
-  async recordMealFoodItems(mealId, dto){
-    logger.info(`MealService recordMealFoodItems started. ${mealId}`);
+  /**
+   * 상세 식사내용 기록
+   * @param mealId
+   * @param file 
+   * @param foods 
+   * @returns 
+   */
+  async recordMealFoodItems(mealId, file, foods){
+    logger.info(`MealService recordMealFoodItems started. mealId: ${mealId}`);
+    logger.debug(`foods, ${JSON.stringify(foods)}`)
 
     try{
       await this.prisma.$transaction(async (tx) => {
@@ -292,58 +300,202 @@ export class MealService {
         await tx.mealFood.deleteMany({
           where: {mealId}
         });
-
+        
         // unitCalorie 계산 준비
         let unitCalorie = 0;
 
         // mealFood 새로 등록
-        if(dto.foods.length > 0){
-          unitCalorie = dto.foods.reduce(
+        if(foods.length > 0){
+          unitCalorie = foods.reduce(
             (sum, food) => sum + food.calorie,
             0,
           );
           await tx.mealFood.createMany({
-            data: dto.foods.map(food => ({
+            data: foods.map(food => ({
               mealId,
-              foodName: food.foodName,
+              FoodName: food.foodName,
               calorie: food.calorie,
             }))
           })
         }
 
-        // mealId에 unitCalorie 수정
+        let imageUrl="";
+
+        if(file){
+          imageUrl = await this.uploadImage(file);
+          logger.debug(`imageUrl: ${imageUrl}`);
+        }
+
+        // mealId에 unitCalorie 수정, imageUrl 등록
         await tx.meal.update({
           where: {id: mealId},
           data: {
             unitCalorie,
+            mealStatus: 'COMPLETE',
+            ...(imageUrl && { photoUrl: imageUrl }),
           }
         })
       });
 
-      logger.info(`MealService recordMealFoodItems ended.`);
+      logger.info(`MealService recordMealFoodItems ended. mealId: ${mealId}`);
       return { mealId };
     }catch(error){
       logger.error(`MealFood 등록 중 에러 발생: ${error}`, );
+      throw error;
+    }
+  }
+
+
+  // MealFood 삭제
+  async removeMealFoodItems(mealId){
+    logger.info(`MealService removeMealFoodItems started. mealId: ${mealId}`);
+
+    const meal = await this.findMealById(mealId);
+    console.log('meal: ', meal);
+
+    const mealFoods = await this.findMealFoodByMealId(mealId);
+    console.log('foods: ', mealFoods);
+
+    try{
+      await this.prisma.$transaction(async (tx) => {
+        // mealFood 삭제
+        await tx.mealFood.deleteMany({
+          where: {mealId}
+        });
+
+        // meal의 unitCalorie: 0, meaStatus: PENDING
+        await tx.meal.update({
+          where: {id: mealId},
+          data: {
+            unitCalorie: 0,
+            mealStatus: 'PENDING',
+            photoUrl: null,
+          }
+        })
+      })
+
+      logger.info(`MealFood 삭제 및 meal 상태 업데이트 완료. mealId: ${mealId}`);
+
+      // 스토리지의 이미지 파일 삭제
+      if(meal && meal.photoUrl){
+        await this.deleteMealImage(meal.photoUrl);
+        logger.info(`Azure 이미지 파일 삭제 프로세스 완료`)
+      }
+
+      logger.info(`MealService removeMealFoodItems ended. mealId: ${mealId}`);
+      return { mealId };
+    }catch(error){
+      logger.error(`MealFood 삭제 중 에러 발생: ${error}`, );
+      throw error;
     }
   }
 
 
 
-
-  create(createMealDto: CreateMealDto) {
-    return 'This action adds a new meal';
+  // Meal: id로 찾기
+  async findMealById(id){
+    const meal = await this.prisma.meal.findUnique({where: {id: id}})
+    if(!meal) throw new NotFoundException(`식사 기록이 없어요`);
+    return meal;
   }
 
-  findAll() {
-    return `This action returns all meal`;
+  // MealFood : mealId로 찾기
+  async findMealFoodByMealId(mealId){
+    logger.info(`MealService findMealFoodById started. mealId: ${mealId}`);
+
+    const mealFoods = await this.prisma.mealFood.findMany({where: {mealId}});
+
+    if(!mealFoods) throw new NotFoundException(`식사 기록이 없어요`)
+
+    logger.info(`MealService findMealFoodById ended. mealId: ${mealId}`);
+    return mealFoods;
   }
 
 
-  update(id: number, updateMealDto: UpdateMealDto) {
-    return `This action updates a #${id} meal`;
+
+  // 
+
+  // image 파일 업로드
+  async uploadImage(file: Express.Multer.File){
+  
+    let imageUrl = '';
+
+    logger.info(`fileName: ${file.originalname}`);
+
+    const baseUrl = process.env.AZURE_STORAGE_IMAGES || "";
+    const sasToken = process.env.AZURE_SAS_TOKEN || "";
+
+    if(!baseUrl || !sasToken) throw new BadRequestException('업로드할 저장소를 찾을 수 없어요');
+
+    const targetFileName = encodeURIComponent(file.originalname);
+    imageUrl = sasToken
+      ? `${baseUrl}${targetFileName}?${sasToken}`
+      : `${baseUrl}${targetFileName}`
+
+    try{
+      logger.debug(`Send image a file started. fileName: ${file.originalname}`);
+
+      const response = await fetch(imageUrl, {
+        method: "PUT",
+        headers: {
+          "x-ms-blob-type": "BlockBlob",
+          "Content-Type": file.mimetype,
+          "x-ms-version": "2026-06-06",
+        },
+        body: new Uint8Array(file.buffer),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.error(`Azure Response Error: ${response.status} - ${errorText}`);
+        throw new Error(`Azure HTTP Error ${response.status}`);
+      }
+
+      logger.debug(`Send image a file ended. fileName: ${file.originalname}`);
+    }catch(error){
+      logger.error('Send image Error: 500 - 전송 실패');
+      throw new InternalServerErrorException('이미지 전송 실패')
+    }
+
+    return imageUrl;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} meal`;
+
+  // 이미지 파일 삭제
+  async deleteMealImage(photoUrl: string){
+    if (!photoUrl) {
+      return false; 
+    }
+    try {
+      // URL에서 파일 이름(Blob Name) 추출
+      const urlWithoutQuery = photoUrl.split('?')[0];
+      const blobName = urlWithoutQuery.substring(urlWithoutQuery.lastIndexOf('/') + 1);
+
+      if (!blobName) {
+        return false;
+      }
+
+      const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+      const containerName = process.env.AZURE_CONTAINER_NAME || 'images';
+
+      if (!connectionString) {
+        console.error('Azure 스토리지 연결 설정이 없습니다.');
+        return false;
+      }
+
+      const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+      const containerClient = blobServiceClient.getContainerClient(containerName);
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+      // Azure 스토리지에서 파일 삭제 (없어도 에러 안 나고 안전하게 넘어감)
+      await blockBlobClient.deleteIfExists();
+      
+      return true;
+    } catch (error) {
+      // 삭제 중 에러가 나더라도 서비스가 죽지 않도록 로깅만 하고 안전하게 처리
+      console.error('Azure 이미지 삭제 중 에러 발생 (무시됨):', error);
+      return false;
+    }
   }
+
 }

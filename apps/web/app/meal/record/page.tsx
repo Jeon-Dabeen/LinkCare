@@ -4,21 +4,22 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 
-
-import { CirclePlus, CircleXIcon, Utensils } from "lucide-react";
+import { CirclePlus, Utensils } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
 import styles from "@/styles/meal/record.module.css";
 
-
-import { MealFoodItem, MealFoodResponse } from "@/types/meal";
+import { MealFoodResponse } from "@/types/meal";
 import { apiFetch } from "../_api/apiFetch";
+import { analyzeFood } from "../_api/analyzeFood";
 
+import { parseKcal } from "@/utils/meals";
 import Button from "@/app/_components/ui/Button";
 import EmptyPage from "@/app/_components/ui/EmptyPage";
 import RecordPhoto from "./_components/recordPhoto";
 import FoodItem from "./_components/foodItem";
-
+import StatePage from "@/app/_components/ui/StatePage";
+import { getMealTypeLabel, MealType } from "@/types/mealType";
 
 type RecordModeType =
   | 'EDIT'      // 오늘 + 기존 데이터 있음 (수정)
@@ -50,33 +51,19 @@ export default function MealRecord() {
   // 오늘 날짜인지 확인
   let isToday = (date === formattedDate);
 
-
-  // 뒤로가기 or 목록화면으로 이동 함수
-  const goBackorMeal = () => {
-    if(
-      document.referrer && new URL(document.referrer).origin === window.location.origin
-    ){
-      router.back();
-    }else{
-      router.replace('/meal');
-    }
-  }
-
-  // 식사 상세 데이터 상태(fetch로 받아온 데이터)
-  const [recordDatas, setRecordDatas] = useState<MealFoodItem[] | null>([]);
-
   // 식사 상세 데이터(화면 편집용 데이터)
   const [foodItems, setFoodItems] = useState<TempFoodItemType[]>([]);
-
-  // mealId로 받아온 mealDate
-  const [thisMealDate, setMealDate] = useState('');
 
   // 기록가능 여부 상테
   const [recordMode, setRecordMode] = useState<RecordModeType | null>(null);
   
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(true);
+  const [isPhotoLoading, setIsPhotoLoading] = useState(false);
   
+  // 사진
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // 데이터 불러오기
   useEffect(() => {
@@ -89,15 +76,14 @@ export default function MealRecord() {
       try{
         const result = await apiFetch<MealFoodResponse>(`/meal/record/${mealId}`);
         const data = result.data;
-        setRecordDatas(data.mealFood);
+        setCurrentImageUrl(data.photoUrl);
         setFoodItems(
           data.mealFood.map(item => ({
             id: item.id,
-            foodName: item.foodName,
+            foodName: item.FoodName,
             calorie: item.calorie ?? null
           }))
         );
-        console.log('recordDatas', data)
 
         const hasData = data.mealFood.length > 0;
         const mealDate = data.mealDate?.slice(0, 10) ?? date;
@@ -136,16 +122,6 @@ export default function MealRecord() {
   const editable =
     recordMode === "EDIT" ||
     recordMode === "CREATE";
-    
-  if(recordMode == 'EMPTY'){
-    return (
-      <EmptyPage
-        icon={<Utensils size={32} />}
-        title ="식사 상세 내용이 없어요"
-      />
-    )
-  }
-
 
   // 아이템 추가 버튼 함수
   const addFoodItem = () => {
@@ -180,53 +156,98 @@ export default function MealRecord() {
     )
   }
 
+  // 사진 파일 업로드
+  const handleImageSelected = async (file: File) => {
+    setIsPhotoLoading(true);
 
-  // 사진 등록
+    // 서버 전달용 파일 저장
+    setSelectedFile(file);
 
+    // 화면에 미리보기용 이미지 띄우기
+    const previewUrl = URL.createObjectURL(file);
+    setCurrentImageUrl(previewUrl);
 
-
+    try{
+      // 이미지 분석
+      const foods = await analyzeFood(file);
+      setFoodItems(
+        foods.map((food:any) => ({
+          foodName: food.name,
+          calorie: parseKcal(food.kcal),
+        }))
+      )
+    }catch(error){
+      console.error('이미지 분석 실패: ', error);
+      alert('이미지 분석에 실패했어요');
+    }finally{
+      setIsPhotoLoading(false);
+    }
+  }
 
   // 등록,수정 전 검증 함수
   const getValidFoodItems = (): MealFoodPayload[] | null => {
-    // const invalidItem = foodItems.some(item => {
-    //   const hasName = item.foodName.trim() !== "";
-    //   const hasCalorie = item.calorie !== null;
+    const validItems: MealFoodPayload[] = [];
 
-    //   // 둘 중 하나만 입력된 경우
-    //   return hasName != hasCalorie;
-    // });
+    for(const item of foodItems){
+      const name = item.foodName ? item.foodName.trim() : '';
+      const calorie = item.calorie;
 
-    // if(!invalidItem) return null;
+      const hasName = name !== '';
+      const hasCalorie = calorie !== null && calorie !== undefined && !isNaN(Number(calorie));
 
+      // 둘 다 비어있으면 데이터에서 제외
+      if(!hasName && !hasCalorie){
+        continue;
+      }
 
-    const hasEmpty = foodItems.some(
-      item => item.foodName.trim() === "" || item.calorie === null
-    )
+      // 둘 중 하나만 입력되어 있으면 에러
+      if(hasName !== hasCalorie){
+        alert(`음식명과 칼로리를 입력해주세요`);
+        return null;
+      }
 
-    if(hasEmpty) return null;
+      // 두 다 입력된 유효한 데이터 임시 보관
+      validItems.push({
+        foodName: name,
+        calorie: Number(calorie),
+      })
+    }
 
-    return foodItems.map(item => ({
-      foodName: item.foodName.trim(),
-      calorie: item.calorie!,
-    }))
+    // 유효한 데이터가 없는지 확인
+    if(validItems.length === 0){
+      alert('1개 이상의 음식 정보를 입력해주세요');
+      return null;
+    }
+
+    // 유효한 데이터가 5개가 넘지 않는지 확인
+    if(validItems.length > 5){
+      alert('음식은 최대 5개까지 등록할 수 있어요')
+      return null;
+    }
+    
+    return validItems;
   }
 
   // 등록 버튼 함수
   const handleCreate = async () => {
+    const formData = new FormData();
+
     const foods = getValidFoodItems();
-    console.log('등록 버튼 data', foods)
+    
     if(!foods) {
-      alert('음식명과 칼로리를 모두 입력해주세요')
       return;
     };
+
+    formData.append('foods', JSON.stringify(foods));
+    if(selectedFile){
+      formData.append('image', selectedFile);
+    }
 
     try{
       // 저장
       await apiFetch(`/meal/record/${mealId}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          foods,
-        })
+        method: 'PATCH',
+        body: formData,
       })
       // 화면 이동
       router.replace('/meal');
@@ -238,25 +259,79 @@ export default function MealRecord() {
     }
   }
 
+  // 삭제 버튼 함수
+  const handleDelete = async () => {
+    // 삭제 전 다시 확인
+    const isConfirmed = window.confirm('정말 이 식사 기록을 삭제하실 건가요?');
+    if(!isConfirmed) return;
+
+    try{
+      await apiFetch(`/meal/record/${mealId}`, {
+        method: 'DELETE',
+      })
+
+      alert('성공적으로 삭제되었어요');
+
+      // 화면 이동
+      // router.replace('/meal');
+    }catch(error){
+      if(error instanceof Error){
+        console.error('삭제에 샐패했어요: ', error.message);
+        alert(error.message);
+      }else{
+        alert('삭제에 실패했어요');
+      }
+    }
+  }
+
+  if(isLoading){
+    return (
+      <StatePage 
+        open={true}
+        title='데이터 가져오는중'
+        description={<>식사 데이터를 가져오고 있어요.<br/>잠시만 기다려주세요</>}
+      />
+    )
+  }
+    
+  // 데이터 로드가 끝났는데 기록이 없을 때
+  if(recordMode == 'EMPTY'){
+    return (
+      <EmptyPage
+        icon={<Utensils size={32} />}
+        title ="식사 상세 내용이 없어요"
+      />
+    )
+  }
+
+  if(isPhotoLoading){
+    return (
+      <StatePage 
+        open={true}
+        title='이미지 분석중'
+        description={<>이미지의 식사 데이터를 분석하고 있어요.<br/>잠시만 기다려주세요</>}
+      />
+    )
+  }
 
   return (
     <section className={commonStyle.mainContent}>
       <div className={commonStyle.pageTitleWrapper}>
-        <h2 className={commonStyle.pageTitle}>식사 기록</h2>
+        <h2 className={commonStyle.pageTitle}>{getMealTypeLabel(mealType as MealType)}식사 기록</h2>
       </div>
       <div className={formStyle.formWrapper}>
         <form className={formStyle.form}>
 
           <RecordPhoto 
-            onClick = {() => {}}
+            imageUrl={currentImageUrl}
+            onSelectImage = {handleImageSelected}
           />
-          
 
           <div className={styles.inputWrapper}>
             <ul className={styles.inputList}>
               {foodItems.map((item, index) => (
                 <FoodItem 
-                  key={item.id ?? index}
+                  key={index}
                   foodName={item.foodName}
                   calorie={item.calorie}
                   canModify={editable}
@@ -281,7 +356,7 @@ export default function MealRecord() {
               <div className={commonStyle.fixedBottomInner}>
                 {recordMode === 'EDIT' && (
                   <>
-                    <Button type="button" variant="secondary" size="large">
+                    <Button type="button" variant="secondary" size="large" onClick={handleDelete}>
                       삭제
                     </Button>
                     <Button type="button" variant="primary" size="large" onClick={handleCreate}>
@@ -304,9 +379,3 @@ export default function MealRecord() {
     </section>
   )
 }
-
-
-
-
-
-

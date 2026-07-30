@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Put, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
 import { MealService } from './meal.service';
 import { CreateMealDto } from './dto/create-meal.dto';
@@ -6,7 +6,11 @@ import { UpdateMealDto } from './dto/update-meal.dto';
 import { ApiOperation } from '@nestjs/swagger';
 import { MealQueryDto } from './dto/query-meal.dto';
 import { mealstatus } from '@prisma/client';
-import { CreateMealFoodDto } from './dto/create-meal-food.dto';
+import { MealFoodDto } from './dto/create-meal-food.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { RenameFileInterceptor } from '../common/interceptors/rename.file.interceptor';
+import { imageUploadOptions } from '../config/upload.config';
+import { ConvertToWebpInterceptor } from '../common/interceptors/convert.image.interceptor';
 
 @Controller('meal')
 @UseInterceptors(TransformInterceptor)
@@ -46,16 +50,31 @@ export class MealController {
   findMealFood(
     @Param('mealId', ParseIntPipe) id: number,
   ){
-    return this.mealService.findMealFoodbyMealId(id);
+    return this.mealService.findMealFoodDetail(id);
   }
 
   @ApiOperation({summary: '식사 상세 기록 등록/수정'})
-  @Put('/record/:mealId')
+  @UseInterceptors(
+    FileInterceptor('image', imageUploadOptions),
+    RenameFileInterceptor,
+    ConvertToWebpInterceptor,
+  )
+  @Patch('/record/:mealId')
   createMealFood(
     @Param('mealId', ParseIntPipe) mealId: number,
-    @Body() dto: CreateMealFoodDto[],
+    @UploadedFile() file: Express.Multer.File,
+    @Body('foods') foodsString: string,
   ){
-    return this.mealService.recordMealFoodItems(mealId, dto);
+    const foods = (foodsString ? JSON.parse(foodsString) : []) as MealFoodDto[];
+    return this.mealService.recordMealFoodItems(mealId, file, foods);
+  }
+
+  @ApiOperation({summary: '식사 상세 기록 삭제'})
+  @Delete('/record/:mealId')
+  removeMealFood(
+    @Param('mealId', ParseIntPipe) mealId: number,
+  ){
+    return this.mealService.removeMealFoodItems(mealId);
   }
 
 }

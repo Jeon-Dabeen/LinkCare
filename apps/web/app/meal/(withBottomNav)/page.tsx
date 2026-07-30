@@ -15,12 +15,11 @@ import commonStyle from "@/styles/common.module.css";
 import styles from "@/styles/meal/meal.module.css";
 
 import Grid from "@/app/_components/ui/Grid";
-import Button, { ButtonIcon } from "@/app/_components/ui/Button";
+import Button from "@/app/_components/ui/Button";
 import {ViewCalendar, ViewWeek} from "../_components/viewCalendar";
 import MealGoalCard from "../_components/mealGoalCard";
 import MealPhotoList from "../_components/mealPhotoList";
 import MealDetailList from "../_components/mealDetailList";
-
 
 export default function Page({
 }){
@@ -59,8 +58,6 @@ export default function Page({
     fetchMeal();
   }, [fetchMeal])
 
-
-
   // 아침,점심,저녁
   const mealsList = mealData ?? [];
   console.log('mealsList', mealsList)
@@ -79,7 +76,6 @@ export default function Page({
   // 목표 칼로리
   const goalCalorie = breakfast?.goalCalorie ?? 2000;
 
-
   /***
    * 등록/수정 페이지 이동
    */
@@ -91,20 +87,14 @@ export default function Page({
     }
     const upperMealType = mealType.toUpperCase();
     router.push(
-      `/meal/record?date=${selectedDate}&mealType=${upperMealType}&mealId=${mealId}`
+      `/meal/record?mealType=${upperMealType}&mealId=${mealId}`
     );
   }
-
-
-
-
-
 
   // 달력 모달
   function handleOpenCalendar() {
     setViewCalendar(true);
   }
-
 
   return (
     <section className={commonStyle.mainContent}>
@@ -120,12 +110,10 @@ export default function Page({
       </header>
       
       <Grid>
-
         <Grid.ItemFull>
           <ViewWeek  selectedDate={dayjs(selectedDate)} />
         </Grid.ItemFull>
         
-
         <Grid.ItemFull>
           <MealGoalCard 
             totalCalorie={totalCalorie}
@@ -158,8 +146,6 @@ export default function Page({
         </Grid.ItemFull>
       </Grid>
 
-
-
       <ViewCalendar 
         open={viewCalendar} 
         onClose={() => setViewCalendar(false)}
@@ -167,5 +153,3 @@ export default function Page({
     </section>
   )
 }
-
-

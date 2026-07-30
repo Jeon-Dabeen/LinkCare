@@ -4,7 +4,7 @@ import { MealType, MealStatus } from "./mealType";
 export interface MealFoodItem {
   id: number;
   mealId: number;
-  foodName: string;
+  FoodName: string;
   calorie: number;
 }
 
