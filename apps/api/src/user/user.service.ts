@@ -38,7 +38,7 @@ export class UserService {
     });
 
     logger.debug(`createUser result: ${JSON.stringify(user)}, ${JSON.stringify(profile)}`);
-    logger.info(`UserService createUser ended. email=${data.email}`)
+    logger.info(`UserService createUser ended. email=${data.email}`);
     
     return user;
   }
@@ -50,6 +50,10 @@ export class UserService {
    */
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
+  }
+
+  async findUseByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email, useyn: "Y" } });
   }
 
   findOne(id: number) {

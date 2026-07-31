@@ -47,10 +47,10 @@ export class AuthService {
   async login(dto: LoginDto) {
     logger.info(`AuthService login started.`);
 
-    const user = await this.userService.findByEmail(dto.email);
+    const user = await this.userService.findUseByEmail(dto.email);
 
     if (!user) {
-      throw new UnauthorizedException("이메일 또는 비번이 틀려요.");
+      throw new UnauthorizedException("회원님이 아니시네요. 가입해주세요.");
     }
 
     const isRight = await bcrypt.compare(dto.password, user.password);
