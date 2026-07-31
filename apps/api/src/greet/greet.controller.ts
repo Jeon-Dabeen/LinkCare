@@ -22,16 +22,25 @@ export class GreetController {
   // }
 
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: "데일리 쉴드 조회" })
-  @ApiQuery({ name: "dailyDate", required: true, example: "2026-07-22" })
+  @ApiOperation({ summary: "데일리 건강 코멘트 조회" })
   @Get()
   findOne(@CurrentUser("id") userId: number, @Query("dailyDate") dailyDate: string) {
-    logger.info(`GreetController findOne started.`)
+    logger.info(`GreetController findOne.`)
     return this.greetService.findOne(userId, dailyDate);
   }
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateGreetDto: UpdateGreetDto) {
-    return this.greetService.update(+id, updateGreetDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "사용자 닉네임 조회" })
+  @Get(":name")
+  findNickName(@CurrentUser("id") userId: number) {
+    logger.info(`GreetController findNickName.`)
+    return this.greetService.findNickName(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "데일리 건강 코멘트 재생성" })
+  @Patch()
+  update(@CurrentUser("id") userId: number, @Body('dailyDate') dailyDate: string) {
+    return this.greetService.update(userId, dailyDate);
   }
 }

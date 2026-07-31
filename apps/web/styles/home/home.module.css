@@ -20,10 +20,57 @@
 .nickname {
   font-size: var(--font-size-lg);
   color: var(--color-secondary-active);
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 텍스트는 왼쪽, 버튼은 오른쪽 끝으로 이동 */
+  width: 100%;
   /* initial 상태는 안 보이게 처리 */
   opacity: 0;
   /* 닉네임: 인사말이 나오는 중간인 0.2초 뒤에 시작 */
   animation: fadeInUp 0.4s ease-out 0.2s forwards;
+}
+
+/* 재생성 버튼 */
+.refreshBtn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--color-text-secondary, #888);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+
+  /* 2. 안전하게 오른쪽으로 끝까지 밀어내기 */
+  margin-left: auto;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  color: var(--color-secondary-active, #333);
+  background-color: rgba(0, 0, 0, 0.05); /* 마우스 올렸을 때 은은한 배경 */
+}
+
+.refreshBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 아이콘 기본 및 로딩 애니메이션 */
+.refreshIcon {
+  transition: transform 0.2s ease;
+}
+
+.refreshBtn:hover:not(:disabled) .refreshIcon {
+  transform: rotate(45deg); /* 호버 시 살짝 돌아가는 센스 있는 효과 */
+}
+
+/* 로딩 중일 때 360도 연속 회전 */
+.spinning {
+  animation: spin 1s linear infinite;
 }
 
 .aiComment {

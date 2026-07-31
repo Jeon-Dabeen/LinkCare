@@ -2,19 +2,31 @@
 
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import styles from "@/styles/home/home.module.css";
-import { useEffect, useRef, useState } from 'react';
-import { ChevronUp, ChevronDown } from "lucide-react";
-
-interface DailyCommentData {
-  nickname: string;
-  aiComment: string;
-}
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { ChevronUp, ChevronDown, RotateCw } from "lucide-react";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/greet`;
 
+// 공통 API 호출 헬퍼 함수
+const fetchCommentApi = async (url: string, options: RequestInit, errorMsg: string) => {
+  const res = await fetch(url, {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    ...options,
+  });
+
+  if (!res.ok) throw new Error(errorMsg);
+
+  const data: { aiComment: string } = await res.json();
+  return data.aiComment;
+};
+
 export default function Greet() {
-  const { baseDate, formattedDate } = useBaseDate();
-  const [data, setData] = useState<DailyCommentData | null>(null);
+  const { baseDate, formattedDate: targetDate } = useBaseDate();
+  const [nickName, setNickName] = useState<string>('');
+
+  const [aiComment, setAiComment] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState<number>(0); // 재생성
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,73 +34,109 @@ export default function Greet() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
   const commentRef = useRef<HTMLDivElement>(null);
-  const targetDate = formattedDate;
+
+  // nickName 조회
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/name`, { credentials: "include" })
+      .then((res) => res.ok ? res.json() : Promise.reject())
+      .then((data: { nickName: string }) => setNickName(data.nickName))
+      .catch(() => {
+        setNickName('자랑스러운 우리 회원');
+      });
+  }, []);
+
+  // dailyComment 조회
+  // [GET] 조회 함수
+  const fetchDailyComment = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const comment = await fetchCommentApi(
+        `${API_BASE_URL}?dailyDate=${targetDate}`,
+        { method: "GET" },
+        "데이터를 불러오지 못했어요."
+      );
+      setAiComment(comment);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }, [targetDate]);
+
+  // [PATCH] 재생성 함수
+  const handleRegenerate = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (loading) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      setIsExpanded(false);
+
+      const comment = await fetchCommentApi(
+        API_BASE_URL,
+        { method: "PATCH", body: JSON.stringify({ dailyDate: targetDate }) },
+        "재생성에 실패했어요."
+      );
+      setAiComment(comment);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // dailyComment 조회
-    const fetchDailyComment = async () => {
-      try {
-        setLoading(true);
-
-        const response = await fetch(
-          `${API_BASE_URL}?dailyDate=${targetDate}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error('데이터를 불러오는 데 실패했습니다.');
-        }
-
-        const result: DailyCommentData = await response.json();
-        console.log("⑤ 결과", result);
-        setData(result);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '알 수 없는 에러가 발생했습니다.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDailyComment();
-  }, [targetDate]);
+  }, [fetchDailyComment]);
 
   // 텍스트가 5줄을 초과하는지 체크
   useEffect(() => {
-    if (data && commentRef.current) {
+    if (aiComment && commentRef.current) {
       const element = commentRef.current;
-
-      // 5줄 높이(line-height * 5줄)보다 내용 전체 높이(scrollHeight)가 큰지 확인
-      // (1px 정도의 오차 방지를 위해 + 2px 여유)
       const hasOverflow = element.scrollHeight > element.clientHeight + 2;
 
-      // 아직 접힌 상태(isExpanded === false)일 때만 overflow 여부를 판단하여 고정
+      // 접힌 상태일 때만 overflow 여부를 판단하여 고정
       if (!isExpanded) {
         setIsOverflowing(hasOverflow);
       }
     }
-  }, [data, isExpanded]);
+  }, [aiComment, isExpanded]);
 
   return (
     <div className={styles.greetingWrapper}>
       <p className={styles.greeting}>오늘도 반가워요,</p>
       <p className={styles.nickname}>
-        <strong>하늘을 나는 코끼리</strong>님!
+        <span><strong>{nickName} </strong>님!</span>
+        {loading ? (
+          <span></span>
+        ) : (<button
+          type="button"
+          className={styles.refreshBtn}
+          onClick={handleRegenerate} /* 실행할 재생성 함수 */
+          disabled={loading}        /* 로딩 중 중복 클릭 방지 */
+          aria-label="AI 건강분석 다시 생성"
+        >
+          <RotateCw
+            size={16}
+            className={`${styles.refreshIcon} ${loading ? styles.spinning : ''}`}
+          />
+        </button>)}
       </p>
 
       <div className={styles.aiComment}>
         {loading ? (
           <span></span>
-        ) : error || !data ? (
+        ) : error || !aiComment ? (
           <span>데이터를 못 불러왔어요.</span>
         ) : (
           <div
             ref={commentRef}
             className={`${styles.commentContainer} ${isExpanded ? styles.expanded : styles.clamped}`}
           >
-            <span>{data.aiComment}</span>
+            <span>{aiComment}</span>
             {isOverflowing && (
               <button
                 type="button"

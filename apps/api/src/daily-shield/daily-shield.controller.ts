@@ -16,6 +16,7 @@ export class DailyShieldController {
   @ApiOperation({ summary: "데일리 쉴드 등록" })
   @Post()
   create(@CurrentUser("id") userId: number, @Body() dto: CreateDailyShieldDto) {
+    logger.debug(`DailyShieldController create ${userId}`);
     return this.dailyShieldService.create(userId, dto);
   }
 
