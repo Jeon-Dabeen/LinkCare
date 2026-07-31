@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 import styles from "@/styles/meal/viewCalendar.module.css";
 

@@ -1,7 +1,5 @@
-
 'use client';
 
-// import { cookies } from "next/headers";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
@@ -26,7 +24,6 @@ export default function Page({
 
   const router = useRouter();
   const {formattedDate} = useBaseDate();
-  // const token = localStorage.getItem("accessToken");
   const searchParams = useSearchParams();
   const selectedDate = searchParams.get('date') ?? formattedDate;
 
