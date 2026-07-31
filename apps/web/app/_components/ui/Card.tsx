@@ -8,14 +8,6 @@ type CardProps = {
   variant?: "default" | "color";
 }
 
-type CardHeaderProps = {
-  icon?: ReactNode;
-  title?: ReactNode;
-  left?: ReactNode;
-  right?: ReactNode;
-  noPadding?: boolean;
-}
-
 type CardBodyProps = {
   noTopPadding?: boolean,
   children: ReactNode;
@@ -53,21 +45,35 @@ export function Card({
 }
 
 
+
+type CardHeaderProps = {
+  icon?: ReactNode;
+  title?: ReactNode;
+  left?: ReactNode;
+  right?: ReactNode;
+  noPadding?: boolean;
+  isLeftFull?: boolean;
+}
+
 export function CardHeader({
   icon,
   title,
   left,
   right,
   noPadding,
+  isLeftFull,
 }:CardHeaderProps){
 
   return (
     <div className={clsx(
       styles.cardHeader,
-      noPadding && styles.noPadding
+      noPadding && styles.noPadding,
+      isLeftFull && styles.fullLeft
     )}
     >
-      <div className={styles.left}>
+      <div className={clsx(
+        styles.left,
+      )}>
         {icon && <span className={styles.icon}>{icon}</span>}
         {title && <h3 className={styles.title}>{title}</h3>}
         {left && left}

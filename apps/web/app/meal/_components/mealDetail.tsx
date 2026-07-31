@@ -1,6 +1,7 @@
 
 import Button from "@/app/_components/ui/Button";
 import styles from "@/styles/meal/mealDetail.module.css";
+import { getMealTypeLabel } from "@/types/mealType";
 import { Pencil } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -37,7 +38,7 @@ export function MealList({
   return (
     <div className={styles.listWrapper}>
       <div className={styles.listHeader}>
-        <p className={styles.type}>{type}</p>
+        <p className={styles.type}>{getMealTypeLabel(type)}</p>
         {canModify &&
           <Button 
             variant="text-tertiary"

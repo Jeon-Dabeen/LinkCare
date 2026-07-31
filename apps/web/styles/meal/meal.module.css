@@ -4,6 +4,13 @@
   align-items: center;
 }
 
+.goalCalorie .label{
+  padding-right: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-tertiary);
+}
+
 .goalCalorie .value{
   font-size: var(--font-size-md);
   font-weight: 600;

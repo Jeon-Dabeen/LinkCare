@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Goal, Pencil } from "lucide-react";
 import styles from "@/styles/meal/meal.module.css";
@@ -14,22 +14,32 @@ import BottomSheet from "@/app/_components/ui/BottomSheet";
 import Input from "@/app/_components/ui/Input";
 import { apiFetch } from "../_api/apiFetch";
 import { GoalCalorieResponse } from "@/types/meal";
+import { getCalorieMessage } from "@/utils/getCalorieMessage";
 
 interface MealGoalCardProps {
   totalCalorie: number;
   goalCalorie: number;
-  onRefresh: () => void; // 저장 후 화면 갱신용 부모 함수 (fetchMeal)
+  onRefresh: () => void; // 저장 후 화면 갱신용 부모 함수 (fetchMeal),
+  isToday: boolean; // 오늘인지 여부 (오늘만 수정 가능)
 }
 
 export default function MealGoalCard({
   totalCalorie,
   goalCalorie,
   onRefresh,
+  isToday
 }: MealGoalCardProps){
 
   // 목표칼로리 수정용 상태
   const [openGoal, setOpenGoal] = useState(false);
   const [inputGoalCalorie, setinputGoalCalorie] = useState<number>(2000);
+  const [message, setMessage] = useState<string>("목표를 향해 차근차근 잘 가고 있어요!");
+
+  // 목표칼로리 메시지 업데이트
+  useEffect(() => {
+    const newMessage = getCalorieMessage(totalCalorie, goalCalorie);
+    setMessage(newMessage);
+  }, [totalCalorie, goalCalorie]);
 
   // 바텀시트 열 때 현재 목표 칼로리로 초기화
   function handleOpenGoal() {
@@ -68,6 +78,7 @@ export default function MealGoalCard({
       await onRefresh(); 
       setOpenGoal(false);
     }catch(error){
+      console.error('목표칼로리 변경 중 오류 발생: ', error);
       alert('목표칼로리 변경 중 오류가 발생했습니다.');
     }
   }
@@ -77,19 +88,27 @@ export default function MealGoalCard({
       <Card variant="color">
         <Card.Header 
           icon={<Goal />}
-          title="목표 칼로리까지 영차영차!"
+          title={message}
+          isLeftFull
           right={
             <div className={styles.goalCalorie}>
-              <span className={styles.value}>{totalCalorie.toLocaleString()}</span>
+              <span className={styles.label}>목표 칼로리: </span>
+              <span className={styles.value}>{goalCalorie.toLocaleString()}</span>
               <span className={styles.unit}>kcal</span>
-              <ButtonIcon color="tertiary" onClick={handleOpenGoal}>
-                <Pencil/>
-              </ButtonIcon>
+              {isToday && (
+                <ButtonIcon color="tertiary" onClick={handleOpenGoal}>
+                  <Pencil/>
+                </ButtonIcon>
+              )}
             </div>
           }
         />
         <Card.Body noTopPadding>
-          <Progress value={totalCalorie} max={goalCalorie} />
+          <Progress
+            value={totalCalorie}
+            max={goalCalorie}
+            unit="kcal"
+          />
         </Card.Body>
       </Card>
 

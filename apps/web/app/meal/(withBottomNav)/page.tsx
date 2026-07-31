@@ -19,8 +19,7 @@ import MealGoalCard from "../_components/mealGoalCard";
 import MealPhotoList from "../_components/mealPhotoList";
 import MealDetailList from "../_components/mealDetailList";
 
-export default function Page({
-}){
+export default function Page(){
 
   const router = useRouter();
   const {formattedDate} = useBaseDate();
@@ -116,6 +115,7 @@ export default function Page({
             totalCalorie={totalCalorie}
             goalCalorie={goalCalorie}
             onRefresh={fetchMeal}
+            isToday={isToday}
           />
         </Grid.ItemFull>
 
