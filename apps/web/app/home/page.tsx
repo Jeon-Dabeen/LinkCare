@@ -33,7 +33,7 @@ export default function Home() {
           <BG bgDate="TODAY" glucose="145" />
         </Grid.Link>
         <Grid.ItemFull>
-          <Grid.Link href="/daily/meal">
+          <Grid.Link href="/meal">
             <Card>
               <Card.Header icon={<Salad />} title="식사 다이어리" />
               <Card.Body noTopPadding>

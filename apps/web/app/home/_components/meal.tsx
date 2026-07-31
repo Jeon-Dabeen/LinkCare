@@ -2,13 +2,9 @@
 
 import Image from "next/image";
 import { Scan, Utensils } from "lucide-react";
-
 import clsx from "clsx";
 import styles from "@/styles/home/meal.module.css";
-
-
 import Progress from "@/app/_components/ui/Progress";
-
 import { formatNumber } from "@/utils/format";
 
 
@@ -21,19 +17,18 @@ type MealProps = {
   goalCalorie: number;
 }
 
-
-export default function Meal ({
+export default function Meal({
   imageUrl,
   mealType,
   foodName,
   foodCalorie,
   todayCalorie = 0,
   goalCalorie
-}: MealProps){
+}: MealProps) {
 
   return (
     <div className={styles.wrapper}>
-      <Progress 
+      <Progress
         value={todayCalorie}
         max={goalCalorie}
         unit="kcal"
@@ -41,9 +36,9 @@ export default function Meal ({
       />
       <div className={styles.foodWrapper}>
         <div className={styles.photo}>
-        {imageUrl ? (
+          {imageUrl ? (
             <Image src={imageUrl} alt={`${foodName} 사진`} width={100} height={100} />
-          ): (
+          ) : (
             <Scan size={48} strokeWidth={1}>
               <Utensils
                 size={8}
