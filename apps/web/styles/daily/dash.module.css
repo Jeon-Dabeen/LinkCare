@@ -1,6 +1,4 @@
-
-
-.dashWrapper{
+.dashWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,7 +8,7 @@
   text-align: center;
 }
 
-.current{
+.current {
   position: relative;
   display: inline-block;
   padding: 0 32px;
@@ -19,28 +17,28 @@
   font-weight: 700;
 }
 
-.value{
-  font-size: 28px;
+.value {
+  font-size: 26px;
 }
 
-.separator{
+.separator {
   padding: 0 4px;
   font-size: 28px;
   font-weight: 200;
 }
 
-.unit{
+.unit {
   padding-left: 4px;
 }
 
-.buttonArea{
+.buttonArea {
   position: absolute;
   top: 0;
   right: 0;
 }
 
 
-.dashBox{
+.dashBox {
   display: flex;
   align-items: center;
   padding: var(--spacing-sm);
@@ -53,7 +51,7 @@
 }
 
 
-.dashStatus{
+.dashStatus {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,15 +65,14 @@
   border-radius: 4px;
 }
 
-.normal{
+.normal {
   background-color: var(--color-success);
 }
 
-.warning{
+.warning {
   background-color: var(--color-warning);
 }
 
-.danger{
+.danger {
   background-color: var(--color-error);
 }
-

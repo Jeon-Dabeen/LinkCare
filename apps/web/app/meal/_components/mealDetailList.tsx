@@ -42,7 +42,7 @@ export default function MealDetailList({
     return (
       <MealDetail.List 
         key={labelKey}
-        type={title} 
+        type={labelKey} 
         canModify={canModify}
         onClick={handleClick}
       >

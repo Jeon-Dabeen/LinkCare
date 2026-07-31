@@ -88,6 +88,7 @@
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -104,7 +105,8 @@
 
 /* 1. 접힌 상태 (5줄 고정 + 오른쪽 아래 더보기 버튼) */
 .clamped {
-  max-height: 7.5em; /* 1.5 * 5줄 = 7.5em */
+  max-height: 7.5em;
+  /* 1.5 * 5줄 = 7.5em */
   overflow: hidden;
 }
 
@@ -169,7 +171,7 @@
 
 .quickWrapper {
   display: flex;
-  gap: var(--spacing-box-inner);
+  gap: var(--spacing-sm);
 }
 
 .customWrapper {
@@ -192,6 +194,7 @@
 .customButton {
   text-align: right;
 }
+
 .customButton button {
   min-width: 100px;
 }

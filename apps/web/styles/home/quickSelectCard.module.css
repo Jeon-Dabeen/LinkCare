@@ -1,9 +1,8 @@
-
-
-.card{
+.card {
   position: relative;
   flex: 1;
   width: 33%;
+  min-width: 0;
   padding: 12px 8px;
   background-color: var(--color-surface);
   border: 1px solid var(--border-color);
@@ -11,15 +10,15 @@
   cursor: pointer;
 }
 
-.input{
+.input {
   display: none;
 }
 
-.icon{
+.icon {
   color: var(--icon-color)
 }
 
-.title{
+.title {
   margin: 10px 0 4px;
   display: block;
   font-size: var(--font-size-xs);
@@ -27,14 +26,14 @@
   color: var(--color-secondary);
 }
 
-.values{
+.values {
   display: flex;
   align-items: center;
   gap: 2px;
   width: 100%;
 }
 
-.value{
+.value {
   font-weight: 600;
   color: var(--color-text-dark);
   white-space: nowrap;
@@ -42,12 +41,12 @@
   text-overflow: ellipsis;
 }
 
-.unit{
+.unit {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
 
-.checkedIcon{
+.checkedIcon {
   content: '';
   display: block;
   position: absolute;
@@ -62,11 +61,10 @@
   z-index: 1;
 }
 
-
-.card:has(input:checked) .icon{
+.card:has(input:checked) .icon {
   color: var(--color-primary);
 }
 
-.card:has(input:checked) .checkedIcon{
+.card:has(input:checked) .checkedIcon {
   background-image: url('/images/icon/form_checkbox_checked_primary.svg');
 }
