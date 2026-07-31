@@ -5,18 +5,17 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, mealtype, mealstatus } from "@prisma/client";
 import { BlobServiceClient } from "@azure/storage-blob";
 
-import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
 import { MealQueryDto } from './dto/query-meal.dto';
 
 import { calculateDefaultGoalCalorie } from './common/nutrition';
 import { isSameDate } from './common/date';
+import { MealFoodDto } from './dto/create-meal-food.dto';
 
 // Meal과 MealFood가 include된 반환 타입 정의
 type MealWithFoods = Prisma.MealGetPayload<{
   include: { MealFood: true };
 }>;
-
 
 @Injectable()
 export class MealService {
@@ -27,42 +26,43 @@ export class MealService {
     return new Date(date.trim());
   }
 
-  async findMeal(query: MealQueryDto){
-    logger.info(`MealService findMeal started. query: ${query.date}`);
+  /**
+   * 하루 식사 데이터 전체내용 받아오기
+   * @param userId 
+   * @param query 
+   * @returns 
+   */
+  async findMeal(userId: number, query: MealQueryDto){
+    logger.info(`MealService findMeal started. userId: ${userId} query: ${query.date}`);
 
-    const userId = 2; // 임시 유저 아이디
     const {date, baseDate} = query;
-
     const mealDate = this.toDate(date);
-
-    // 디버깅용 로그 (터미널에서 꼭 확인해보세요!)
-    console.log('====================================');
-    console.log(`[findMeal] date: "baseDate: "${baseDate}"`);
-    console.log(`[findMeal] 조건 검사 (baseDate === date):`, baseDate === date);
-    console.log('====================================');
 
     // meals의 타입을 MealWithFoods[] 로 명시
     let meals: MealWithFoods[] = [];
 
     // date와 baseDate가 같을 때만 '없을 때 자동 생성' 로직 실행
     if(baseDate && isSameDate(date, baseDate)){
-      console.log('---생성 로직(ensureAndGetDateMeal) 실행!---');
       meals = await this.ensureAndGetDateMeal(userId, mealDate);
     }else{
-      console.log('---단순 조회 로직(findDateMeal) 실행!---');
       // 날짜가 다르거나 baseDate가 없으면 조회만 실행
       meals = await this.findDateMeal(userId, mealDate);
     }
 
     const result = meals;
+
     logger.info(`MealService findMeal ended.`);
     return result;
   }
 
-
-  // 유저의 특정 날짜 식사 기록 조회(없으면 빈 배열)
+  /**
+   * 유저의 특정 날짜 식사 기록 조회(없으면 빈 배열)
+   * @param userId 
+   * @param mealDate 
+   * @returns 
+   */
   async findDateMeal(userId: number, mealDate: Date){
-    logger.info(`MealService findDateMeal started. ${userId}, ${mealDate}`);
+    logger.info(`MealService findDateMeal started. userId: ${userId}, mealDate: ${mealDate}`);
     const result = await this.prisma.meal.findMany({
       where: {
         userId,
@@ -75,14 +75,19 @@ export class MealService {
         mealType: 'asc'
       }
     });
-    logger.info(`MealService findDateMeal ended.`);
+    logger.info(`MealService findDateMeal ended. userId: ${userId}, mealDate: ${mealDate}`);
     return result;
   }
 
-
-  // 유저의 특정 날짜 식사 기록 조회(없으면 데이터 생성 후 조회)
+  /**
+   * 유저의 특정 날짜 식사 기록 조회(없으면 데이터 생성 후 조회)
+   * @param userId 
+   * @param mealDate 
+   * @returns 
+   */
   async ensureAndGetDateMeal(userId: number, mealDate: Date){
-    logger.info(`MealService ensureAndGetDateMeal started. ${userId}, ${mealDate}`);
+    logger.info(`MealService ensureAndGetDateMeal started. userId: ${userId}, mealDate: ${mealDate}`);
+
     const ALL_MEAL_TYPES = [
       mealtype.BREAKFAST,
       mealtype.LUNCH,
@@ -150,22 +155,27 @@ export class MealService {
         )
       )
 
-      console.log(`[UPSERT 완료] 생성/조회된 데이터 개수: ${results.length}`)
+      logger.info(`[UPSERT 완료] 생성/조회된 데이터 개수: ${results.length}`)
+      logger.info(`MealService ensureAndGetDateMeal ended. userId: ${userId}, mealDate: ${mealDate}`);
       return results;
 
     }catch(error){{
-      console.error(error);
+      logger.error(`식사 데이터 생성 및 조회 중 오류 : ${error}`);
       throw new InternalServerErrorException('식사 데이터 생성 및 조회 중 오류가 발생했어요');
     }}
   }
 
+  /**
+   * 오늘 날짜의 식사 상태 수정
+   * @param userId 
+   * @param mealId 
+   * @param dto 
+   * @returns 
+   */
+  async updateMealState(userId, mealId: number, dto: UpdateMealDto){
+    logger.info(`MealService updateMealState started. userId: ${userId}, mealId: ${mealId}`);
 
-
-  // 오늘 날짜의 식사 상태 수정
-  async updateMealState(mealId: number, dto: UpdateMealDto){
-    logger.info(`MealService updateMealState started. ${mealId}`);
-
-    const meal = await this.findMealFood(mealId);
+    const meal = await this.findMealFoodById(mealId);
 
     if(!dto.baseDate){
       throw new BadRequestException(`기준 날짜(baseDate)가 필요합니다.`)
@@ -190,12 +200,18 @@ export class MealService {
       }
     })
 
-    logger.info(`MealService updateMealState ended.`);
+    logger.info(`MealService updateMealState ended. userId: ${userId}, mealId: ${mealId}`);
     return result;
   }
 
-  // mealFood 찾기
-  async findMealFood(mealId: number) {
+  /**
+   * Id로 mealFood 찾기
+   * @param mealId 
+   * @returns 
+   */
+  async findMealFoodById(mealId: number) {
+    logger.info(`MealService findMealFoodById started. mealId: ${mealId}`);
+
     const meal = await this.prisma.meal.findUnique({
       where: { id: mealId },
       include: {
@@ -203,17 +219,20 @@ export class MealService {
       },
     });
     if(!meal) throw new NotFoundException(`식사 데이터를 찾을 수 없어요`);
+
+    logger.info(`MealService findMealFoodById ended. mealId: ${mealId}`);
     return meal;
   }
 
+  /**
+   * 목표 칼로리 수정
+   * @param userId 
+   * @param dto 
+   * @returns 
+   */
+  async updateGoalCalorie(userId: number, dto: UpdateMealDto){
+    logger.info(`MealService updateGoalCalorie started. userId: ${userId}`);
 
-
-
-  // 목표 칼로리 수정
-  async updateGoalCalorie(dto: UpdateMealDto){
-    logger.info(`MealService updateGoalCalorie started.`);
-
-    const userId = 2; // 임시 유저 아이디
     const today = new Date;
 
     const {goalCalorie} = dto;
@@ -252,18 +271,22 @@ export class MealService {
           }
         })
       ]);
-      logger.info(`MealService updateGoalCalorie ended.`);
+      logger.info(`MealService updateGoalCalorie ended. userId: ${userId}`);
       return {goalCalorie: goalCalorie};
     }catch(error){
       logger.error(`목표 칼로리 수정 중 에러 발생: ${error}`, );
+      throw new InternalServerErrorException("목표 칼로리 수정 실패");
     }
   }
 
-
-
-  // 식사 상세 기록 조회
-  async findMealFoodDetail(mealId){
-    logger.info(`MealService findMealFoodDetail started. ${mealId}`);
+  /**
+   * 식사 상세 기록 조회
+   * @param userId 
+   * @param mealId 
+   * @returns 
+   */
+  async findMealFoodDetail(userId: number, mealId: number){
+    logger.info(`MealService findMealFoodDetail started. userId: ${userId}, mealId: ${mealId}`);
 
     const result = await this.findMealFoodByMealId(mealId);
 
@@ -273,15 +296,16 @@ export class MealService {
 
     if(!result || !meal) throw new NotFoundException(`해당 식사 내용을 찾을 수 없어요`);
 
-    logger.info(`MealService findMealFoodDetail ended.`);
-    return {
+    const data = {
         mealId,
         mealDate: meal.mealDate,
         photoUrl: meal.photoUrl,
         mealFood: result,
-      };
-  }
+    }
 
+    logger.info(`MealService findMealFoodDetail ended. userId: ${userId}, mealId: ${mealId}`);
+    return data;
+  }
 
   /**
    * 상세 식사내용 기록
@@ -290,7 +314,7 @@ export class MealService {
    * @param foods 
    * @returns 
    */
-  async recordMealFoodItems(mealId, file, foods){
+  async recordMealFoodItems(userId: number, mealId: number, file: Express.Multer.File, foods){
     logger.info(`MealService recordMealFoodItems started. mealId: ${mealId}`);
     logger.debug(`foods, ${JSON.stringify(foods)}`)
 
@@ -345,9 +369,13 @@ export class MealService {
     }
   }
 
-
-  // MealFood 삭제
-  async removeMealFoodItems(mealId){
+  /**
+   * MealFood 삭제
+   * @param userId 
+   * @param mealId 
+   * @returns 
+   */
+  async removeMealFoodItems(userId: number, mealId: number){
     logger.info(`MealService removeMealFoodItems started. mealId: ${mealId}`);
 
     const meal = await this.findMealById(mealId);
@@ -374,14 +402,6 @@ export class MealService {
         })
       })
 
-      logger.info(`MealFood 삭제 및 meal 상태 업데이트 완료. mealId: ${mealId}`);
-
-      // 스토리지의 이미지 파일 삭제
-      if(meal && meal.photoUrl){
-        await this.deleteMealImage(meal.photoUrl);
-        logger.info(`Azure 이미지 파일 삭제 프로세스 완료`)
-      }
-
       logger.info(`MealService removeMealFoodItems ended. mealId: ${mealId}`);
       return { mealId };
     }catch(error){
@@ -390,16 +410,26 @@ export class MealService {
     }
   }
 
+  /**
+   * Meal: id로 찾기
+   * @param id 
+   * @returns 
+   */
+  async findMealById(id: number){
+    logger.info(`MealService findMealById started. id: ${id}`);
 
-
-  // Meal: id로 찾기
-  async findMealById(id){
     const meal = await this.prisma.meal.findUnique({where: {id: id}})
     if(!meal) throw new NotFoundException(`식사 기록이 없어요`);
+
+    logger.info(`MealService findMealById ended. id: ${id}`);
     return meal;
   }
 
-  // MealFood : mealId로 찾기
+  /**
+   * MealFood : mealId로 찾기
+   * @param mealId 
+   * @returns 
+   */
   async findMealFoodByMealId(mealId){
     logger.info(`MealService findMealFoodById started. mealId: ${mealId}`);
 
@@ -411,12 +441,13 @@ export class MealService {
     return mealFoods;
   }
 
-
-
-  // 
-
-  // image 파일 업로드
+  /**
+   * image 파일 업로드
+   * @param file 
+   * @returns 
+   */
   async uploadImage(file: Express.Multer.File){
+    logger.info(`MealService uploadImage started`);
   
     let imageUrl = '';
 
@@ -457,45 +488,8 @@ export class MealService {
       throw new InternalServerErrorException('이미지 전송 실패')
     }
 
+    logger.info(`MealService uploadImage ended`);
     return imageUrl;
-  }
-
-
-  // 이미지 파일 삭제
-  async deleteMealImage(photoUrl: string){
-    if (!photoUrl) {
-      return false; 
-    }
-    try {
-      // URL에서 파일 이름(Blob Name) 추출
-      const urlWithoutQuery = photoUrl.split('?')[0];
-      const blobName = urlWithoutQuery.substring(urlWithoutQuery.lastIndexOf('/') + 1);
-
-      if (!blobName) {
-        return false;
-      }
-
-      const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-      const containerName = process.env.AZURE_CONTAINER_NAME || 'images';
-
-      if (!connectionString) {
-        console.error('Azure 스토리지 연결 설정이 없습니다.');
-        return false;
-      }
-
-      const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
-      const containerClient = blobServiceClient.getContainerClient(containerName);
-      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-      // Azure 스토리지에서 파일 삭제 (없어도 에러 안 나고 안전하게 넘어감)
-      await blockBlobClient.deleteIfExists();
-      
-      return true;
-    } catch (error) {
-      // 삭제 중 에러가 나더라도 서비스가 죽지 않도록 로깅만 하고 안전하게 처리
-      console.error('Azure 이미지 삭제 중 에러 발생 (무시됨):', error);
-      return false;
-    }
   }
 
 }

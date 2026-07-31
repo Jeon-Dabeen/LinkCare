@@ -37,6 +37,7 @@ export default function MealGoalCard({
     setOpenGoal(true);
   }
 
+  // 목표칼로리 최고값
   const MAX_CALORIE = 6000;
 
   // input 변경
