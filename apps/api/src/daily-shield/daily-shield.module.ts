@@ -5,5 +5,6 @@ import { DailyShieldController } from './daily-shield.controller';
 @Module({
   controllers: [DailyShieldController],
   providers: [DailyShieldService],
+  exports: [DailyShieldService],
 })
 export class DailyShieldModule {}

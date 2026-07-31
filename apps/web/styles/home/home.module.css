@@ -1,17 +1,105 @@
+.greetingWrapper {
+  /* 인사말(2줄) + AI 한마디(최대 5줄) + 여백들을 고려한 최소 높이 설정 */
+  /* min-height: 200px; 픽셀(px) 단위로 설정하는 방법 */
+
+  /* 또는 상대 단위 em/rem 활용 */
+  min-height: 11.5rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
 .greeting {
   font-size: var(--font-size-lg);
   color: var(--color-secondary-active);
+  /* 인사말: 즉시 시작 (0.4초 동안) */
+  animation: fadeInUp 0.4s ease-out forwards;
 }
 
 .nickname {
   font-size: var(--font-size-lg);
   color: var(--color-secondary-active);
+  /* initial 상태는 안 보이게 처리 */
+  opacity: 0;
+  /* 닉네임: 인사말이 나오는 중간인 0.2초 뒤에 시작 */
+  animation: fadeInUp 0.4s ease-out 0.2s forwards;
 }
 
 .aiComment {
   margin-top: var(--spacing-sm);
   color: var(--color-text-secondary);
   font-size: var(--font-size-md);
+  line-height: 1.5;
+  /* font-size: 0.95rem;
+  color: #333; */
+  transition: all 0.2s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 기본 컨테이너 */
+.commentContainer {
+  position: relative;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* 1. 접힌 상태 (5줄 고정 + 오른쪽 아래 더보기 버튼) */
+.clamped {
+  max-height: 7.5em; /* 1.5 * 5줄 = 7.5em */
+  overflow: hidden;
+}
+
+.clamped::before {
+  content: "";
+  float: right;
+  height: calc(100% - 1.5em);
+}
+
+.clamped .inlineMoreBtn {
+  float: right;
+  clear: right;
+  position: relative;
+  top: -1.3em;
+  background-color: var(--color-bg);
+}
+
+/* 2. 펼쳐진 상태 (전체 노출 + 글자 바로 뒤에 접기 버튼) */
+.expanded {
+  max-height: none;
+}
+
+.expanded .inlineMoreBtn {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* 3. 공통 버튼 스타일 */
+.inlineMoreBtn {
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.inlineMoreBtn:hover {
+  color: #333;
+}
+
+.icon {
+  display: block;
 }
 
 /* dailyShield */
