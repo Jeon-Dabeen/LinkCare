@@ -76,12 +76,11 @@ export class CheckupService {
     return { result: "success", code: 201, data };
   }
 
-  async create(createCheckupDto: CreateCheckupDto) {
+  async create(userId: number, createCheckupDto: CreateCheckupDto) {
     logger.info(
       `CheckupService create started. createCheckupDto: ${createCheckupDto.checkup_history.length}`,
     );
 
-    const userId = 1; // 임시 유저 아이디
     const gender = "female"; // 임시 유저 성별
 
     const checkupHistory = createCheckupDto.checkup_history;
@@ -178,8 +177,7 @@ export class CheckupService {
     logger.info(`CheckupService generateCheckupAdvice ended. checkupId: ${checkupId}`);
   }
 
-  async findAll() {
-    const userId = 1; // 임시 유저 아이디
+  async findAll(userId: number) {
     logger.info(`CheckupService findAll started.`);
 
     const checkup = await this.prisma.checkUp.findFirst({
@@ -227,7 +225,7 @@ export class CheckupService {
       orderBy: { year: "desc" },
       where: { userId, isShow: true },
     });
-    if (!checkup) throw new NotFoundException(`검진 결과를 찾을 수 없음`);
+    if (!checkup) throw new NotFoundException("검진 결과를 찾을 수 없습니다");
     logger.debug(`find Checkup result: userId ${checkup.id} year ${checkup.year}`);
 
     const {
@@ -281,9 +279,8 @@ export class CheckupService {
     return { result: "success", code: 200, data: dashboardResponseDto };
   }
 
-  async findYears() {
+  async findYears(userId: number) {
     logger.info(`CheckupService findYear started.`);
-    const userId = 1; // 임시 유저 아이디
 
     const checkup = await this.prisma.checkUp.findMany({
       where: { userId, isShow: true },
@@ -292,13 +289,15 @@ export class CheckupService {
       orderBy: { year: "desc" },
     });
 
+    logger.debug(checkup.length);
+    if (checkup.length === 0) throw new NotFoundException("검진 결과를 찾을 수 없습니다.");
+
     logger.info(`CheckupService findYear ended.`);
     return { result: "success", code: 200, data: checkup.map((years) => years.year) };
   }
 
-  async findBodyMetrics(years: number[]) {
+  async findBodyMetrics(userId: number, years: number[]) {
     logger.info(`CheckupService findBodyMetrics started. years: ${years}`);
-    const userId = 1; // 임시 유저 아이디
 
     const bodyMetrics = await this.findValuesByYear(
       userId,
@@ -327,9 +326,8 @@ export class CheckupService {
     return { result: "success", code: 200, data: bodyMetrics };
   }
 
-  async findBloodPressure(years: number[]) {
+  async findBloodPressure(userId: number, years: number[]) {
     logger.info(`CheckupService findBloodPressure started. years: ${years}`);
-    const userId = 1; // 임시 유저 아이디
 
     const bloodPressure = await this.findValuesByYear(
       userId,
@@ -352,9 +350,8 @@ export class CheckupService {
     return { result: "success", code: 200, data: bloodPressure };
   }
 
-  async findDiabetesAnemia(years: number[]) {
+  async findDiabetesAnemia(userId: number, years: number[]) {
     logger.info(`CheckupService findDiabetesAnemia started. years: ${years}`);
-    const userId = 1; // 임시 유저 아이디
 
     const diabetesAnemia = await this.findValuesByYear(
       userId,
@@ -378,9 +375,8 @@ export class CheckupService {
     return { result: "success", code: 200, data: diabetesAnemia };
   }
 
-  async findLiver(years: number[]) {
+  async findLiver(userId: number, years: number[]) {
     logger.info(`CheckupService findLiver started. years: ${years}`);
-    const userId = 1; // 임시 유저 아이디
 
     const liver = await this.findValuesByYear(
       userId,
@@ -406,9 +402,8 @@ export class CheckupService {
     return { result: "success", code: 200, data: liver };
   }
 
-  async findKidney(years: number[]) {
+  async findKidney(userId: number, years: number[]) {
     logger.info(`CheckupService findKidney started. years: ${years}`);
-    const userId = 1; // 임시 유저 아이디
 
     const kidney = await this.findValuesByYear(
       userId,

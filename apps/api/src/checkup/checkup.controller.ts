@@ -7,6 +7,7 @@ import {
   UploadedFile,
   Query,
   ParseArrayPipe,
+  UseGuards,
 } from "@nestjs/common";
 import { CheckupService } from "./checkup.service";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
@@ -14,8 +15,11 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { pdfUploadOptions } from "../config/upload.config";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { RenameFileInterceptor } from "../common/interceptors/rename.file.interceptor";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth/jwt-auth.guard";
+import { CurrentUser } from "../common/decorator/current-user.decorator";
 
 @ApiTags("CheckUp")
+@UseGuards(JwtAuthGuard)
 @Controller("checkup")
 export class CheckupController {
   constructor(private readonly checkupService: CheckupService) {}
@@ -29,59 +33,64 @@ export class CheckupController {
 
   @ApiOperation({ summary: "검진 결과 확인 후 등록" })
   @Post()
-  create(@Body() createCheckupDto: CreateCheckupDto) {
-    return this.checkupService.create(createCheckupDto);
+  create(@CurrentUser("id") userId: number, @Body() createCheckupDto: CreateCheckupDto) {
+    return this.checkupService.create(userId, createCheckupDto);
   }
 
   @ApiOperation({ summary: "검진 대시보드 수치, 분류 조회" })
   @Get()
-  findAll() {
-    return this.checkupService.findAll();
+  findAll(@CurrentUser("id") userId: number) {
+    return this.checkupService.findAll(userId);
   }
 
   @ApiOperation({ summary: "검진 결과 최근 3개 데이터 조회" })
   @Get("/years")
-  findYears() {
-    return this.checkupService.findYears();
+  findYears(@CurrentUser("id") userId: number) {
+    return this.checkupService.findYears(userId);
   }
 
   @ApiOperation({ summary: "신체 지표 데이터 조회" })
   @Get("/body-metrics")
   findBodyMetrics(
+    @CurrentUser("id") userId: number,
     @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
   ) {
-    return this.checkupService.findBodyMetrics(years);
+    return this.checkupService.findBodyMetrics(userId, years);
   }
 
   @ApiOperation({ summary: "혈압 데이터 조회" })
   @Get("/blood-pressure")
   findBloodPressure(
+    @CurrentUser("id") userId: number,
     @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
   ) {
-    return this.checkupService.findBloodPressure(years);
+    return this.checkupService.findBloodPressure(userId, years);
   }
 
   @ApiOperation({ summary: "혈당 & 빈혈 데이터 조회" })
   @Get("/diabetes-anemia")
   findDiabetesAnemia(
+    @CurrentUser("id") userId: number,
     @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
   ) {
-    return this.checkupService.findDiabetesAnemia(years);
+    return this.checkupService.findDiabetesAnemia(userId, years);
   }
 
   @ApiOperation({ summary: "간 데이터 조회" })
   @Get("/liver")
   findLiver(
+    @CurrentUser("id") userId: number,
     @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
   ) {
-    return this.checkupService.findLiver(years);
+    return this.checkupService.findLiver(userId, years);
   }
 
   @ApiOperation({ summary: "신장 데이터 조회" })
   @Get("/kidney")
   findKidney(
+    @CurrentUser("id") userId: number,
     @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
   ) {
-    return this.checkupService.findKidney(years);
+    return this.checkupService.findKidney(userId, years);
   }
 }
