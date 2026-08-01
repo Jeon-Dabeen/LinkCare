@@ -4,22 +4,66 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../config/logger";
+import { NicknameService } from "../common/services/nickname.service";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly nickname: NicknameService,
+  ) {}
+
+  /**
+   * 닉네임 중복 확인
+   */
+  async checkDuplicateNickName(nickName: string) {
+    const found = await this.prisma.profile.findFirst({ where: { nickName } });
+    logger.debug(`UserService checkDuplicateNickName ended. ${found}`);
+    return !!found;
+  }
+
+  /**
+   * 닉네임 생성
+   * @param checkDuplicateExist
+   * @param maxAttempts 최대 재시도 횟수 (기본값: 5회)
+   */
+  async generateUniqueNickname(maxAttempts = 5) {
+    logger.info(`UserService generateUniqueNickname processing...`);
+
+    // 1차 시도
+    let nickname = this.nickname.generateBaseNickname();
+    let isExist = await this.checkDuplicateNickName(nickname);
+
+    if (!isExist) {
+      return nickname;
+    }
+
+    // 2차 시도 이후: 중복이 있으면 뒤에 2자리 숫자를 붙여서 재시도 ("신난쿼카_42")
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const baseName = this.nickname.generateBaseNickname();
+      const num = this.nickname.generateTwoDigitNumber();
+      nickname = `${baseName}_${num}`;
+
+      isExist = await this.checkDuplicateNickName(nickname);
+      if (!isExist) {
+        return nickname;
+      }
+    }
+
+    // 만약 maxAttempts 동안 중복이 해소되지 않으면 시간 기반 fallback 처리
+    const fallbackNum = Math.floor(Math.random() * 90 + 10);
+    return `${this.nickname.generateBaseNickname()}_${fallbackNum}`;
+  }
 
   /**
    * 회원가입
-   * @param data 
-   * @returns 
+   * @param data
+   * @returns
    */
   async createUser(data: { email: string; password: string }) {
     logger.info(`UserService createUser started. email=${data.email}`);
 
-    // TODO: 닉네임 값 수정 필요
-    let uuid = uuidv4().substring(0, 4);
-    const nickName = `나는 토깽이 ${uuid}`;
+    const nickName = await this.generateUniqueNickname();
     logger.debug(`nickName: ${nickName}`);
 
     const { user, profile } = await this.prisma.$transaction(async (tx) => {
@@ -39,14 +83,14 @@ export class UserService {
 
     logger.debug(`createUser result: ${JSON.stringify(user)}, ${JSON.stringify(profile)}`);
     logger.info(`UserService createUser ended. email=${data.email}`);
-    
+
     return user;
   }
 
   /**
    * 이메일로 사용자 찾기 (로그인 시 사용)
-   * @param email 
-   * @returns 
+   * @param email
+   * @returns
    */
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });

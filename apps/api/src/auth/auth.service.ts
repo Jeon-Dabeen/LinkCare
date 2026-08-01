@@ -13,6 +13,19 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  async checkDuplicateEmail(email: string) {
+    logger.info(`AuthService checkDuplicateEmail started. email=${email}`);
+    
+    const exists = await this.userService.findByEmail(email);
+
+    if (exists) {
+      throw new ConflictException("이미 가입된 이메일 입니다.");
+    }
+
+    logger.info(`AuthService checkDuplicateEmail ended. email=${email}`);
+    return {result: "success"};
+  }
+
   /**
    * 회원가입
    * @param dto
@@ -50,7 +63,7 @@ export class AuthService {
     const user = await this.userService.findUseByEmail(dto.email);
 
     if (!user) {
-      throw new UnauthorizedException("회원님이 아니시네요. 가입해주세요.");
+      throw new UnauthorizedException("회원정보를 찾을 수 없어요.");
     }
 
     const isRight = await bcrypt.compare(dto.password, user.password);
@@ -60,7 +73,7 @@ export class AuthService {
     }
 
     // TODO: loginCnt +1 로직
-    
+
     const payload = {
       sub: user.id,
       email: user.email,
