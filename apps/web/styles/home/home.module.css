@@ -152,6 +152,13 @@
 }
 
 /* dailyShield */
+.headerWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 양 끝 정렬 */
+  width: 100%;
+}
+
 .dailyShield {
   margin-top: calc(var(--spacing-lg) * -1);
   display: flex;

@@ -299,12 +299,14 @@ export default function DailyShield() {
 
   return (
     <Card>
+      <div className={styles.headerWrapper}>
       <Card.Header icon={<ShieldCheck />} title="데일리 쉴드 생성" />
       {formData.id > 0 && !isEditing && (
         <ButtonIcon onClick={handleStartEdit}>
           <Pencil />
         </ButtonIcon>
       )}
+      </div>
       <Card.Body noTopPadding>
         <div className={styles.dailyShield}>
           <Progress value={progressValue} max={4} isInfo />
@@ -319,7 +321,7 @@ export default function DailyShield() {
                 onChange={() => handleQuickToggle('exercise')}
                 icon={<SportShoe />}
                 title="운동"
-                value={(formData.exerciseTime || formData.lastExerciseTime)}
+                value={(formData.exerciseTime || formData.lastExerciseTime || '30')}
                 unit="min"
               />
               <QuickSelectCard
@@ -328,7 +330,7 @@ export default function DailyShield() {
                 onChange={() => handleQuickToggle('water')}
                 icon={<GlassWater />}
                 title="수분섭취"
-                value={String(formData.waterCup || formData.lastWaterCup)}
+                value={String(formData.waterCup || formData.lastWaterCup || 8)}
                 unit="cups"
               />
               <QuickSelectCard
@@ -337,7 +339,7 @@ export default function DailyShield() {
                 onChange={() => handleQuickToggle('supplement')}
                 icon={<PillBottle />}
                 title="영양제"
-                value={formData.supplementType || formData.lastSupplementType}
+                value={formData.supplementType || formData.lastSupplementType || '종합비타민'}
               />
             </div>
           </article>
