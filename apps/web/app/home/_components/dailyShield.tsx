@@ -12,6 +12,7 @@ import Button from "../../_components/ui/Button";
 import { ButtonIcon } from "../../_components/ui/Button";
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import { DailyShieldState, ShieldPayload } from "@/types/dailyShieldType";
+import { toast } from "sonner";
 
 // 상수 데이터 정의
 // ==========================================
@@ -152,8 +153,7 @@ export default function DailyShield() {
       // API 결과를 formData 전체에 세팅 (생성된 id 및 last* 값 포함)
       setFormData(data);
     } catch (error) {
-      console.error('DailyShield Fetch Error:', error);
-      // TODO: toast 처리 필요
+      toast.error('서버 통신 에러가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -270,12 +270,12 @@ export default function DailyShield() {
         // 수정 호출
         const result = await updateDailyShield(formData.id, payload);
         console.log('수정 완료:', result);
-        alert('데일리 쉴드가 수정되었습니다!');
+        toast.success('데일리 쉴드가 수정되었어요!');
       } else {
         // 생성 호출
         const result = await createDailyShield(payload);
         console.log('생성 완료:', result);
-        alert('데일리 쉴드가 성공적으로 등록되었습니다!');
+        toast.success('데일리 쉴드가 성공적으로 등록되었어요!');
       }
 
       setIsEditing(false);
@@ -285,7 +285,7 @@ export default function DailyShield() {
 
     } catch (error) {
       console.error('Submit Error:', error);
-      alert('저장 중 오류가 발생했습니다.');
+      toast.error('저장 중 오류가 발생했습니다.');
     }
   };
 

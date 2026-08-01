@@ -8,6 +8,7 @@ import Button from "@/app/_components/ui/Button";
 import Input from "@/app/_components/ui/Input";
 import CheckBox from "@/app/_components/ui/Checkbox";
 import BottomSheet from "@/app/_components/ui/BottomSheet";
+import { toast } from "sonner";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
 
@@ -41,12 +42,12 @@ export default function Register() {
   // 확인
   function handleOpenSheet() {
     if (!isEmailChecked) {
-      alert("이메일 중복 확인을 진행해 주세요.");
+      toast.warning("이메일 중복 확인을 진행해 주세요.");
       return;
     }
 
     if (password.length < 6) {
-      alert(`비밀번호는 6자 이상으로 입력해주세요.`);
+      toast.warning(`비밀번호는 6자 이상으로 입력해주세요.`);
       return;
     }
 
@@ -65,16 +66,16 @@ export default function Register() {
       });
 
       if (response.ok) {
-        alert("회원가입이 완료되었습니다!");
+        toast.success("회원가입이 완료되었습니다!");
         setOpen(false);
         router.push("/auth/login"); // 로그인 페이지 이동
       } else {
         const errorData = await response.json().catch(() => ({}));
-        alert(errorData.message || "회원가입에 실패했습니다.");
+        toast.error(errorData.message || "회원가입에 실패했습니다.");
       }
     } catch (error) {
       console.error("Register Error:", error);
-      alert("서버 통신 중 오류가 발생했습니다.");
+      toast.error("서버 통신 중 오류가 발생했어요, 잠시후 다시 시도해주세요.");
     }
   };
 
