@@ -8,6 +8,7 @@ import style from "@/styles/layout/layout.module.css";
 import Header from "@/app/_components/layout/Header";
 import SampleLink from "./_components/SampleLink";
 import { Providers } from "./_providers/Provider";
+import { Toaster } from "sonner";
 
 
 const pretendard = localFont({
@@ -39,6 +40,7 @@ export default function RootLayout({
             </div>
           </Providers>
         </div>
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );
