@@ -5,8 +5,7 @@ import { Observable } from "rxjs";
 export class RenameFileInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = context.switchToHttp().getRequest();
-    // const userId = req.user.id; // 임시 유저 아이디
-    const userId = 1; // 임시 유저 아이디
+    const userId = req.user.id;
 
     if (req.file) {
       req.file.originalname = `${userId}_${req.file.originalname}`;
