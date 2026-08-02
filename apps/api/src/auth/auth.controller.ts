@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Res, Get, Query } from "@nestjs/common";
+import { Controller, Body, Post, Res, Get, Query, HttpCode, HttpStatus } from "@nestjs/common";
 import type { Response } from "express";
 import { ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
@@ -36,5 +36,12 @@ export class AuthController {
     });
 
     return { message: "로그인 성공" };
+  }
+
+  @Post("logout")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "회원 로그아웃" })
+  logout(@Res({ passthrough: true }) response: Response) {
+    return this.authService.logout(response);
   }
 }

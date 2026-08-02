@@ -1,0 +1,35 @@
+
+.genderGroup{
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.radioButton{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  height: var(--input-height);
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--radius-md);
+}
+
+.genderIcon{
+  color:var(--icon-color);
+}
+
+.active{
+  /* color: var(--color-text-inverse);
+  background-color: var(--color-primary); */
+  border-color: var(--color-primary);
+}
+
+.active .genderIcon{
+  color: var(--color-primary);
+}
+
+.checkIcon{
+  color: var(--color-primary);
+}

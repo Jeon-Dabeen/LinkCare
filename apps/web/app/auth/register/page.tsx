@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -31,12 +31,13 @@ export default function Register() {
     sensitive: false,
   });
 
-  const isAllAgreed = agreements.terms && agreements.privacy && agreements.sensitive;
+  const isAllAgreed =
+    agreements.terms && agreements.privacy && agreements.sensitive;
 
   // 필수정보 - 개별 체크박스 변경 핸들러
   const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setAgreements((prev) => ({ ...prev, [name]: checked, }));
+    setAgreements((prev) => ({ ...prev, [name]: checked }));
   };
 
   // 확인
@@ -81,8 +82,11 @@ export default function Register() {
 
   // 비밀번호 확인
   const passwordErrorMessage =
-    confirmPassword && !isPasswordMatch ? "비밀번호가 일치하지 않습니다."
-      : confirmPassword && isPasswordMatch ? "비밀번호가 일치합니다." : "";
+    confirmPassword && !isPasswordMatch
+      ? "비밀번호가 일치하지 않습니다."
+      : confirmPassword && isPasswordMatch
+        ? "비밀번호가 일치합니다."
+        : "";
 
   // 이메일 중복 체크 함수
   const handleCheckEmail = async () => {
@@ -99,10 +103,13 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/check-email?email=${email}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/check-email?email=${email}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
 
       const data = await response.json();
 
@@ -143,13 +150,24 @@ export default function Register() {
                 }}
                 required
               />
-              <Button type="button" variant="secondary" size="medium" onClick={handleCheckEmail}>
+              <Button
+                type="button"
+                variant="secondary"
+                size="medium"
+                onClick={handleCheckEmail}
+              >
                 중복 확인
               </Button>
             </div>
             {/* 검증 결과 안내 메시지 표시 */}
             {emailMessage && (
-              <p className={isEmailChecked ? commonStyle.textSuccess : commonStyle.textError}>
+              <p
+                className={
+                  isEmailChecked
+                    ? commonStyle.textSuccess
+                    : commonStyle.textError
+                }
+              >
                 {emailMessage}
               </p>
             )}
@@ -186,27 +204,39 @@ export default function Register() {
             {passwordErrorMessage && (
               <p
                 className={
-                  isPasswordMatch ? commonStyle.textSuccess : commonStyle.textError
+                  isPasswordMatch
+                    ? commonStyle.textSuccess
+                    : commonStyle.textError
                 }
               >
                 {passwordErrorMessage}
               </p>
             )}
           </div>
+          <div className={formStyle.formBoxCenter}>
+            <Button
+              variant="text-primary"
+              size="small"
+              onClick={() => router.push("/auth/login")}
+            >
+              로그인
+            </Button>
+          </div>
           <div className={commonStyle.fixedBottom}>
             <div className={commonStyle.fixedBottomInner}>
-              <Button type="button" variant="primary" size="large" onClick={handleOpenSheet}>
+              <Button
+                type="button"
+                variant="primary"
+                size="large"
+                onClick={handleOpenSheet}
+              >
                 회원가입
               </Button>
             </div>
           </div>
         </form>
       </div>
-      <BottomSheet
-        open={open}
-        title="약관 동의"
-        onClose={() => setOpen(false)}
-      >
+      <BottomSheet open={open} title="약관 동의" onClose={() => setOpen(false)}>
         <div className={formStyle.formWrapper}>
           <div className={formStyle.formGroup}>
             <div className={formStyle.formInputWrapper}>
@@ -219,7 +249,9 @@ export default function Register() {
                 onChange={handleCheckChange}
                 required
               />
-              <Button type="button" variant="text-secondary" size="small">약관 보기</Button>
+              <Button type="button" variant="text-secondary" size="small">
+                약관 보기
+              </Button>
             </div>
           </div>
           <div className={formStyle.formGroup}>
@@ -233,7 +265,9 @@ export default function Register() {
                 onChange={handleCheckChange}
                 required
               />
-              <Button type="button" variant="text-secondary" size="small">약관 보기</Button>
+              <Button type="button" variant="text-secondary" size="small">
+                약관 보기
+              </Button>
             </div>
           </div>
           <div className={formStyle.formGroup}>
@@ -247,11 +281,15 @@ export default function Register() {
                 onChange={handleCheckChange}
                 required
               />
-              <Button type="button" variant="text-secondary" size="small">약관 보기</Button>
+              <Button type="button" variant="text-secondary" size="small">
+                약관 보기
+              </Button>
             </div>
           </div>
           <div className={formStyle.formGroup}>
-            <p className={commonStyle.textInfo}>필수약관에 동의하신 후 서비스를 이용할 수 있습니다.</p>
+            <p className={commonStyle.textInfo}>
+              필수약관에 동의하신 후 서비스를 이용할 수 있습니다.
+            </p>
           </div>
 
           {/* disabled 및 onClick 연결 */}

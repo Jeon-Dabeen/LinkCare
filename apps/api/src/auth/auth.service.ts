@@ -5,9 +5,18 @@ import { UserService } from "../user/user.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { logger } from "../config/logger";
+import type { CookieOptions, Response } from "express";
 
 @Injectable()
 export class AuthService {
+  // 공통 쿠키 기본 옵션
+  private readonly baseCookieOptions: CookieOptions = {
+    httpOnly: true, // XSS 공격 방지
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax", // Cross-site 쿠키 전송 허용
+    path: "/", // 쿠키 경로 설정
+  };
+
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -15,7 +24,7 @@ export class AuthService {
 
   async checkDuplicateEmail(email: string) {
     logger.info(`AuthService checkDuplicateEmail started. email=${email}`);
-    
+
     const exists = await this.userService.findByEmail(email);
 
     if (exists) {
@@ -23,7 +32,7 @@ export class AuthService {
     }
 
     logger.info(`AuthService checkDuplicateEmail ended. email=${email}`);
-    return {result: "success"};
+    return { result: "success" };
   }
 
   /**
@@ -66,6 +75,11 @@ export class AuthService {
       throw new UnauthorizedException("회원정보를 찾을 수 없어요.");
     }
 
+    // 탈퇴한 회원 접근 차단
+    if (user.useyn === "N") {
+      throw new UnauthorizedException("탈퇴 처리된 계정입니다.");
+    }
+
     const isRight = await bcrypt.compare(dto.password, user.password);
 
     if (!isRight) {
@@ -83,5 +97,29 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  /**
+   * 공통 쿠키 삭제 메서드
+   * @param response
+   */
+  clearAuthCookie(response: Response) {
+    logger.info(`AuthService clearAuthCookie started.`);
+
+    response.clearCookie("access_token", this.baseCookieOptions);
+
+    logger.info(`AuthService clearAuthCookie ended.`);
+  }
+
+  /**
+   * 로그아웃
+   * @param response
+   * @returns
+   */
+  logout(response: Response) {
+    logger.info(`AuthService logout started.`);
+    this.clearAuthCookie(response);
+    logger.info(`AuthService logout ended.`);
+    return { message: "로그아웃 성공" };
   }
 }
