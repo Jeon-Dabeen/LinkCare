@@ -12,6 +12,7 @@ import { UserModule } from "./user/user.module";
 import { GreetModule } from "./greet/greet.module";
 import { BloodGlucoseModule } from "./blood-glucose/blood-glucose.module";
 import { ProfileModule } from "./profile/profile.module";
+import { BloodPressureModule } from './blood-pressure/blood-pressure.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ProfileModule } from "./profile/profile.module";
     GreetModule,
     BloodGlucoseModule,
     ProfileModule,
+    BloodPressureModule,
   ],
   controllers: [AppController],
   providers: [AppService],
