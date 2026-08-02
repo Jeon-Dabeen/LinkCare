@@ -1,73 +1,71 @@
-
-.cardWrapper{
+.cardWrapper {
   position: relative;
   background-color: var(--color-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-secondary);
   border-radius: var(--border-radius);
   min-width: 0;
 }
 
-.color{
+.color {
   background-color: var(--color-card-bg);
 }
 
 /* header */
-.cardHeader{
+.cardHeader {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   padding: var(--spacing-box-inner) var(--spacing-box-inner) calc(var(--spacing-box-inner) / 2);
 }
 
-.noPadding{
+.noPadding {
   padding: 0;
 }
 
-.cardHeader .left{
+.cardHeader .left {
   flex: 1;
   display: flex;
   gap: var(--spacing-sm);
   color: var(--color-secondary);
 }
 
-.fullLeft{
+.fullLeft {
   flex-wrap: wrap;
 }
 
-.fullLeft .left{
+.fullLeft .left {
   flex: 1 1 100%;
 }
 
-.cardHeader .title{
-  min-width: 180px;
+.cardHeader .title {
   font-weight: 700;
 }
 
-.cardHeader .right{
+.cardHeader .right {
   margin-left: auto;
   font-weight: 600;
   color: var(--color-secondary);
 }
 
 /* body */
-.cardBody{
+.cardBody {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
   padding: var(--spacing-box-inner);
 }
 
-.noTopPadding{
+.noTopPadding {
   padding-top: 0;
 }
 
-.cardGrid{
+.cardGrid {
   position: relative;
   display: grid;
   gap: var(--spacing-md);
 }
 
-.lineTop::before{
+.lineTop::before {
   content: '';
   position: absolute;
   top: calc(var(--spacing-md) / -2);
@@ -77,11 +75,11 @@
   border-top: 1px dashed var(--border-color);
 }
 
-.lineLeft > *{
+.lineLeft>* {
   position: relative;
 }
 
-.lineLeft > *:not(:first-child)::after{
+.lineLeft>*:not(:first-child)::after {
   content: '';
   position: absolute;
   left: calc(var(--spacing-md) / -2);
@@ -92,14 +90,14 @@
 }
 
 /* item */
-.cardItem{
+.cardItem {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
 }
 
-.cardItemHeader{
+.cardItemHeader {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -108,4 +106,3 @@
   font-weight: 700;
   color: var(--color-text-light);
 }
-

@@ -1,5 +1,5 @@
-import { mealtype } from '@prisma/client';
-import { IsDateString, IsEnum, IsInt, IsOptional } from 'class-validator';
+import { mealtype } from "@prisma/client";
+import { IsDateString, IsEnum, IsInt, IsOptional } from "class-validator";
 
 export class MealQueryDto {
   @IsDateString()
@@ -15,5 +15,5 @@ export class MealQueryDto {
 
   @IsOptional()
   @IsInt()
-  mealId?:number;
+  mealId?: number;
 }

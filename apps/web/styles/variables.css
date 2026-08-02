@@ -27,9 +27,9 @@
   --color-error-light: #e8a298;
   --color-error-hover: #B05A4D;
   --color-error-active: #964A3F;
-  --color-info: #8FA0C0;
-  --color-info-hover: #7B8BB8;
-  --color-info-active: #6A7AA5;
+  --color-info: #5e7196;
+  --color-info-hover: #3c4e80;
+  --color-info-active: #2c395d;
 
   /* status */
   --color-low: #6F9FC9;
@@ -68,6 +68,7 @@
   /* border */
   --border-radius: 8px;
   --border-color: #9F988F;
+  --border-color-light: #ebe8e6;
 
   /* fonts */
   --font-size-xs: 12px;

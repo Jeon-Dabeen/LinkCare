@@ -1,5 +1,6 @@
 
 import styles from "@/styles/meal/photoButton.module.css";
+import Image from "next/image";
 
 import { MealType, getMealTypeLabel } from "@/types/mealType";
 import { BeefOff, PaperBag, Plus } from "lucide-react";
@@ -34,7 +35,7 @@ export default function PhotoButton({
       }
       {imageUrl && 
         <div className={styles.photo}>
-          <img src={imageUrl} alt={`${label} 사진`} width={100} height={100} />
+          <Image src={imageUrl} alt={`${label} 사진`} width={100} height={100} />
         </div>
       }
     </div>

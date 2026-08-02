@@ -19,12 +19,16 @@ import MealGoalCard from "../_components/mealGoalCard";
 import MealPhotoList from "../_components/mealPhotoList";
 import MealDetailList from "../_components/mealDetailList";
 
+import { useAlert } from "@/app/_providers/AlertContext";
+
 export default function Page(){
 
   const router = useRouter();
   const {formattedDate} = useBaseDate();
   const searchParams = useSearchParams();
   const selectedDate = searchParams.get('date') ?? formattedDate;
+
+  const { customAlert } = useAlert();
 
   // 오늘 날짜인지 확인
   const isToday = (selectedDate === formattedDate);
@@ -45,7 +49,7 @@ export default function Page(){
     }catch(error){
       if(error instanceof Error){
         console.error('식사 데이터 로드 실패: ', error.message);
-        alert(error.message);
+        await customAlert(error.message);
       }
     }
   }, [selectedDate, formattedDate])
@@ -78,7 +82,7 @@ export default function Page(){
   function handleNavRecord(mealType: string, mealId?: number, isSkipped?: boolean){
     // 안먹었어요! 상태일 때 수정 불가
     if(isSkipped){
-      alert(`'안먹었어요'가 체크된 식사는 수정할 수 없어요`);
+      customAlert(`'안먹었어요'가 체크된 식사는 수정할 수 없어요`);
       return;
     }
     const upperMealType = mealType.toUpperCase();

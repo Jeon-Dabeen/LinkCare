@@ -141,7 +141,6 @@ export default function MealRecord() {
    */
   const addFoodItem = async () => {
     if (foodItems.length >= 5) {
-      // alert("더 이상 추가할 수 없어요");
       await customAlert("더 이상 추가할 수 없어요")
       return;
     }
@@ -189,14 +188,6 @@ export default function MealRecord() {
       (item) => item.foodName.trim() !== "" || item.calorie !== null,
     );
 
-    // if (hasExistingData || currentImageUrl) {
-    //   const isConfirmed = window.confirm(
-    //     "새로운 사진을 분석하면 기존에 작성된 식사 내용이 사라져요. 덮어쓰시겠어요?",
-    //   );
-    //   if (!isConfirmed) {
-    //     return;
-    //   }
-    // }
     if (hasExistingData || currentImageUrl) {
       const isConfirmed =  await customConfirm(
         "새로운 사진을 분석하면 기존에 작성된 식사 내용이 사라져요. 덮어쓰시겠어요?",
@@ -222,7 +213,6 @@ export default function MealRecord() {
 
       if (foods.length === 0) {
         await customAlert("음식 사진을 찾지 못했어요\n다른 사진으로 다시 골라주세요")
-        // alert("음식 사진을 찾지 못했어요\n다른 사진으로 다시 골라주세요");
         return;
       }
 
@@ -238,7 +228,6 @@ export default function MealRecord() {
       setCurrentImageUrl(previewUrl);
     } catch (error) {
       console.error("이미지 분석 실패: ", error);
-      // alert("이미지 분석에 실패했어요");
       await customAlert("이미지 분석에 실패했어요")
     } finally {
       setIsPhotoLoading(false);
@@ -267,7 +256,7 @@ export default function MealRecord() {
 
       // 둘 중 하나만 입력되어 있으면 에러
       if (hasName !== hasCalorie) {
-        alert(`음식명과 칼로리를 입력해주세요`);
+        customAlert("음식명과 칼로리를 입력해주세요");
         return null;
       }
 
@@ -280,13 +269,13 @@ export default function MealRecord() {
 
     // 유효한 데이터가 없는지 확인
     if (validItems.length === 0) {
-      alert("1개 이상의 음식 정보를 입력해주세요");
+      customAlert("1개 이상의 음식 정보를 입력해주세요");
       return null;
     }
 
     // 유효한 데이터가 5개가 넘지 않는지 확인
     if (validItems.length > 5) {
-      alert("음식은 최대 5개까지 등록할 수 있어요");
+      customAlert("음식은 최대 5개까지 등록할 수 있어요");
       return null;
     }
 
@@ -322,7 +311,7 @@ export default function MealRecord() {
     } catch (error) {
       if (error instanceof Error) {
         console.error("저장에 실패했어요: ", error.message);
-        alert(error.message);
+        await customAlert(error.message);
       }
     }
   };
@@ -341,16 +330,16 @@ export default function MealRecord() {
         method: "DELETE",
       });
 
-      alert("성공적으로 삭제되었어요");
+      await customAlert("성공적으로 삭제되었어요");
 
       // 화면 이동
       // router.replace('/meal');
     } catch (error) {
       if (error instanceof Error) {
         console.error("삭제에 샐패했어요: ", error.message);
-        alert(error.message);
+        await customAlert(error.message);
       } else {
-        alert("삭제에 실패했어요");
+        await customAlert("삭제에 실패했어요");
       }
     }
   };
