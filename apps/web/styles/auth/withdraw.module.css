@@ -1,0 +1,32 @@
+.wrapper {}
+
+.comment {
+  color: var(--color-text-dark);
+}
+
+.list {
+  margin: var(--spacing-lg) 0;
+}
+
+.list>li {
+  position: relative;
+  padding-left: 1.2em;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.list>li::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 1.2em;
+  margin-left: -1em;
+  width: 4px;
+  height: 4px;
+  background-color: var(--color-text-secondary);
+  border-radius: 50%;
+}
+
+.list>li~li {
+  margin-top: var(--spacing-xs);
+}
