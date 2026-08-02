@@ -31,7 +31,11 @@ import {
   getBarPercentage,
   getEgfrBarPercentage,
 } from "@/utils/checkupBarRange";
+
 import CheckupRange from "@/utils/checkup-range.json";
+import { ENV } from "@/env";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 interface CheckupDashBoardResponse {
   id: number;
@@ -74,28 +78,55 @@ interface CheckupDashBoardResponse {
     alt: StatusType;
     ygtp: StatusType;
   };
-  aiComment: {
+  aiComment?: {
     id: number;
     comment: string;
   };
+}
+
+async function fetchCheckupWithRetry(token: string, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    const response = await fetch(`${ENV.API_URL}/checkup`, {
+      headers: { Cookie: `access_token=${token}` },
+    });
+
+    if (response.ok) return response;
+
+    if (response.status === 500 && i < maxRetries - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // 0.5초 대기 후 재시도
+      continue;
+    }
+
+    return response;
+  }
 }
 
 export default async function Page() {
   // TODO: Gender 하드코딩 수정해야 함!
   const gender = "female"; // 임시 성별 코드
 
-  const response = await fetch(`${process.env.NEXT_API_URL}/checkup`)
-    .then((res) => res.json())
-    .catch((e) => {
-      console.error(`Server Error`);
-    });
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+  if (token === undefined) redirect("/auth/login");
 
-  if (!response) {
-    // TODO: Toast 추가
-    alert(`검진 결과를 가져오지 못했습니다.`);
+  const response = await fetchCheckupWithRetry(token);
+
+  if (!response) throw new Error("Server Error");
+
+  if (!response.ok) {
+    if (response.status === 401) redirect("/auth/login");
+    if (response.status === 404) redirect("/checkup/upload");
+
+    throw new Error(`검진 결과 조회 실패: ${response.status}`);
   }
 
-  const data: CheckupDashBoardResponse = response.data;
+  const json = await response.json();
+
+  if (!json.data) {
+    throw new Error("응답에 데이터가 없습니다");
+  }
+
+  const data: CheckupDashBoardResponse = json.data;
   const {
     body_metrics,
     blood_pressure,
@@ -157,10 +188,12 @@ export default async function Page() {
           <h2 className={commonStyle.pageTitle}>건강검진</h2>
         </div>
         <div className={commonStyle.right}>
-          <Button variant="text-primary">
-            <CirclePlus />
-            <span>건강검진 데이터 추가</span>
-          </Button>
+          <Link href="/checkup/upload">
+            <Button variant="text-primary">
+              <CirclePlus />
+              <span>건강검진 데이터 추가</span>
+            </Button>
+          </Link>
         </div>
       </header>
 
