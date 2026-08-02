@@ -20,6 +20,8 @@ import RecordPhoto from "./_components/recordPhoto";
 import FoodItem from "./_components/foodItem";
 import StatePage from "@/app/_components/ui/StatePage";
 import { getMealTypeLabel, MealType } from "@/types/mealType";
+import { useAlert } from "@/app/_providers/AlertContext";
+import { useConfirm } from "@/app/_providers/ConfirmContext";
 
 type RecordModeType =
   | "EDIT" // 오늘 + 기존 데이터 있음 (수정)
@@ -46,6 +48,9 @@ export default function MealRecord() {
   const date = searchParams.get("date");
   const mealType = searchParams.get("mealType");
   const mealId = searchParams.get("mealId");
+
+  const { customAlert } = useAlert();
+  const { customConfirm } = useConfirm();
 
   // 오늘 날짜인지 확인
   let isToday = date === formattedDate;
@@ -134,9 +139,10 @@ export default function MealRecord() {
    * 아이템 추가 버튼 함수
    * @returns
    */
-  const addFoodItem = () => {
+  const addFoodItem = async () => {
     if (foodItems.length >= 5) {
-      alert("더 이상 추가할 수 없어요");
+      // alert("더 이상 추가할 수 없어요");
+      await customAlert("더 이상 추가할 수 없어요")
       return;
     }
     setFoodItems((prev) => [
@@ -183,9 +189,22 @@ export default function MealRecord() {
       (item) => item.foodName.trim() !== "" || item.calorie !== null,
     );
 
+    // if (hasExistingData || currentImageUrl) {
+    //   const isConfirmed = window.confirm(
+    //     "새로운 사진을 분석하면 기존에 작성된 식사 내용이 사라져요. 덮어쓰시겠어요?",
+    //   );
+    //   if (!isConfirmed) {
+    //     return;
+    //   }
+    // }
     if (hasExistingData || currentImageUrl) {
-      const isConfirmed = window.confirm(
+      const isConfirmed =  await customConfirm(
         "새로운 사진을 분석하면 기존에 작성된 식사 내용이 사라져요. 덮어쓰시겠어요?",
+        {
+          title: "식사 내용 덮어쓰기",
+          confirmText: "덮어쓰기",
+          cancelText: '취소',
+        }
       );
       if (!isConfirmed) {
         return;
@@ -202,7 +221,8 @@ export default function MealRecord() {
       const foods = await analyzeFood(file);
 
       if (foods.length === 0) {
-        alert("음식 사진을 찾지 못했어요\n다른 사진으로 다시 골라주세요");
+        await customAlert("음식 사진을 찾지 못했어요\n다른 사진으로 다시 골라주세요")
+        // alert("음식 사진을 찾지 못했어요\n다른 사진으로 다시 골라주세요");
         return;
       }
 
@@ -218,7 +238,8 @@ export default function MealRecord() {
       setCurrentImageUrl(previewUrl);
     } catch (error) {
       console.error("이미지 분석 실패: ", error);
-      alert("이미지 분석에 실패했어요");
+      // alert("이미지 분석에 실패했어요");
+      await customAlert("이미지 분석에 실패했어요")
     } finally {
       setIsPhotoLoading(false);
     }
@@ -463,6 +484,7 @@ export default function MealRecord() {
           )}
         </form>
       </div>
+
     </section>
   );
 }

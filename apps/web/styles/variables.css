@@ -1,4 +1,4 @@
-:root{
+:root {
   /* colors */
   --color-primary: #5E8B62;
   --color-primary-hover: #4A6F4E;
@@ -70,12 +70,18 @@
   --border-color: #9F988F;
 
   /* fonts */
-  --font-size-xs: 12px;  /* 캡션, 보조 */
-  --font-size-sm: 13px;  /* 작은 설명 */
-  --font-size-base: 14px; /* 기본 본문 */
-  --font-size-md: 16px;  /* 강조 본문 */
-  --font-size-lg: 20px;  /* 섹션 제목 */
-  --font-size-xl: 24px;  /* 페이지 제목 */
+  --font-size-xs: 12px;
+  /* 캡션, 보조 */
+  --font-size-sm: 13px;
+  /* 작은 설명 */
+  --font-size-base: 14px;
+  /* 기본 본문 */
+  --font-size-md: 16px;
+  /* 강조 본문 */
+  --font-size-lg: 20px;
+  /* 섹션 제목 */
+  --font-size-xl: 24px;
+  /* 페이지 제목 */
   --line-height-base: 1.5;
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
@@ -107,9 +113,9 @@
   --radius-full: 9999px;
 
   /* shadow */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.12);
-  --shadow-lg: 0 10px 30px rgba(0,0,0,.16);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, .12);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, .16);
 
   /* layout */
   --app-max-width: 600px;
@@ -141,6 +147,7 @@
 
   /* input */
   --input-height: 48px;
+  --input-height-sm: 36px;
   --input-padding-x: 10px;
   --input-padding-y: 15px;
   --input-border-radius: 8px;
