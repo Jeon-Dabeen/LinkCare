@@ -8,7 +8,7 @@ import clsx from "clsx";
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   type?: string;
   variant?: "primary" | "secondary" | "outline" | "text-primary" | "text-secondary" | "text-tertiary";
-  size?: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large" | "textonly";
   full?: boolean,
   round?: boolean
 };

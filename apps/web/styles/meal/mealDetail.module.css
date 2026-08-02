@@ -1,5 +1,4 @@
-
-.wrapper{
+.wrapper {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
@@ -7,46 +6,46 @@
 
 
 
-.listHeader{
+.listHeader {
   display: flex;
   align-items: center;
   padding: 10px;
   padding-right: 0;
 }
 
-.type{
+.type {
   flex: 1;
   font-weight: 600;
   color: var(--color-secondary);
 }
 
-.list{
-  border-top: 1px solid var(--color-text-secondary);
-  border-bottom: 1px solid var(--color-text-secondary);
+.list {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 /* item */
 
-.item{
+.item {
   display: flex;
   gap: var(--spacing-box-inner);
   padding: 10px;
 }
 
-.item:not(:first-child){
+.item:not(:first-child) {
   border-top: 1px dashed var(--color-text-secondary);
 }
 
-.foodName{
+.foodName {
   flex: 1;
 }
 
-.unitCalorie{
+.unitCalorie {
   text-align: right;
   color: var(--color-text-secondary);
 }
 
-.unitCalorie strong{
+.unitCalorie strong {
   margin-right: 2px;
   font-weight: 700;
   color: var(--color-primary);

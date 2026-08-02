@@ -7,14 +7,17 @@ import clsx from "clsx";
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 
 import { StatusType } from "@/types/statusType";
-import { getCalendarDays, isAvailableDate } from "./date";
+import {
+  getCalendarDays,
+  isAvailableDate,
+} from "@/app/_components/ui/calendar/date";
 
-import WeekHeader from "./Weeks";
+import WeekHeader from "@/app/_components/ui/calendar/Weeks";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import styles from "@/styles/components/calendar.module.css";
 
-type MonthCalendarProps = {
+type MealMonthCalendarProps = {
   // 현재 선택된 날짜 없으면 오늘 기준
   selectedDate?: Dayjs;
   data?: Record<
@@ -27,12 +30,12 @@ type MonthCalendarProps = {
   onMonthChange?: (month: string) => void;
 };
 
-export default function MonthCalendar({
+export default function MealMonthCalendar({
   selectedDate,
   data = {},
   onDateClick,
   onMonthChange,
-}: MonthCalendarProps) {
+}: MealMonthCalendarProps) {
   const { baseDate } = useBaseDate();
 
   // 달력 최초 표시 기준
@@ -67,13 +70,19 @@ export default function MonthCalendar({
   return (
     <div>
       <header className={styles.header}>
-        {!isFirstMonth && 
-          <button onClick={() => moveMonth(-1)} className={styles.buttonPrev}><ChevronLeft /></button>
-        }
-        <p className={styles.currentMonth}>{currentMonth.format("YYYY년 MM월")}</p>
-        {!isLastMonth && 
-          <button onClick={() => moveMonth(1)} className={styles.buttonNext}><ChevronRight /></button>
-        }
+        {!isFirstMonth && (
+          <button onClick={() => moveMonth(-1)} className={styles.buttonPrev}>
+            <ChevronLeft />
+          </button>
+        )}
+        <p className={styles.currentMonth}>
+          {currentMonth.format("YYYY년 MM월")}
+        </p>
+        {!isLastMonth && (
+          <button onClick={() => moveMonth(1)} className={styles.buttonNext}>
+            <ChevronRight />
+          </button>
+        )}
       </header>
 
       <WeekHeader />
@@ -104,7 +113,7 @@ export default function MonthCalendar({
                 className={clsx(
                   styles.daybutton,
                   disabled && styles.disabled,
-                  isToday && styles.today, 
+                  isToday && styles.today,
                   record?.status && styles[record.status],
                 )}
               >

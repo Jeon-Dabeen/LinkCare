@@ -7,6 +7,7 @@ import Button from "@/app/_components/ui/Button";
 import PhotoButton from "./photoButton";
 import { MealItem } from "@/types/meal";
 import { apiFetch } from "../_api/apiFetch";
+import { useAlert } from "@/app/_providers/AlertContext";
 
 interface MealPhotoListProps {
   mealsList: MealItem[];
@@ -26,6 +27,8 @@ export default function MealPhotoList({
   const breakfast = mealsList.find((m) => m.mealType === "BREAKFAST");
   const lunch = mealsList.find((m) => m.mealType === "LUNCH");
   const dinner = mealsList.find((m) => m.mealType === "DINNER");
+
+  const { customAlert } = useAlert();
 
   // 안먹었어요 버튼
   async function handleToggleSkip(
@@ -54,7 +57,7 @@ export default function MealPhotoList({
     } catch (error) {
       if (error instanceof Error) {
         console.error("안먹었어요 상태 변경 실패: ", error.message);
-        alert(error.message);
+        await customAlert(error.message);
       }
     }
   }
@@ -85,6 +88,7 @@ export default function MealPhotoList({
         {isToday && meal && !hasFood && (
           <Button
             variant="text-tertiary"
+            size="textonly"
             onClick={() =>
               handleToggleSkip(
                 meal.id,

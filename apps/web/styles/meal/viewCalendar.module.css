@@ -4,7 +4,7 @@
   bottom: 0;
   left: 50%;
   display: none;
-  padding: 0 var(--layout-padding-x) var(--layout-padding-x);
+  padding: 0 0 var(--layout-padding-x);
   width: 100%;
   max-width: var(--app-max-width);
   height: 100vh;
@@ -22,4 +22,13 @@
 
 .header button{
   margin-left: auto;
+}
+
+
+.monthlyWrapper{
+  padding: 0 var(--layout-padding-x);
+}
+
+.infoBox{
+  padding: var(--layout-padding-x);
 }

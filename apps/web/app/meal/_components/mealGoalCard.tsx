@@ -15,6 +15,7 @@ import Input from "@/app/_components/ui/Input";
 import { apiFetch } from "../_api/apiFetch";
 import { GoalCalorieResponse } from "@/types/meal";
 import { getCalorieMessage } from "@/utils/getCalorieMessage";
+import { useAlert } from "@/app/_providers/AlertContext";
 
 interface MealGoalCardProps {
   totalCalorie: number;
@@ -30,6 +31,8 @@ export default function MealGoalCard({
   isToday
 }: MealGoalCardProps){
 
+  const { customAlert } = useAlert();
+  
   // 목표칼로리 수정용 상태
   const [openGoal, setOpenGoal] = useState(false);
   const [inputGoalCalorie, setinputGoalCalorie] = useState<number>(2000);
@@ -79,7 +82,7 @@ export default function MealGoalCard({
       setOpenGoal(false);
     }catch(error){
       console.error('목표칼로리 변경 중 오류 발생: ', error);
-      alert('목표칼로리 변경 중 오류가 발생했습니다.');
+      await customAlert('목표칼로리 변경 중 오류가 발생했어요');
     }
   }
     

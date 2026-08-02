@@ -53,7 +53,7 @@
   height: 60px;
   padding-left: var(--spacing-lg);
   background-color: var(--color-surface);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color-light);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
