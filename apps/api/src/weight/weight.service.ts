@@ -244,7 +244,7 @@ export class WeightService {
     });
 
     logger.debug(`updateWeightProfile result: ${result}`);
-    logger.info(`WeightService updateWeightProfile started. userId=${userId}`);
+    logger.info(`WeightService updateWeightProfile ended. userId=${userId}`);
 
     return result;
   }

@@ -7,7 +7,7 @@ import dashStyle from "@/styles/daily/dash.module.css";
 import Card from "@/app/_components/ui/Card";
 import WeightRegisterForm from "../../_components/WeightRegisterForm";
 import StatePage from "@/app/_components/ui/StatePage";
-import { StatusType } from "@/types/statusType";
+import type { StatusType } from "@/types/statusType";
 import GaugeChart from "@/app/_components/ui/chart/guageChart";
 import WeightWeekChart from "../../_components/WeightWeekChart";
 import MonthCalendar from "@/app/_components/ui/calendar/MonthCalendar";
@@ -15,6 +15,7 @@ import WeightBottomSheet from "../../_components/WeightBottomSheet";
 import HeightBottomSheet from "../../_components/HeightBottomSheet";
 import GoalWeightInputBottomSheet from "../../_components/GoalWeightBottomSheet";
 import { ButtonIcon } from "@/app/_components/ui/Button";
+import { getBmiStatus } from "@/utils/dailyRange";
 
 interface WeightProfile {
   height: number | null;
@@ -53,9 +54,12 @@ type CalendarData = {
   };
 };
 
-const USER_ID = 1;
-
-const BMI_LEVELS: StatusType[] = ["low", "normal", "caution", "danger"];
+const BMI_LEVELS: StatusType[] = [
+  "low",
+  "normal",
+  "warning",
+  "danger",
+];
 
 //기존 주간 list에 오늘 체중기록 추가, 오래된날짜부터
 function addTodayWeekRecord(
@@ -77,23 +81,6 @@ function addTodayMonthRecord(
   );
 }
 
-//임시 bmi 기준 함수 (만들어주실것)
-function getBmiStatus(bmi: number | null): StatusType | undefined {
-  if (bmi == null) {
-    return undefined;
-  }
-  if (bmi < 18.5) {
-    return "low";
-  }
-
-  if (bmi < 23) {
-    return "normal";
-  }
-  if (bmi < 25) {
-    return "caution";
-  }
-  return "danger";
-}
 //달력용 데이터
 function makeCalendarData(records: MonthWeightRecord[]) {
   const result: CalendarData = {};
@@ -112,7 +99,7 @@ function makeCalendarData(records: MonthWeightRecord[]) {
   return result;
 }
 
-export default function Page() {
+export default function Page(){
   const { formattedDate, baseDate } = useBaseDate(); //날짜
 
   //에러
@@ -137,6 +124,8 @@ export default function Page() {
   //로딩
   const [weekLoading, setWeekLoading] = useState(true);
   const [monthLoading, setMonthLoading] = useState(true);
+  //제출중 상태
+  const [submitting, setSubmitting] =useState(false);
 
   //1회성 건너뛰기
   const [skipped, setSkipped] = useState(false);
@@ -148,7 +137,8 @@ export default function Page() {
     const fetchWeekWeights = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/weight/week/${USER_ID}?date=${formattedDate}`,
+          `http://localhost:3001/weight/week?weightDate=${formattedDate}`,
+          {credentials: "include"},
         );
         if (!response.ok) {
           throw new Error(`주간 체중 조회 실패: ${response.status}`);
@@ -174,7 +164,8 @@ export default function Page() {
     const fetchMonthWeights = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/weight/month/${USER_ID}?date=${formattedDate}`,
+          `http://localhost:3001/weight/month?date=${formattedDate}`,
+          {credentials: "include"},
         );
         if (!response.ok) {
           throw new Error(`월간 BMI 조회 실패 : ${response.status}`);
@@ -222,7 +213,7 @@ export default function Page() {
   );
 
   //bmi차트
-  const bmiStatus = getBmiStatus(todayWeight?.bmi ?? null);
+ const bmiStatus = getBmiStatus(todayWeight?.bmi);
 
   //월간bmi를 달력데이터로 변경
   const calendarData = makeCalendarData(monthWeights);
@@ -310,13 +301,14 @@ export default function Page() {
 
   //오늘 체중 바텀시트로 POST
   async function handleCreateTodayWeight() {
-    //체중을 입력하지 않았으면 요청하지않음
-    if (newWeight === "") {
+    if (submitting || newWeight.trim() === ""){
       return;
     }
+    setSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:3001/weight/${USER_ID}`, {
+      const response = await fetch(`http://localhost:3001/weight`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-type": "application/json",
         },
@@ -357,21 +349,27 @@ export default function Page() {
       setOpenTodayWeight(false);
     } catch (error) {
       console.error("체중 등록 오류:", error);
+    } finally {
+      setSubmitting(false);
     }
   }
+  
 
   //바텀시트
   //목표체중 PATCH
   async function handleUpdateGoalWeight() {
-    if (newGoalWeight === "") {
-      return;
+    if( submitting || newGoalWeight.trim() === "") {
+    return;
     }
+
+    setSubmitting(true);
 
     try {
       const response = await fetch(
-        `http://localhost:3001/weight/profile/${USER_ID}`,
+        `http://localhost:3001/weight/profile`,
         {
           method: "PATCH",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -392,20 +390,25 @@ export default function Page() {
       setOpenGoal(false);
     } catch (error) {
       console.error("목표체중 수정 오류:", error);
+    }finally {
+      setSubmitting(false);
     }
   }
 
   //바텀시트
   //키 PATCH
   async function handleUpdateHeight() {
-    if (newHeight === "") {
-      return;
-    }
+    if( submitting || newHeight.trim() === "") {
+    return;
+  }
+    setSubmitting(true);
+
     try {
       const response = await fetch(
-        `http://localhost:3001/weight/profile/${USER_ID}`,
+        `http://localhost:3001/weight/profile`,
         {
           method: "PATCH",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -423,8 +426,26 @@ export default function Page() {
       setOpenHeight(false);
     } catch (error) {
       console.error("키 수정 오류", error);
-    }
+    }finally {
+      setSubmitting(false);
   }
+}
+
+//바텀시트 닫기
+function handleCloseWeight() {
+  setNewWeight("");
+  setOpenTodayWeight(false);
+}
+
+function handleCloseHeight() {
+  setNewHeight("");
+  setOpenHeight(false);
+}
+
+function handleCloseGoalWeight() {
+  setNewGoalWeight("");
+  setOpenGoal(false);
+}
 
   return (
     <section className={commonStyle.mainContent}>
@@ -542,25 +563,28 @@ export default function Page() {
 <WeightBottomSheet
   open={openTodayWeight}
   value={newWeight}
+  submitting={submitting}
   onChange={setNewWeight}
-  onClose={() => setOpenTodayWeight(false)}
+  onClose={handleCloseWeight}
   onSubmit={handleCreateTodayWeight}
 />
 
-    <HeightBottomSheet
+  <HeightBottomSheet
   open={openHeight}
   value={newHeight}
+  submitting={submitting}
   onChange={setNewHeight}
-  onClose={() => setOpenHeight(false)}
+  onClose={handleCloseHeight}
   onSubmit={handleUpdateHeight}
 />
 <GoalWeightInputBottomSheet
   open={openGoal}
   value={newGoalWeight}
+  submitting={submitting}
   onChange={setNewGoalWeight}
-  onClose={() => setOpenGoal(false)}
+  onClose={handleCloseGoalWeight}
   onSubmit={handleUpdateGoalWeight}
 />
     </section>
-  );
+  )
 }

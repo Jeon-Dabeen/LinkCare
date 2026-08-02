@@ -9,6 +9,7 @@ import formStyle from "@/styles/components/form.module.css";
 type GoalWeightInputBottomSheetProps = {
   open: boolean;
   value: string;
+  submitting: boolean;
   onChange: (value: string) => void;
   onClose: () => void;
   onSubmit: () => void;

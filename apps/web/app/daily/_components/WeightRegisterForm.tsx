@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
 
 import Button from "@/app/_components/ui/Button";
 import Input from "@/app/_components/ui/Input";
-
-const USER_ID = 1;
 
 interface RegisterResult {
   weight: number;
@@ -76,8 +74,11 @@ export default function WeightRegisterForm({
     isValueOk= false
   }
 
-  async function handleSubmit() {
-    if (!isValueOk) return;
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if(!isValueOk || submitting) {
+      return;
+    }
 
     setSubmitting(true);
     setError(null);
@@ -95,21 +96,22 @@ export default function WeightRegisterForm({
     }
 
     try {
-      const resoponse = await fetch(`http://localhost:3001/weight/${USER_ID}`, {
+      const response = await fetch(`http://localhost:3001/weight`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(requestBody),
       }
     );
-      if (!resoponse.ok) {
-        if (resoponse.status === 409) {
+      if (!response.ok) {
+        if (response.status === 409) {
           setError("오늘 체중은 이미 등록되어 있어요");
         } else {
           setError("문제 발생");
         }
         return;
       }
-      const saved: CreateWeightResponse = await resoponse.json();
+      const saved: CreateWeightResponse = await response.json();
 
       onSuccess({
         weight: saved.weight,
@@ -132,7 +134,7 @@ export default function WeightRegisterForm({
         <h2 className={commonStyle.pageTitle}>체중을 입력하세요</h2>
       </div>
       <div className={formStyle.formWrapper}>
-        <form className={formStyle.form}>
+        <form className={formStyle.form}  onSubmit={handleSubmit}>
           {needHeight && (
           <div className={formStyle.formGroup}>
             <label htmlFor="currentHeight" className={formStyle.formLabel}>
@@ -178,21 +180,21 @@ export default function WeightRegisterForm({
               required
             />
           </div>)}
+          {error && <p>{error}</p>}
           <div className={commonStyle.fixedBottom}>
             <div className={commonStyle.fixedBottomInner}>
               <Button
                 type="button"
                 variant="secondary"
-                size="large"
                 onClick={onSkip}
+                size="large"
               >
                 건너뛰기
               </Button>
               <Button
-                type="button"
+                type="submit"
                 variant="primary"
                 size="large"
-                onClick={handleSubmit}
                 disabled={!isValueOk || submitting}
               >
                 {submitting ? "저장중..." : "기록"}
