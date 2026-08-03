@@ -204,9 +204,6 @@ export default function MealRecord() {
 
     setIsPhotoLoading(true);
 
-    // 서버 전달용 파일 저장
-    setSelectedFile(file);
-
     try {
       // 이미지 분석
       const foods = await analyzeFood(file);
@@ -215,6 +212,9 @@ export default function MealRecord() {
         await customAlert("음식 사진을 찾지 못했어요\n다른 사진으로 다시 골라주세요")
         return;
       }
+
+      // 서버 전달용 파일 저장
+      setSelectedFile(file);
 
       setFoodItems(
         foods.map((food: any) => ({
