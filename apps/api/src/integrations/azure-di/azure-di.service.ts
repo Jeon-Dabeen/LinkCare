@@ -51,6 +51,7 @@ export class AzureDiService implements OnModuleInit {
 
   // 데이터 처리 메인 parser
   async checkupDataParser(data) {
+    logger.debug(`checkupDataParser Data received:`, JSON.stringify(data));
     const checkupTable = data.documents?.[0]?.fields.checkup_table;
 
     if (checkupTable && checkupTable.kind !== "object") {
@@ -88,6 +89,7 @@ export class AzureDiService implements OnModuleInit {
   }
 
   async finalJson(filteredYears) {
+    logger.info(`AzureDiService finalJson started.`);
     const result: any[] = [];
 
     if (filteredYears && Object.keys(filteredYears).length === 0) {
@@ -123,6 +125,9 @@ export class AzureDiService implements OnModuleInit {
 
       result.push(checkupRecord);
     }
+
+    logger.debug(`finalJson checkupRecord result: ${JSON.stringify(result)}`);
+    logger.info(`AzureDiService finalJson ended.`);
 
     return result;
   }

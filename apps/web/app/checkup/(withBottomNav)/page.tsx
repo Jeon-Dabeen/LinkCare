@@ -137,10 +137,10 @@ export default async function Page() {
     aiComment,
   } = data;
 
-  const comments = aiComment.comment.split("\n\n");
+  const comments = aiComment?.comment.split("\n\n") || [];
 
   // blood pressure
-  const bp = assessment.bp.split("/").map((d: string) => d.split(":")[1]);
+  const bp = assessment.bp.split("/").map((d: string) => d.split(":")[1]) || [];
   const bpStatus = bp[0] === "normal" ? bp[1] : bp[0];
 
   // diabetes & anemia
@@ -203,7 +203,7 @@ export default async function Page() {
             <Card.Header icon={<MessageSquareCheck />} title={comments[1]} />
             <Card.Body noTopPadding>
               <div className={styles.aiComment}>
-                {comments[0].replace("\n", " ")}
+                {comments[0]?.replace("\n", " ")}
               </div>
             </Card.Body>
           </Card>
@@ -290,8 +290,8 @@ export default async function Page() {
               <GaugeChart
                 key={blood_pressure.bp_systolic}
                 levels={["low", "normal", "caution", "warning", "danger"]}
-                status={bpStatus}
-                value={getStatusTypeLabel(bpStatusTypeLabel, bpStatus)}
+                status={bpStatus as StatusType}
+                value={getStatusTypeLabel(bpStatusTypeLabel, bpStatus as StatusType)}
               />
               <div
                 className={clsx(commonStyle.dataWrapper, commonStyle.jfCenter)}
