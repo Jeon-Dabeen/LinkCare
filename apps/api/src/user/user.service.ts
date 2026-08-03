@@ -5,6 +5,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../config/logger";
 import { NicknameService } from "../common/services/nickname.service";
+import { log } from "console";
 
 @Injectable()
 export class UserService {
@@ -104,7 +105,12 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  updateLoginCnt(id: number) {
+    logger.info(`updateLoginCnt userId=${id}`);
+    
+    return this.prisma.user.update({
+      where: { id },
+      data: { loginCnt: { increment: 1 } },
+    });
   }
 }

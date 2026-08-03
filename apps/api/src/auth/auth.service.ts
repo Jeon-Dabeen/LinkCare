@@ -86,7 +86,8 @@ export class AuthService {
       throw new UnauthorizedException("이메일 또는 비번이 틀려요.");
     }
 
-    // TODO: loginCnt +1 로직
+      // loginCnt +1
+    await this.userService.updateLoginCnt(user.id);
 
     const payload = {
       sub: user.id,
@@ -118,8 +119,10 @@ export class AuthService {
    */
   logout(response: Response) {
     logger.info(`AuthService logout started.`);
+    
     this.clearAuthCookie(response);
     logger.info(`AuthService logout ended.`);
+    
     return { message: "로그아웃 성공" };
   }
 }
