@@ -1,33 +1,16 @@
 import type { StatusType } from "@/types/statusType";
 
 
-//혈압·혈당 수치 범위
+//혈압, 혈당용 최소 최대
 export type HealthRange = {
   min: number;
   max: number;
 };
 
-//상태별 수치 범위
 export type HealthThresholds = Partial<
   Record<StatusType, HealthRange>
 >;
 
-//sys 수축기 기준
-export const SYSTOLIC_BLOOD_PRESSURE_THRESHOLDS = {
-  low: { min: 0, max: 89 },
-  normal: { min: 90, max: 119 },
-  caution: { min: 120, max: 129 },
-  warning: { min: 130, max: 139 },
-  danger: { min: 140, max: 999 },
-} satisfies HealthThresholds;
-
-//dia 이완기 기준
-export const DIASTOLIC_BLOOD_PRESSURE_THRESHOLDS = {
-  low: { min: 0, max: 59 },
-  normal: { min: 60, max: 79 },
-  warning: { min: 80, max: 89 },
-  danger: { min: 90, max: 999 },
-} satisfies HealthThresholds;
 
 //상태별 위험도
 const STATUS_PRIORITY: Record<StatusType, number> = {
@@ -40,10 +23,13 @@ const STATUS_PRIORITY: Record<StatusType, number> = {
 
 //혈압 혈당 상태 판정
 export function getStatusByThreshold(
-  value: number | null | undefined,
-  thresholds: HealthThresholds,
+value: number | null | undefined, thresholds: HealthThresholds,
 ): StatusType | undefined {
-  if (value == null || !Number.isFinite(value)) {
+  if (
+    value == null|| 
+    !Number.isFinite(value)||
+    value<0
+    ) {
     return undefined;
   }
 
@@ -58,9 +44,42 @@ export function getStatusByThreshold(
       value <= range.max,
   )?.[0];
 }
+//혈당
 
-//혈압 종합 상태판정 
-//더 높은 위험도
+export const BEFORE_BLOOD_GLUCOSE_THRESHOLDS = {
+  low: { min: 0, max: 69 },
+  normal: { min: 70, max: 99 },
+  warning: { min: 100, max: 125 },
+  danger: { min: 126, max: 999 },
+} satisfies HealthThresholds;
+
+export const AFTER_BLOOD_GLUCOSE_THRESHOLDS = {
+  low: { min: 0, max: 69 },
+  normal: { min: 70, max: 139 },
+  warning: { min: 140, max: 199 },
+  danger: { min: 200, max: 999 },
+} satisfies HealthThresholds;
+
+//혈압 
+
+//혈압- sys
+export const SYSTOLIC_BLOOD_PRESSURE_THRESHOLDS = {
+  low: { min: 0, max: 89 },
+  normal: { min: 90, max: 119 },
+  caution: { min: 120, max: 129 },
+  warning: { min: 130, max: 139 },
+  danger: { min: 140, max: 999 },
+} satisfies HealthThresholds;
+
+//혈압- dia
+export const DIASTOLIC_BLOOD_PRESSURE_THRESHOLDS = {
+  low: { min: 0, max: 59 },
+  normal: { min: 60, max: 79 },
+  warning: { min: 80, max: 89 },
+  danger: { min: 90, max: 999 },
+} satisfies HealthThresholds;
+
+//혈압- 위험도 비교
 export function getBloodPressureStatus(
   systolic: number | null | undefined,
   diastolic: number | null | undefined,
@@ -85,6 +104,8 @@ export function getBloodPressureStatus(
     ? systolicStatus
     : diastolicStatus;
 }
+
+//bmi
 
 //BMI 상태가 변경되는 기준값
 export const BMI_THRESHOLDS = {
