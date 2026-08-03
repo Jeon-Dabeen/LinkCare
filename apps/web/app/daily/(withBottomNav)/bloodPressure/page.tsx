@@ -18,11 +18,7 @@ import BpChart from "@/app/_components/ui/chart/bpChart";
 
 import { BloodPressureRecord, CreateBloodPressureRequest, CreateBloodPressureResponse, DayPeriod, UpdateBloodPressurePulseRequest } from "@/types/bloodPressureType";
 import { bpStatusTypeLabel, StatusType } from "@/types/statusType";
-import {
-  BloodPressureThresholds,
-  DIASTOLIC_BLOOD_PRESSURE_THRESHOLDS,
-  SYSTOLIC_BLOOD_PRESSURE_THRESHOLDS,
-} from "@/utils/dailyRange";
+import { getBloodPressureStatus } from "@/utils/daily-Status";
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import StatePage from "@/app/_components/ui/StatePage";
 import BloodPressureRegisterForm from "../../_components/BloodPressureRegisterForm";
@@ -43,55 +39,7 @@ function getCurrentDayPeriod(hour: number): DayPeriod {
   return hour < 17 ? "MORNING" : "EVENING";
 }
 
-//수축기나 이완기 값 하나의 상태를 계산
-function getBloodPressureValueStatus(
-  value: number,
-  thresholds: BloodPressureThresholds,
-): StatusType {
-  //Range를 돌며 최소 최대값찾기
-  const matchedEntry = Object.entries(thresholds).find(
-    ([, range]) =>
-      range !== undefined && value >= range.min && value <= range.max,
-  );
 
-  if (!matchedEntry) {
-    return "danger";
-  }
-
-  return matchedEntry[0] as StatusType;
-}
-
-//수축기와 이완기 중 더 주의가 필요한 상태를 반환
-//조건 바꿀수도 있음
-function getBloodPressureStatus(
-  systolic: number,
-  diastolic: number,
-): StatusType {
-  const systolicStatus = getBloodPressureValueStatus(
-    systolic,
-    SYSTOLIC_BLOOD_PRESSURE_THRESHOLDS,
-  );
-
-  const diastolicStatus = getBloodPressureValueStatus(
-    diastolic,
-    DIASTOLIC_BLOOD_PRESSURE_THRESHOLDS,
-  );
-
-  const statusPriority: Record<StatusType, number> = {
-    normal: 0,
-    low: 1,
-    caution: 2,
-    warning: 3,
-    danger: 4,
-  };
-
-  //sys dia를 비교하여 더 위험한(점수가높은)상태를 찾음
-  if (statusPriority[systolicStatus] >= statusPriority[diastolicStatus]) {
-    return systolicStatus;
-  }
-
-  return diastolicStatus;
-}
 
 //이번주 정상 범위 이탈 횟수
 function getBloodPressureOutCount(records: BloodPressureRecord[]): number {

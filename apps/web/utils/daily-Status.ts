@@ -29,6 +29,15 @@ export const DIASTOLIC_BLOOD_PRESSURE_THRESHOLDS = {
   danger: { min: 90, max: 999 },
 } satisfies HealthThresholds;
 
+//상태별 위험도
+const STATUS_PRIORITY: Record<StatusType, number> = {
+  normal: 0,
+  low: 1,
+  caution: 2,
+  warning: 3,
+  danger: 4,
+};
+
 //혈압 혈당 상태 판정
 export function getStatusByThreshold(
   value: number | null | undefined,
@@ -50,6 +59,32 @@ export function getStatusByThreshold(
   )?.[0];
 }
 
+//혈압 종합 상태판정 
+//더 높은 위험도
+export function getBloodPressureStatus(
+  systolic: number | null | undefined,
+  diastolic: number | null | undefined,
+): StatusType | undefined {
+  const systolicStatus = getStatusByThreshold(
+    systolic,
+    SYSTOLIC_BLOOD_PRESSURE_THRESHOLDS,
+  );
+
+  const diastolicStatus = getStatusByThreshold(
+    diastolic,
+    DIASTOLIC_BLOOD_PRESSURE_THRESHOLDS,
+  );
+
+  // 둘 중 하나라도 정상적인 수치가 아니면 상태를 판정하지 않음
+  if (!systolicStatus || !diastolicStatus) {
+    return undefined;
+  }
+
+  return STATUS_PRIORITY[systolicStatus] >=
+    STATUS_PRIORITY[diastolicStatus]
+    ? systolicStatus
+    : diastolicStatus;
+}
 
 //BMI 상태가 변경되는 기준값
 export const BMI_THRESHOLDS = {
