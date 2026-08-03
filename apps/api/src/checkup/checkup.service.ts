@@ -304,6 +304,7 @@ export class CheckupService {
       years,
       {
         id: true,
+        year: true,
         height: true,
         weight: true,
         waist: true,
@@ -334,6 +335,7 @@ export class CheckupService {
       years,
       {
         id: true,
+        year: true,
         bp_systolic: true,
         bp_diastolic: true,
         CheckupAssessment: {
@@ -358,6 +360,7 @@ export class CheckupService {
       years,
       {
         id: true,
+        year: true,
         fbg: true,
         hemoglobin: true,
         CheckupAssessment: {
@@ -383,6 +386,7 @@ export class CheckupService {
       years,
       {
         id: true,
+        year: true,
         ast: true,
         alt: true,
         ygtp: true,
@@ -410,6 +414,7 @@ export class CheckupService {
       years,
       {
         id: true,
+        year: true,
         urine_protein: true,
         creatinine: true,
         egfr: true,

@@ -210,9 +210,9 @@ export default async function Page() {
         </Grid.ItemFull>
 
         <Grid.ItemFull>
-          <Link href="/checkup/basic">
+          <Link href="/checkup/bodyMetrics">
             <Card>
-              <Card.Header icon={<BookHeart />} title="신체 기본 지표" />
+              <Card.Header icon={<BookHeart />} title="신체 지표" />
               <Card.Body noTopPadding>
                 <Card.Grid>
                   <Card.Item>
@@ -234,7 +234,7 @@ export default async function Page() {
                       <span className={commonStyle.dataValue}>
                         {body_metrics.bmi}
                       </span>
-                      <span className={commonStyle.dataUnit}>BMI</span>
+                      <span className={commonStyle.dataUnit}>kg/㎡</span>
                     </div>
                   </Card.Item>
                   <div className={styles.basicValues}>

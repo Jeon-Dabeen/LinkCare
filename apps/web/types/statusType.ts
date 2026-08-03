@@ -9,13 +9,12 @@ export const commonStatusTypeLabel = {
 } as const;
 
 export const bgStatusTypeLabel = {
-  low:"저혈당",
-  normal:"정상",
+  low: "저혈당",
+  normal: "정상",
   caution: "",
-  warning:"주의",
-  danger:"위험"
-}
-
+  warning: "주의",
+  danger: "위험",
+};
 
 export const bmiStatusTypeLabel = {
   low: "저체중",
@@ -25,6 +24,14 @@ export const bmiStatusTypeLabel = {
   danger: "비만",
 } as const;
 
+export const waistStatusTypeLabel = {
+  low: "",
+  normal: "정상",
+  caution: "",
+  warning: "",
+  danger: "위험",
+} as const;
+
 export const bpStatusTypeLabel = {
   low: "저혈압",
   normal: "정상",
@@ -32,7 +39,6 @@ export const bpStatusTypeLabel = {
   warning: "경고",
   danger: "고혈압",
 } as const;
-
 
 export function getStatusTypeLabel<T extends StatusType>(
   labelMap: Record<T, string>,
