@@ -39,6 +39,7 @@ export class AzureDiService implements OnModuleInit {
       const data = await poller.pollUntilDone();
       // 3. 필요한 부분만 json parsing
       const result = await this.checkupDataParser(data);
+      logger.debug(`analyzeDocumentByUrl result: ${JSON.stringify(result)}`);
 
       return result;
     } catch (error: any) {
@@ -109,6 +110,7 @@ export class AzureDiService implements OnModuleInit {
         weight: props.weight?.value ?? "",
         waist: props.waist?.value ?? "",
         bmi: props.bmi?.value ?? "",
+        hearing: props.hearing?.value ?? "",
         vision_left: props.vision?.value.split("/")[0] ?? "",
         vision_right: props.vision?.value.split("/")[1] ?? "",
         bp_systolic: props["bp_systolic/bp_diastolic"]?.value.split("/")[0] ?? "",
