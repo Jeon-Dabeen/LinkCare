@@ -1,22 +1,19 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-
 import clsx from "clsx";
-import { ArrowDown, Car, Droplet, HeartPulse, Pencil } from "lucide-react";
+import { Droplet, Pencil } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
 import style from "@/styles/daily/dash.module.css";
-
 import Tabs from "@/app/_components/ui/Tabs";
 import Card from "@/app/_components/ui/Card";
 import BottomSheet from "@/app/_components/ui/BottomSheet";
 import Button, { ButtonIcon } from "@/app/_components/ui/Button";
 import Input from "@/app/_components/ui/Input";
 import MonthCalendar from "@/app/_components/ui/calendar/MonthCalendar";
-
-import { MealType } from "@/types/mealType";
-import { bgStatusTypeLabel } from "@/types/statusType";
+import type { MealType } from "@/types/mealType";
+import { bgStatusTypeLabel, StatusType } from "@/types/statusType";
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import {
   BloodGlucoseRecord,
@@ -29,13 +26,10 @@ import BloodGlucoseRegisterForm from "../../_components/BloodGlucoseRegisterForm
 import BloodGlucoseWeekChart from "../../_components/BloodGlucoseWeekChart";
 import BarChart from "@/app/_components/ui/chart/barChart";
 import StatusTag from "@/app/_components/ui/StatusTag";
-import { StatusType } from "@/types/statusType";
 import { getBarPercentage } from "@/utils/checkupBarRange";
-import {
-  AFTER_BLOOD_GLUCOSE_THRESHOLDS,
-  BEFORE_BLOOD_GLUCOSE_THRESHOLDS,
-  BloodGlucoseThresholds,
-} from "../../BgRange";
+import { AFTER_BLOOD_GLUCOSE_THRESHOLDS, BEFORE_BLOOD_GLUCOSE_THRESHOLDS, getStatusByThreshold } from "@/utils/dailyStatus";
+
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/blood-glucose`;
 
 interface MonthBloodGlucoseRecord {
   bgDate: string;
@@ -56,49 +50,37 @@ function getCurrentMealType(hour: number): MealType {
   return "DINNER";
 }
 
-//혈당 범위 계산
-function getBloodGlucoseStatus(
-  value: number,
-  thresholds: BloodGlucoseThresholds,
-): StatusType {
-  const matchedEntry = Object.entries(thresholds).find(
-    ([, range]) =>
-      range !== undefined && value >= range.min && value <= range.max,
-  );
-
-  if (!matchedEntry) {
-    return "danger";
-  }
-
-  return matchedEntry[0] as StatusType;
-}
-
-//정상범위 이탈 횟수 계산
+//정상범위 이탈 횟수
 function getBgOutCount(records: BloodGlucoseRecord[]): number {
   let count = 0;
 
   records.forEach((record) => {
-    //식전은 식전의기준
     if (record.before != null) {
-      const beforeStatus = getBloodGlucoseStatus(
+      const beforeStatus = getStatusByThreshold(
         record.before,
         BEFORE_BLOOD_GLUCOSE_THRESHOLDS,
       );
 
-      //정상이 아닌경우 카운트
-      if (beforeStatus !== "normal") {
+      //값이 있고 nomal이 아닌경우만 집계
+      if (
+        beforeStatus &&
+        beforeStatus !== "normal"
+      ) {
         count += 1;
       }
+
     }
 
-    //식후 카운트
     if (record.after != null) {
-      const afterStatus = getBloodGlucoseStatus(
+      const afterStatus = getStatusByThreshold(
         record.after,
         AFTER_BLOOD_GLUCOSE_THRESHOLDS,
       );
 
-      if (afterStatus !== "normal") {
+      if (
+        afterStatus &&
+        afterStatus !== "normal"
+      ) {
         count += 1;
       }
     }
@@ -108,7 +90,7 @@ function getBgOutCount(records: BloodGlucoseRecord[]): number {
 }
 
 //달력용 타입
-type bgCalendarItem = {
+type BgCalendarItem = {
   leftStatus?: StatusType | null;
   rightStatus?: StatusType | null;
 };
@@ -116,20 +98,20 @@ type bgCalendarItem = {
 //달력용 데이터
 function getBgCalendarData(
   records: MonthBloodGlucoseRecord[],
-): Record<string, bgCalendarItem> {
-  const calendarData: Record<string, bgCalendarItem> = {};
+): Record<string, BgCalendarItem> {
+  const calendarData: Record<string, BgCalendarItem> = {};
 
   records.forEach((record) => {
     const dateKey = record.bgDate.slice(0, 10);
 
     const beforeStatus =
       record.before != null
-        ? getBloodGlucoseStatus(record.before, BEFORE_BLOOD_GLUCOSE_THRESHOLDS)
+        ? getStatusByThreshold(record.before, BEFORE_BLOOD_GLUCOSE_THRESHOLDS)
         : null;
 
     const afterStatus =
       record.after != null
-        ? getBloodGlucoseStatus(record.after, AFTER_BLOOD_GLUCOSE_THRESHOLDS)
+        ? getStatusByThreshold(record.after, AFTER_BLOOD_GLUCOSE_THRESHOLDS)
         : null;
 
     calendarData[dateKey] = {
@@ -157,12 +139,14 @@ export default function Page() {
   const [weekLoading, setWeekLoading] = useState(true);
 
   //월간
-  const [monthBloodGlucse, setMonthBloodGlucose] = useState<
+  const [monthBloodGlucose, setMonthBloodGlucose] = useState<
     MonthBloodGlucoseRecord[]
   >([]);
+  const [monthLoading, setMonthLoading]=useState(true)
+  const [monthError, setMonthError] = useState<string | null>(null);
 
   //월간달력용 데이터
-  const calendarData = getBgCalendarData(monthBloodGlucse);
+  const calendarData = getBgCalendarData(monthBloodGlucose);
 
   //1회성 스킵;
   const [skipped, setSkipped] = useState(false);
@@ -187,7 +171,7 @@ export default function Page() {
 
       try {
         const response = await fetch(
-          `http://localhost:3001/blood-glucose/week/` +
+          `${API_BASE_URL}/week` +
             `?bgDate=${formattedDate}` +
             `&mealType=${mealType}`,
           { credentials: "include" },
@@ -199,7 +183,6 @@ export default function Page() {
         setWeekRecords(data);
       } catch (error) {
         console.error("주간 혈당 조회 오류:", error);
-
         setWeekError("혈당 정보를 불러오지 못했어요.");
       } finally {
         setWeekLoading(false);
@@ -211,9 +194,12 @@ export default function Page() {
   //월간 api 함수
   const fetchMonthBloodGlucose = useCallback(
     async (mealType: MealType) => {
+      setMonthLoading(true);
+      setMonthBloodGlucose([]);
+      setMonthError(null);
       try {
         const response = await fetch(
-          `http://localhost:3001/blood-glucose/month/?bgDate=${formattedDate}&mealType=${mealType}`,
+          `${API_BASE_URL}/month?bgDate=${formattedDate}&mealType=${mealType}`,
           { credentials: "include" },
         );
 
@@ -222,11 +208,13 @@ export default function Page() {
         }
 
         const data: MonthBloodGlucoseRecord[] = await response.json();
-
         setMonthBloodGlucose(data);
       } catch (error) {
         console.error("월간 혈당 조회 오류:", error);
+        setMonthError("월간 혈당 기록을 불러오지 못했어요.");
         setMonthBloodGlucose([]);
+      } finally {
+        setMonthLoading(false);
       }
     },
     [formattedDate],
@@ -274,19 +262,16 @@ export default function Page() {
   );
 
   //오늘의 식전 혈당 상태
-  const beforeStatus =
-    todayRecord?.before != null
-      ? getBloodGlucoseStatus(
-          todayRecord.before,
-          BEFORE_BLOOD_GLUCOSE_THRESHOLDS,
-        )
-      : null;
+ const beforeStatus = getStatusByThreshold(
+  todayRecord?.before,
+  BEFORE_BLOOD_GLUCOSE_THRESHOLDS,
+);
 
   //식후 혈당
-  const afterStatus =
-    todayRecord?.after != null
-      ? getBloodGlucoseStatus(todayRecord.after, AFTER_BLOOD_GLUCOSE_THRESHOLDS)
-      : null;
+const afterStatus = getStatusByThreshold(
+  todayRecord?.after,
+  AFTER_BLOOD_GLUCOSE_THRESHOLDS,
+);
 
   //바차트용 퍼센테이지
   const beforePosition =
@@ -374,7 +359,7 @@ export default function Page() {
     setSubmitting(true);
     setSheetError(null);
     try {
-      const response = await fetch(`http://localhost:3001/blood-glucose/`, {
+      const response = await fetch(API_BASE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -400,7 +385,7 @@ export default function Page() {
 
       //오늘 입력값을 추가하기 위해 재조회
       await fetchWeekBloodGlucose(selectedMealType);
-      await fetchMonthBloodGlucose(selectedMealType);
+      void fetchMonthBloodGlucose(selectedMealType);
     } catch (error) {
       console.error("혈당 등록 오류:", error);
       setSheetError("혈당 등록 중 문제가 발생했어요.");
@@ -552,7 +537,16 @@ export default function Page() {
         <Card.Header title="혈당 기록" />
 
         <Card.Body noTopPadding>
-          <MonthCalendar selectedDate={baseDate} data={calendarData} />
+          {monthLoading ? (
+            <p>혈당 기록을 불러오고 있어요.</p>
+          ) : monthError ? (
+          <p>{monthError}</p>
+        ) : (
+        <MonthCalendar
+        selectedDate={baseDate}
+        data={calendarData}
+  />
+)}
         </Card.Body>
       </Card>
 
@@ -585,14 +579,14 @@ export default function Page() {
             type="button"
             variant="primary"
             size="large"
-            onClick={handleCreateBloodGlucose}
+            onClick={() => void handleCreateBloodGlucose()}
             disabled={
               newGlucose.trim() === "" ||
               selectedMealTiming === null ||
               submitting
             }
           >
-            {submitting ? "저장 중..." : "기록"}
+            {submitting ? "저장중..." : "기록"}
           </Button>
         </div>
       </BottomSheet>

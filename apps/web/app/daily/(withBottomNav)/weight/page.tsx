@@ -15,7 +15,7 @@ import WeightBottomSheet from "../../_components/WeightBottomSheet";
 import HeightBottomSheet from "../../_components/HeightBottomSheet";
 import GoalWeightInputBottomSheet from "../../_components/GoalWeightBottomSheet";
 import { ButtonIcon } from "@/app/_components/ui/Button";
-import { getBmiStatus } from "@/utils/daily-Status";
+import { getBmiStatus } from "@/utils/dailyStatus";
 
 interface WeightProfile {
   height: number | null;

@@ -18,7 +18,7 @@ import BpChart from "@/app/_components/ui/chart/bpChart";
 
 import { BloodPressureRecord, CreateBloodPressureRequest, CreateBloodPressureResponse, DayPeriod, UpdateBloodPressurePulseRequest } from "@/types/bloodPressureType";
 import { bpStatusTypeLabel, StatusType } from "@/types/statusType";
-import { getBloodPressureStatus } from "@/utils/daily-Status";
+import { getBloodPressureStatus } from "@/utils/dailyStatus";
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import StatePage from "@/app/_components/ui/StatePage";
 import BloodPressureRegisterForm from "../../_components/BloodPressureRegisterForm";
