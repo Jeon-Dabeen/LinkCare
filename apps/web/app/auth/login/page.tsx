@@ -40,7 +40,15 @@ export default function Login() {
 
       if (response.ok) {
         // 로그인 성공 시 쿠키는 브라우저에 자동으로 저장
-        router.push("/home"); 
+        const data = await response.json();
+        alert(data.count);
+
+        if (data.count > 1) {
+          router.push("/home"); 
+        } else {
+          router.push("/checkup/upload"); 
+        }
+
       } else {
         const errorData = await response.json().catch(() => ({}));
         setErrorMessage(errorData.message || "로그인에 실패했습니다. 정보를 확인해주세요.");

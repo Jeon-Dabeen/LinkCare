@@ -87,7 +87,8 @@ export class AuthService {
     }
 
       // loginCnt +1
-    await this.userService.updateLoginCnt(user.id);
+    const loginData = await this.userService.updateLoginCnt(user.id);
+    logger.debug(`loginData: ${JSON.stringify(loginData)}`);
 
     const payload = {
       sub: user.id,
@@ -97,6 +98,7 @@ export class AuthService {
     logger.info(`AuthService login ended.`);
     return {
       access_token: this.jwtService.sign(payload),
+      count: loginData.loginCnt,
     };
   }
 
