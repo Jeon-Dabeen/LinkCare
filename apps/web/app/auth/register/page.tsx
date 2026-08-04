@@ -14,6 +14,7 @@ import clsx from "clsx";
 import { Check, Mars, Venus } from "lucide-react";
 import { GenderType, genderTypeLabel } from "@/types/profileType";
 import dayjs from "dayjs";
+import TermsModal, { TermsType } from "./_components/TermsModal";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
 
@@ -34,6 +35,9 @@ export default function Register() {
   const [birth, setBirth] = useState("");
   const [selectedGender, setSelectedGender] = useState<GenderType | null>(null);
   const [height, setHeight] = useState("");
+
+  // 약관 모달 상태 관리 (null이면 닫힘, 'terms'|'privacy'|'sensitive' 선택 시 열림)
+  const [termsModalType, setTermsModalType] = useState<TermsType | null>(null);
 
   // 약관 동의 체크 상태 관리
   const [agreements, setAgreements] = useState({
@@ -448,40 +452,57 @@ export default function Register() {
 
         </form>
       </div >
+
+      {/* 약관 동의 바텀시트 */}
       <BottomSheet open={open} title="약관 동의" onClose={() => setOpen(false)}>
         <div className={formStyle.formWrapper}>
+          {/* 이용약관 */}
           <div className={formStyle.formGroup}>
             <div className={formStyle.formInputWrapper}>
               <CheckBox
                 type="checkbox"
                 id="terms"
                 name="terms"
-                label="[필수]이용약관에 동의합니다"
+                label="[필수] 서비스 이용약관에 동의합니다"
                 checked={agreements.terms}
                 onChange={handleCheckChange}
                 required
               />
-              <Button type="button" variant="text-secondary" size="small">
+              <Button
+                type="button"
+                variant="text-secondary"
+                size="small"
+                onClick={() => setTermsModalType("terms")}
+              >
                 약관 보기
               </Button>
             </div>
           </div>
+
+          {/* 개인정보 처리방침 */}
           <div className={formStyle.formGroup}>
             <div className={formStyle.formInputWrapper}>
               <CheckBox
                 type="checkbox"
                 id="privacy"
                 name="privacy"
-                label="[필수]개인정보처리방침에 동의합니다"
+                label="[필수] 개인정보 처리방침에 동의합니다"
                 checked={agreements.privacy}
                 onChange={handleCheckChange}
                 required
               />
-              <Button type="button" variant="text-secondary" size="small">
+              <Button
+                type="button"
+                variant="text-secondary"
+                size="small"
+                onClick={() => setTermsModalType("privacy")}
+              >
                 약관 보기
               </Button>
             </div>
           </div>
+
+          {/* 민감정보 동의 */}
           <div className={formStyle.formGroup}>
             <div className={formStyle.formInputWrapper}>
               <CheckBox
@@ -493,18 +514,23 @@ export default function Register() {
                 onChange={handleCheckChange}
                 required
               />
-              <Button type="button" variant="text-secondary" size="small">
+              <Button
+                type="button"
+                variant="text-secondary"
+                size="small"
+                onClick={() => setTermsModalType("sensitive")}
+              >
                 약관 보기
               </Button>
             </div>
           </div>
+
           <div className={formStyle.formGroup}>
             <p className={commonStyle.textInfo}>
               필수약관에 동의하신 후 서비스를 이용할 수 있습니다.
             </p>
           </div>
 
-          {/* disabled 및 onClick 연결 */}
           <Button
             type="button"
             variant="primary"
@@ -516,6 +542,13 @@ export default function Register() {
           </Button>
         </div>
       </BottomSheet>
-    </section >
+
+      {/* 약관 보기 모달 (BottomSheet 상위에 오도록 오버레이 처리) */}
+      <TermsModal
+        isOpen={Boolean(termsModalType)}
+        type={termsModalType}
+        onClose={() => setTermsModalType(null)}
+      />
+    </section>
   );
 }
