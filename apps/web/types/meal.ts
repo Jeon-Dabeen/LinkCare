@@ -1,4 +1,3 @@
-
 import { MealType, MealStatus } from "./mealType";
 
 export interface MealFoodItem {
@@ -12,7 +11,7 @@ export interface MealItem {
   id: number;
   userId: number;
   mealType: MealType;
-  mealDate: string; 
+  mealDate: string;
   goalCalorie: number | null;
   unitCalorie: number | null;
   photoUrl: string | null;
@@ -26,7 +25,7 @@ export type MealResponse = MealItem[];
 
 export type GoalCalorieResponse = {
   goalCalorie: number;
-}
+};
 
 export type MealFoodResponse = {
   mealId: number;
@@ -35,9 +34,7 @@ export type MealFoodResponse = {
   mealFood: MealFoodItem[];
 };
 
-
 export type UpdateStateResponse = {
   mealId: number;
   mealState: MealStatus;
-}
-
+};

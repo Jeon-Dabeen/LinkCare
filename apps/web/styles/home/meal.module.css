@@ -34,6 +34,7 @@
 }
 
 .type{
+  min-height: 1em;
   font-size: var(--font-size-sm);
   font-weight: 700;
   color: var(--color-secondary);
@@ -47,6 +48,7 @@
 .foodName{
   padding: 2px 0;
   width: 100%;
+  min-height: 1em;
   font-weight: 600;
   color: var(--color-text-dark);
   white-space: nowrap;

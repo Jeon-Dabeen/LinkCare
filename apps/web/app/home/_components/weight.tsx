@@ -9,8 +9,8 @@ import PersonIcon from "./persionIcon";
 
 
 type WeightProps = {
-  current: string,
-  goal: string
+  current: string | number,
+  goal: string | number,
 }
 
 
