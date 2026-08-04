@@ -41,7 +41,6 @@ export default function Login() {
       if (response.ok) {
         // 로그인 성공 시 쿠키는 브라우저에 자동으로 저장
         const data = await response.json();
-        alert(data.count);
 
         if (data.count > 1) {
           router.push("/home"); 
