@@ -135,27 +135,25 @@ export default function WeightRegisterForm({
               required
             />
           </div>)}
-          {error && <p>{error}</p>}
-          <div className={commonStyle.fixedBottom}>
-            <div className={commonStyle.fixedBottomInner}>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onSkip}
-                size="large"
-                disabled={submitting}
-              >
-                건너뛰기
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                size="large"
-                disabled={!isValueOk || submitting}
-              >
-                {submitting ? "저장중..." : "기록"}
-              </Button>
-            </div>
+          {error && <p className={commonStyle.textError}>{error}</p>}
+          <div className={formStyle.formButtonWrapper}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onSkip}
+              size="large"
+              disabled={submitting}
+            >
+              건너뛰기
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              size="large"
+              disabled={!isValueOk || submitting}
+            >
+              {submitting ? "저장중..." : "기록"}
+            </Button>
           </div>
         </form>
       </div>

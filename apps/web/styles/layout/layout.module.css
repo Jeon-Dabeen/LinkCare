@@ -22,10 +22,3 @@
   padding-bottom: calc(var(--bottom-nav-height) + var(--layout-padding-x) + env(safe-area-inset-bottom) + var(--spacing-lg));
   background: var(--color-bg);
 }
-
-/* 
-✅ Header → sticky
-✅ BottomNav → fixed
-✅ BottomSheet → fixed
-✅ Modal → fixed
-✅ Toast → fixed */

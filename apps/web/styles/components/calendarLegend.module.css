@@ -1,0 +1,43 @@
+
+.legend{
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.legendItem{
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.legendItem::before{
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.low::before{
+  background-color: var(--color-low);
+}
+
+.normal::before{
+  background-color: var(--color-normal);
+}
+
+.caution::before{
+  background-color: var(--color-caution);
+}
+
+.warning::before{
+  background-color: var(--color-warning);
+}
+
+.danger::before{
+  background-color: var(--color-danger);
+}
