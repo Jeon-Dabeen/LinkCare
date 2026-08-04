@@ -11,12 +11,6 @@ export class CreateWeightDto {
   weightDate: string;
 
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 1 })
-  @Min(0)
-  @Max(250)
-  height?: number;
-
-  @IsOptional()
   @Min(0)
   @Max(250)
   @IsNumber({maxDecimalPlaces:2})
