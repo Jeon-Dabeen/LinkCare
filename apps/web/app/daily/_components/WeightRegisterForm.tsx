@@ -1,81 +1,53 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-
 import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
-
 import Button from "@/app/_components/ui/Button";
 import Input from "@/app/_components/ui/Input";
-
-interface RegisterResult {
-  weight: number;
-  weightDate: string;
-  bmi: number | null;
-  height: number | null;
-  goalWeight: number | null;
-  goalWeightState: "-" | "+" | "0" | null;
-}
-
-interface CreateWeightResponse {
-  id: number;
-  userId: number;
-  weight: number;
-  bmi: number | null;
-  weightDate: string;
-  createdAt: string;
-  height: number | null;
-  goalWeight: number | null;
-  goalWeightState: "-" | "+" | "0" | null;
-}
+import { ENV } from "@/env";
 
 interface RegisterProps {
-  formattedDate: string;
-  existHeight:number | null; //키와 목표체중이 이미 있다면 받아옴
-  existGoalWeight:number | null;
+  formattedDate:string;
+  existGoalWeight: number | null
   onSkip: () => void;
-  onSuccess: (result: RegisterResult) => void;
+  onSuccess: () => void | Promise<void>;
 }
 
 interface CreateWeightBody {
   weight: number;
   weightDate: string;
-  height?: number;
-  goalWeight?: number;
+  goalWeight?:number; //목표체중이 없는 회원만 전송
 }
 
 
 export default function WeightRegisterForm({
   formattedDate,
-  existHeight,
   existGoalWeight,
   onSkip,
   onSuccess,
 }: RegisterProps) {
+  //오늘 체중
   const [currentWeight, setCurrentWeight] = useState("");
-  const [currentHeight, setCurrentHeight] = useState("");
   const [goalWeight, setGoalWeight] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError]= useState<string | null>(null)
 
-  //DB에 키,목표체중이 없을때만 입력받음
-  const needHeight = existHeight === null;
+  //DB에 목표체중이 없을때만 입력받음
   const needGoalWeight = existGoalWeight === null;
 
   //값이 있는지 체크
   //체중이 있다면 true
-  let isValueOk = currentWeight !=="";
+  let isValueOk = currentWeight.trim() !== "";
   
   //값이 없을때 버튼 비활성화를 위함
-  if(needHeight && currentHeight ===""){
-    isValueOk = false;//
-  }
-  if(needGoalWeight && goalWeight ===""){
-    isValueOk= false
+  if(needGoalWeight && goalWeight.trim() === ""){
+    isValueOk= false;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     if(!isValueOk || submitting) {
       return;
     }
@@ -84,25 +56,23 @@ export default function WeightRegisterForm({
     setError(null);
 
     //체중과 날짜는 항상 전송
+    //키는 서버 프로필을 조회하여 bmi 계산
     const requestBody:CreateWeightBody={
       weight:Number(currentWeight),
       weightDate:formattedDate,
     }
-    if(needHeight){
-      requestBody.height =Number(currentHeight);
-    }
+    //목표체중이 없다면 함께 전송
     if(needGoalWeight){
       requestBody.goalWeight=Number(goalWeight)
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/weight`, {
+      const response = await fetch(`${ENV.API_URL}/weight`,{
         method: "POST",
         credentials: "include",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(requestBody),
-      }
-    );
+      });
       if (!response.ok) {
         if (response.status === 409) {
           setError("오늘 체중은 이미 등록되어 있어요");
@@ -111,18 +81,10 @@ export default function WeightRegisterForm({
         }
         return;
       }
-      const saved: CreateWeightResponse = await response.json();
-
-      onSuccess({
-        weight: saved.weight,
-        weightDate: saved.weightDate,
-        bmi: saved.bmi,
-        height: saved.height,
-        goalWeight: saved.goalWeight,
-        goalWeightState: saved.goalWeightState,
-      });
-    } catch {
-      setError("네트워크 오류 발생");
+      await onSuccess();
+    } catch (error){
+      console.error("체중 등록 오류:", error);
+      setError("네트워크 오류가 발생했어요.");
     } finally {
       setSubmitting(false);
     }
@@ -134,25 +96,15 @@ export default function WeightRegisterForm({
         <h2 className={commonStyle.pageTitle}>체중을 입력하세요</h2>
       </div>
       <div className={formStyle.formWrapper}>
-        <form className={formStyle.form}  onSubmit={handleSubmit}>
-          {needHeight && (
+        <form
+         className={formStyle.form}
+         onSubmit={handleSubmit}
+         >
           <div className={formStyle.formGroup}>
-            <label htmlFor="currentHeight" className={formStyle.formLabel}>
-              키
-            </label>
-            <Input
-              unit="cm"
-              type="number"
-              id="currentHeight"
-              name="currentHeight"
-              value={currentHeight}
-              onChange={(e) => setCurrentHeight(e.target.value)}
-              required
-            />
-          </div>
-          )}
-          <div className={formStyle.formGroup}>
-            <label htmlFor="currentWeight" className={formStyle.formLabel}>
+            <label
+             htmlFor="currentWeight"
+             className={formStyle.formLabel}
+             >
               체중
             </label>
             <Input
@@ -167,7 +119,10 @@ export default function WeightRegisterForm({
           </div>
           {needGoalWeight &&(
           <div className={formStyle.formGroup}>
-            <label htmlFor="goalWeight" className={formStyle.formLabel}>
+            <label
+             htmlFor="goalWeight"
+             className={formStyle.formLabel}
+             >
               목표체중
             </label>
             <Input
@@ -188,6 +143,7 @@ export default function WeightRegisterForm({
                 variant="secondary"
                 onClick={onSkip}
                 size="large"
+                disabled={submitting}
               >
                 건너뛰기
               </Button>
