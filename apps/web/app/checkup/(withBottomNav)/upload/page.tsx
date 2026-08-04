@@ -145,6 +145,12 @@ export default function Page() {
       body: formData,
     });
 
+    if (response.status > 399) {
+
+      toast.warning(`링크케어 AI가 분서 분석을 못해냈어요. 빠르게 수정할게요! 며칠 뒤 다시 시도해주세요.`);
+      router.push('/home');
+    }
+
     console.info(`pdf 업로드 결과: ${response.status}`);
     const json = await response.json();
     const data = json.data;
@@ -174,7 +180,7 @@ export default function Page() {
       return {
         ...prev,
         checkup_history: prev.checkup_history.map((item) =>
-          item.checkup_year === year ? { ...item, [field]: value } : item,
+          item.checkup_year === year ? { ...item, key: `checkup-${year}`, [field]: value } : item,
         ),
       };
     });
@@ -193,11 +199,18 @@ export default function Page() {
     });
 
     if (!response.ok) {
-      toast.error("검진 결과 등록이 실패했습니다. 잠시 후 다시 시도 해주세요!");
-      throw new Error("Server Error");
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.message || "검진 데이터 저장 중 오류가 발생했습니다.";
+
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
 
     setIsStatePageOpen(true);
+
+    const data = response.json();
+    alert(JSON.stringify(data));
+
     router.push("/checkup");
   };
 
@@ -304,14 +317,14 @@ export default function Page() {
         </div>
 
         <div className={formStyle.formWrapper}>
-          <Tabs defaultValue={`year${years[0]}`}>
+          <Tabs defaultValue={`year${years![0]}`}>
             <Tabs.Nav key="tabNav">
-              {[...years].reverse().map((y) => (
-                <Tabs.NavItem value={`year${y}`} title={`${y}`} />
+              {[...years!].reverse().map((y) => (
+                <Tabs.NavItem key={`nav-year-${y}`} value={`year${y}`} title={`${y}`} />
               ))}
             </Tabs.Nav>
 
-            {[...years].reverse().map((y) => {
+            {[...years!].reverse().map((y) => {
               const yearData = uploadedData?.checkup_history.find(
                 (d) => d.checkup_year === y,
               );

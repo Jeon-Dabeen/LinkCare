@@ -26,7 +26,7 @@ export class AzureDiService implements OnModuleInit {
   }
 
   // pdf 문서 분석 - azure blob storage
-  async analyzeDocumentByUrl(fileName: string, modelId: string = "checkupV1.0") {
+  async analyzeDocumentByUrl(fileName: string, modelId: string = "checkupV1.2") {
     logger.info(`analyzeDocumentByUrl started. fileName: ${fileName}`);
 
     try {

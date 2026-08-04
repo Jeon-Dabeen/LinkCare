@@ -7,6 +7,10 @@ export class DashboardResponseDto {
   @Min(1)
   id: number;
 
+  @IsInt()
+  @Min(1)
+  year: number | null;
+
   @IsObject()
   @Type(() => BodyMetricsDto)
   body_metrics: BodyMetricsDto;
@@ -31,9 +35,9 @@ export class DashboardResponseDto {
   @Type(() => AssessmentDto)
   assessment: AssessmentDto;
 
-  @IsObject()
-  @Type(() => AICommentDto)
-  aiComment: AICommentDto;
+  // @IsObject()
+  // @Type(() => AICommentDto)
+  // aiComment: AICommentDto;
 }
 
 export class BodyMetricsDto {

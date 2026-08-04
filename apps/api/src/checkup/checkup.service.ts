@@ -14,6 +14,7 @@ import { AzureDiService } from "../integrations/azure-di/azure-di.service";
 import { CheckupEvaluator } from "../integrations/evaluator/checkup-evaluator";
 import { Prisma } from "@prisma/client";
 import { AiAdvisorService } from "../integrations/ai-advisor/ai-advisor.service";
+import { log } from "console";
 
 @Injectable()
 export class CheckupService {
@@ -74,6 +75,21 @@ export class CheckupService {
 
     logger.info(`CheckupService uploadPdf ended. fileName: ${file.originalname}`);
     return { result: "success", code: 201, data };
+  }
+
+  async findAIComment(userId: number, checkupId: number) {
+    logger.info(`CheckupService findAIComment started. userId=${userId}, checkupId=${checkupId}`);
+
+    const aiComment = await this.prisma.checkUpComment.findFirst({
+      where: { checkUpId: checkupId },
+    });
+
+    if (!aiComment) throw new NotFoundException("AI 검진분석 결과를 찾을 수 없어요.");
+
+    logger.debug(`findAIComment userId=${userId}, checkupId=${checkupId}, aiComment=${aiComment}`);
+    logger.info(`CheckupService findAIComment ended. userId=${userId}, checkupId=${checkupId}`);
+
+    return { aiComment: aiComment.comment };
   }
 
   async create(userId: number, createCheckupDto: CreateCheckupDto) {
@@ -178,11 +194,19 @@ export class CheckupService {
   }
 
   async findAll(userId: number) {
-    logger.info(`CheckupService findAll started.`);
+    logger.info(`CheckupService.findAll started. userId=${userId}`);
 
-    const checkup = await this.prisma.checkUp.findFirst({
+    // 1. DB 조회: 최근 3건, 본인(userId) 데이터만, 최신 연도순 정렬
+    const checkups = await this.prisma.checkUp.findMany({
+      where: {
+        userId,
+        isShow: true,
+      },
+      orderBy: { year: "desc" },
+      take: 3,
       select: {
         id: true,
+        year: true,
         height: true,
         weight: true,
         waist: true,
@@ -200,7 +224,6 @@ export class CheckupService {
         ast: true,
         alt: true,
         ygtp: true,
-        year: true,
         CheckupAssessment: {
           select: {
             id: true,
@@ -215,68 +238,70 @@ export class CheckupService {
             ygtp: true,
           },
         },
-        CheckUpComment: {
-          select: {
-            id: true,
-            comment: true,
-          },
-        },
       },
-      orderBy: { year: "desc" },
-      where: { userId, isShow: true },
     });
-    if (!checkup) throw new NotFoundException("검진 결과를 찾을 수 없습니다");
-    logger.debug(`find Checkup result: userId ${checkup.id} year ${checkup.year}`);
 
-    const {
-      height,
-      weight,
-      waist,
-      bmi,
-      visionLeft,
-      visionRight,
-      hearing,
-      bp_systolic,
-      bp_diastolic,
-      fbg,
-      hemoglobin,
-      ast,
-      alt,
-      ygtp,
-      urine_protein,
-      creatinine,
-      egfr,
-      CheckupAssessment,
-      CheckUpComment,
-    } = checkup;
+    // 2. 데이터 유무 검증 (백엔드 404 처리 -> 프론트엔드에서 업로드 페이지로 유연하게 처리)
+    if (!checkups || checkups.length === 0) {
+      throw new NotFoundException("등록된 건강검진 결과를 찾을 수 없습니다.");
+    }
 
-    const dashboardResponseDto: DashboardResponseDto = {
-      id: checkup.id,
-      body_metrics: { height, weight, waist, bmi, visionLeft, visionRight, hearing },
-      blood_pressure: { bp_systolic, bp_diastolic },
-      diabetes_anemia: { fbg, hemoglobin },
-      liver: { ast, alt, ygtp },
-      kidney: { urine_protein, creatinine, egfr },
-      assessment: {
-        id: CheckupAssessment[0].id,
-        bmi: CheckupAssessment[0].bmi,
-        bp: CheckupAssessment[0].bp,
-        urine_protein: CheckupAssessment[0].urine_protein,
-        hemoglobin: CheckupAssessment[0].hemoglobin,
-        fbg: CheckupAssessment[0].fbg,
-        egfr: CheckupAssessment[0].egfr,
-        ast: CheckupAssessment[0].ast,
-        alt: CheckupAssessment[0].alt,
-        ygtp: CheckupAssessment[0].ygtp,
-      },
-      aiComment: {
-        id: CheckUpComment[0].id,
-        comment: CheckUpComment[0].comment,
-      },
-    };
+    logger.debug(`Found ${checkups.length} checkup records for userId=${userId}`);
 
-    logger.info(`CheckupService findAll ended.`);
-    return { result: "success", code: 200, data: dashboardResponseDto };
+    // 3. DTO 매핑 
+    const dashboardResponseList: DashboardResponseDto[] = checkups.map((checkup) => {
+      const assessmentData = checkup.CheckupAssessment?.[0];
+
+      const dto: DashboardResponseDto = {
+        id: checkup.id,
+        year: checkup.year,
+        body_metrics: {
+          height: checkup.height,
+          weight: checkup.weight,
+          waist: checkup.waist,
+          bmi: checkup.bmi,
+          visionLeft: checkup.visionLeft,
+          visionRight: checkup.visionRight,
+          hearing: checkup.hearing,
+        },
+        blood_pressure: {
+          bp_systolic: checkup.bp_systolic,
+          bp_diastolic: checkup.bp_diastolic,
+        },
+        diabetes_anemia: {
+          fbg: checkup.fbg,
+          hemoglobin: checkup.hemoglobin,
+        },
+        liver: {
+          ast: checkup.ast,
+          alt: checkup.alt,
+          ygtp: checkup.ygtp,
+        },
+        kidney: {
+          urine_protein: checkup.urine_protein,
+          creatinine: checkup.creatinine,
+          egfr: checkup.egfr,
+        },
+        // Assessment 정보가 없는 만약의 경우에도 서버 에러(TypeError)를 방지하는 널 병합 처리
+        assessment: {
+          id: assessmentData?.id ?? 0,
+          bmi: assessmentData?.bmi ?? "",
+          bp: assessmentData?.bp ?? "",
+          urine_protein: assessmentData?.urine_protein ?? "",
+          hemoglobin: assessmentData?.hemoglobin ?? "",
+          fbg: assessmentData?.fbg ?? "",
+          egfr: assessmentData?.egfr ?? "",
+          ast: assessmentData?.ast ?? "",
+          alt: assessmentData?.alt ?? "",
+          ygtp: assessmentData?.ygtp ?? "",
+        },
+      };
+
+      return dto;
+    });
+
+    logger.info(`CheckupService.findAll ended successfully.`);
+    return { result: "success", code: 200, data: dashboardResponseList };
   }
 
   async findYears(userId: number) {

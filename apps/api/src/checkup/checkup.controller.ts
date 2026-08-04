@@ -8,6 +8,8 @@ import {
   Query,
   ParseArrayPipe,
   UseGuards,
+  Param,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { CheckupService } from "./checkup.service";
 import { CreateCheckupDto } from "./dto/create-checkup.dto";
@@ -29,6 +31,15 @@ export class CheckupController {
   @UseInterceptors(FileInterceptor("file", pdfUploadOptions), RenameFileInterceptor)
   uploadPdf(@UploadedFile() file: Express.Multer.File) {
     return this.checkupService.uploadPdf(file);
+  }
+
+  @ApiOperation({ summary: "특정 검진 결과 AI 분석 조회" })
+  @Get("/ai/:checkupId")
+  findAIComment(
+    @CurrentUser("id") userId: number,
+    @Param("checkupId", ParseIntPipe) checkupId: number,
+  ) {
+    return this.checkupService.findAIComment(userId, checkupId);
   }
 
   @ApiOperation({ summary: "검진 결과 확인 후 등록" })
