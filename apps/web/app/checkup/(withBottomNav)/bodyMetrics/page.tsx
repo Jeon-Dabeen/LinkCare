@@ -22,7 +22,7 @@ import {
   waistStatusTypeLabel,
 } from "@/types/statusType";
 
-interface bodyMetricsData {
+interface BodyMetricsData {
   id: number;
   year: number;
   height: number;
@@ -46,7 +46,7 @@ export default function Page() {
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const [selectedYear, setSelectYear] = useState<number>();
-  const [bodyMetricsData, setBodyMetricsData] = useState<bodyMetricsData[]>();
+  const [bodyMetricsData, setBodyMetricsData] = useState<BodyMetricsData[]>();
 
   useEffect(() => {
     async function fetchData() {
@@ -253,8 +253,8 @@ export default function Page() {
                   },
                 ]}
                 gridCount={4}
-                // min={55}
-                // max={150}
+                min={30}
+                max={100}
               />
               <div className={commonStyle.infoBox}>
                 체중과 허리둘레 버튼을 클릭하면 각각의 그래프를 껐다켰다 할 수

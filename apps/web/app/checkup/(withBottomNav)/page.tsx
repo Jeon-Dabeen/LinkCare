@@ -283,7 +283,7 @@ export default async function Page() {
           </Link>
         </Grid.ItemFull>
 
-        <Grid.Link href="/checkup/basic">
+        <Grid.Link href="/checkup/bloodPressure">
           <Card>
             <Card.Header icon={<HeartPulse />} title="혈압" />
             <Card.Body noTopPadding>
