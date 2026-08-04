@@ -85,4 +85,18 @@ export class MealController {
   removeMealFood(@CurrentUser("id") userId: number, @Param("mealId", ParseIntPipe) mealId: number) {
     return this.mealService.removeMealFoodItems(userId, mealId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "홈 화면 식사 기록 조회" })
+  @Get("/home/meals")
+  findHomeMeals(@CurrentUser("id") userId: number, @Query() query: MealQueryDto) {
+    return this.mealService.findHomeMeals(userId, query);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "홈 화면 데일리 기록 조회" })
+  @Get("/home/daily")
+  findHomeDaily(@CurrentUser("id") userId: number,  @Query() query: MealQueryDto) {
+    return this.mealService.findHomeDaily(userId, query);
+  }
 }
