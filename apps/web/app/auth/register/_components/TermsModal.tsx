@@ -121,10 +121,8 @@ export default function TermsModal({ isOpen, type, onClose }: TermsModalProps) {
   );
 }
 
-// =========================================================
-// 🎨 기본 구조 레이아웃 스타일 (필요 시 모듈 CSS 파일로 옮겨 수정 가능)
-// =========================================================
 
+// CSS
 // 전체 화면 덮는 어두운 배경 (BottomSheet의 z-index보다 높게 고정)
 const overlayStyle: React.CSSProperties = {
   position: "fixed",
