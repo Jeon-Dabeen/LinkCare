@@ -4,11 +4,11 @@ import { ENV } from "@/env";
 
 const BASE_URL = ENV.API_URL;
 
-if(!BASE_URL){
-  throw new Error(`NEXT_PUBLIC_API_URL 환경변수가 없습니다.`)
+if (!BASE_URL) {
+  throw new Error(`NEXT_PUBLIC_API_URL 환경변수가 없습니다.`);
 }
 
-interface ApiResponse<T>{
+interface ApiResponse<T> {
   success: boolean;
   statusCode: number;
   message?: string;
@@ -22,15 +22,14 @@ interface ApiFetchOptions extends RequestInit {
 export async function apiFetch<T>(
   path: string,
   options: ApiFetchOptions = {},
-): Promise<ApiResponse<T>>{
-
-  const { auth = false, headers, body, credentials, ...rest} = options;
+): Promise<ApiResponse<T>> {
+  const { auth = false, headers, body, credentials, ...rest } = options;
 
   const requestHeaders = new Headers({
     Accept: "application/json",
   });
 
-  if(headers){
+  if (headers) {
     Object.entries(headers).forEach(([key, value]) => {
       requestHeaders.set(key, value);
     });
@@ -43,7 +42,7 @@ export async function apiFetch<T>(
   if (body && !isFormData && !requestHeaders.has("Content-Type")) {
     requestHeaders.set("Content-Type", "application/json");
   }
-  
+
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: requestHeaders,
     body,
@@ -54,8 +53,8 @@ export async function apiFetch<T>(
   const result = (await response.json()) as ApiResponse<T>;
 
   // 서버가 400 등 에러 코드를 내려보냈을 때
-  if(!response.ok || !result.success){
-    throw new Error(result.message ?? 'API 요청에 실패했습니다.');
+  if (!response.ok || !result.success) {
+    throw new Error(result.message ?? "API 요청에 실패했습니다.");
   }
 
   return result;

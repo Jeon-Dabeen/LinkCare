@@ -1,13 +1,14 @@
 "use client";
 
+import { toast } from "sonner";
+
 import { CircleOff, CookingPot } from "lucide-react";
 import styles from "@/styles/meal/meal.module.css";
 
 import Button from "@/app/_components/ui/Button";
 import PhotoButton from "./photoButton";
 import { MealItem } from "@/types/meal";
-import { apiFetch } from "../_api/apiFetch";
-import { useAlert } from "@/app/_providers/AlertContext";
+import { apiFetch } from "@/utils/api/apiFetch";
 
 interface MealPhotoListProps {
   mealsList: MealItem[];
@@ -27,8 +28,6 @@ export default function MealPhotoList({
   const breakfast = mealsList.find((m) => m.mealType === "BREAKFAST");
   const lunch = mealsList.find((m) => m.mealType === "LUNCH");
   const dinner = mealsList.find((m) => m.mealType === "DINNER");
-
-  const { customAlert } = useAlert();
 
   // 안먹었어요 버튼
   async function handleToggleSkip(
@@ -57,7 +56,7 @@ export default function MealPhotoList({
     } catch (error) {
       if (error instanceof Error) {
         console.error("안먹었어요 상태 변경 실패: ", error.message);
-        await customAlert(error.message);
+        toast.error(error.message);
       }
     }
   }

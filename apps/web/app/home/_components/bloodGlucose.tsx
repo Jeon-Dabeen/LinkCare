@@ -65,7 +65,7 @@ export default function BG({ bgDate, glucose, mealTiming }: BpProps) {
       <Card.Header icon={<Droplet />} right={bgDate} />
       <Card.Body noTopPadding>
         <GaugeChart
-          key={`${glucose}-${mealTiming}`}
+          key={bgStatus}
           levels={["low", "normal", "warning", "danger"]}
           status={bgStatus as keyof typeof bgStatusTypeLabel}
           value={bgStatusLabel}

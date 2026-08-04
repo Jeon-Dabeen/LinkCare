@@ -15,8 +15,8 @@ import {
 import commonStyle from "@/styles/common.module.css";
 import styles from "@/styles/mypage/mypage.module.css";
 
-import { apiFetch } from "@/app/meal/_api/apiFetch";
-import { logoutApi } from "../_api/logoutApi";
+import { apiFetch } from "@/utils/api/apiFetch";
+import { logoutApi } from "@/utils/api/logoutApi";
 
 import { formatDate } from "@/utils/format";
 import { ProfileType } from "@/types/profile";

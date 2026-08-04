@@ -37,6 +37,10 @@
   flex: 1 1 100%;
 }
 
+.cardHeader .left .icon {
+  line-height: 1;
+}
+
 .cardHeader .title {
   font-weight: 700;
 }
@@ -53,6 +57,7 @@
   flex-direction: column;
   gap: var(--spacing-md);
   padding: var(--spacing-box-inner);
+  padding-bottom: var(--spacing-box-inner-lg)
 }
 
 .noTopPadding {

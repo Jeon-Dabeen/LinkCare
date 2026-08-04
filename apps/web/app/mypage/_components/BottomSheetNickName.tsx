@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import formStyle from "@/styles/components/form.module.css";
 import { Dices } from "lucide-react";
 
-import { apiFetch } from "@/app/meal/_api/apiFetch";
+import { apiFetch } from "@/utils/api/apiFetch";
 
 import { toast } from "sonner";
 import BottomSheet from "@/app/_components/ui/BottomSheet";

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 
 import { CirclePlus, Utensils } from "lucide-react";
@@ -10,8 +11,8 @@ import formStyle from "@/styles/components/form.module.css";
 import styles from "@/styles/meal/record.module.css";
 
 import { MealFoodResponse } from "@/types/meal";
-import { apiFetch } from "../_api/apiFetch";
-import { analyzeFood } from "../_api/analyzeFood";
+import { apiFetch } from "@/utils/api/apiFetch";
+import { analyzeFood } from "@/utils/api/analyzeFood";
 
 import { parseKcal } from "@/utils/meals";
 import Button from "@/app/_components/ui/Button";
@@ -69,6 +70,7 @@ export default function MealRecord() {
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(true);
   const [isPhotoLoading, setIsPhotoLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // 사진
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
@@ -118,7 +120,7 @@ export default function MealRecord() {
       } catch (error) {
         if (error instanceof Error) {
           console.error("식사 상세 데이터 로드 실패: ", error.message);
-          alert(error.message);
+          toast.error(error.message);
         }
       } finally {
         setIsLoading(false);
@@ -132,8 +134,9 @@ export default function MealRecord() {
 
   // 변경 감지
   const isModified =
-    selectedFile != null ||
-    JSON.stringify(foodItems) !== JSON.stringify(initialFoodItems);
+    !isSaving &&
+    (selectedFile != null ||
+    JSON.stringify(foodItems) !== JSON.stringify(initialFoodItems));
 
   /**
    * 아이템 추가 버튼 함수
@@ -141,7 +144,7 @@ export default function MealRecord() {
    */
   const addFoodItem = async () => {
     if (foodItems.length >= 5) {
-      await customAlert("더 이상 추가할 수 없어요")
+      await customAlert("더 이상 추가할 수 없어요");
       return;
     }
     setFoodItems((prev) => [
@@ -189,13 +192,13 @@ export default function MealRecord() {
     );
 
     if (hasExistingData || currentImageUrl) {
-      const isConfirmed =  await customConfirm(
+      const isConfirmed = await customConfirm(
         "새로운 사진을 분석하면 기존에 작성된 식사 내용이 사라져요. 덮어쓰시겠어요?",
         {
           title: "식사 내용 덮어쓰기",
           confirmText: "덮어쓰기",
-          cancelText: '취소',
-        }
+          cancelText: "취소",
+        },
       );
       if (!isConfirmed) {
         return;
@@ -209,7 +212,9 @@ export default function MealRecord() {
       const foods = await analyzeFood(file);
 
       if (foods.length === 0) {
-        await customAlert("음식 사진을 찾지 못했어요\n다른 사진으로 다시 골라주세요")
+        await customAlert(
+          "음식 사진을 찾지 못했어요\n다른 사진으로 다시 골라주세요",
+        );
         return;
       }
 
@@ -228,7 +233,7 @@ export default function MealRecord() {
       setCurrentImageUrl(previewUrl);
     } catch (error) {
       console.error("이미지 분석 실패: ", error);
-      await customAlert("이미지 분석에 실패했어요")
+      toast.error("이미지 분석에 실패했어요");
     } finally {
       setIsPhotoLoading(false);
     }
@@ -302,6 +307,7 @@ export default function MealRecord() {
 
     try {
       // 저장
+      setIsSaving(true);
       await apiFetch(`/meal/record/${mealId}`, {
         method: "PATCH",
         body: formData,
@@ -313,6 +319,8 @@ export default function MealRecord() {
         console.error("저장에 실패했어요: ", error.message);
         await customAlert(error.message);
       }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -330,16 +338,15 @@ export default function MealRecord() {
         method: "DELETE",
       });
 
-      await customAlert("성공적으로 삭제되었어요");
+      toast.success("성공적으로 삭제되었어요");
 
       // 화면 이동
-      // router.replace('/meal');
+      router.replace("/meal");
     } catch (error) {
       if (error instanceof Error) {
-        console.error("삭제에 샐패했어요: ", error.message);
-        await customAlert(error.message);
+        toast.error(error.message);
       } else {
-        await customAlert("삭제에 실패했어요");
+        toast.error("삭제에 실패했어요");
       }
     }
   };
@@ -441,6 +448,7 @@ export default function MealRecord() {
                       variant="secondary"
                       size="large"
                       onClick={handleDelete}
+                      disabled={isSaving}
                     >
                       삭제
                     </Button>
@@ -451,7 +459,7 @@ export default function MealRecord() {
                       onClick={handleCreate}
                       disabled={!isModified}
                     >
-                      저장
+                      {isSaving ? "저장중..." : "저장"}
                     </Button>
                   </>
                 )}
@@ -464,7 +472,7 @@ export default function MealRecord() {
                       onClick={handleCreate}
                       disabled={!isModified}
                     >
-                      등록
+                      {isSaving ? "저장중..." : "등록"}
                     </Button>
                   </>
                 )}
@@ -473,7 +481,6 @@ export default function MealRecord() {
           )}
         </form>
       </div>
-
     </section>
   );
 }

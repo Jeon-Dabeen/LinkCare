@@ -23,6 +23,7 @@
 
 
 .icon{
+  padding-top: 20px;
   text-align: center;
   color: var(--icon-color);
 }

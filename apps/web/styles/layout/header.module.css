@@ -15,3 +15,18 @@
 .link {
   display: block;
 }
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.logo span:first-child {
+  color: var(--color-primary);
+}
+
+.logo span:last-child {
+  color: var(--color-secondary);
+}

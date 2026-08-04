@@ -1,4 +1,3 @@
-
 import { CircleXIcon } from "lucide-react";
 import styles from "@/styles/meal/record.module.css";
 
@@ -13,8 +12,8 @@ interface FoodItemProps {
   onDelete: () => void;
   onChange: (
     field: "foodName" | "calorie",
-    value: string | number | null
-  )=> void;
+    value: string | number | null,
+  ) => void;
 }
 
 export default function FoodItem({
@@ -23,21 +22,31 @@ export default function FoodItem({
   canModify = false,
   onDelete,
   onChange,
-}: FoodItemProps){
-
+}: FoodItemProps) {
   return (
-      <li className={styles.inputItem}>
-        {canModify && 
-          <ButtonIcon color="secondary" onClick={onDelete}>
-            <CircleXIcon/>
-          </ButtonIcon>
-        }
-        <div className={styles.name}>
-          <Input type="text" value={foodName} disabled={!canModify} onChange={(e) => onChange('foodName', e.target.value)} />
-        </div>
-        <div className={styles.unit}>
-          <Input type="number" unit="kcal" value={calorie ?? ""} disabled={!canModify} onChange={(e) => onChange('calorie', Number(e.target.value))} />
-        </div>
-      </li>
-  )
+    <li className={styles.inputItem}>
+      {canModify && (
+        <ButtonIcon color="secondary" onClick={onDelete}>
+          <CircleXIcon />
+        </ButtonIcon>
+      )}
+      <div className={styles.name}>
+        <Input
+          type="text"
+          value={foodName}
+          disabled={!canModify}
+          onChange={(e) => onChange("foodName", e.target.value)}
+        />
+      </div>
+      <div className={styles.unit}>
+        <Input
+          type="number"
+          unit="kcal"
+          value={calorie ?? ""}
+          disabled={!canModify}
+          onChange={(e) => onChange("calorie", Number(e.target.value))}
+        />
+      </div>
+    </li>
+  );
 }

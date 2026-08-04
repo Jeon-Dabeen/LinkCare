@@ -1,7 +1,7 @@
 "use client";
 
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
-import { apiFetch } from "@/app/meal/_api/apiFetch";
+import { apiFetch } from "@/utils/api/apiFetch";
 
 import { MealDailyResponse } from "@/types/home";
 import { getMealTypeLabel } from "@/types/mealType";

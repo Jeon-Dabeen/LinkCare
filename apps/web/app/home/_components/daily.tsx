@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
-import { apiFetch } from "@/app/meal/_api/apiFetch";
+import { apiFetch } from "@/utils/api/apiFetch";
 
 import { Salad } from "lucide-react";
 import Grid from "@/app/_components/ui/Grid";

@@ -10,13 +10,12 @@
   font-weight: 500;
 }
 
-
 .button:focus {
   outline: 2px solid var(--input-border-color-focus);
 }
 
-/* variant */
 
+/* variant */
 .primary {
   background-color: var(--color-primary);
   color: var(--color-text-inverse);
@@ -139,14 +138,13 @@
 }
 
 
-
 /* buttonQuestion */
 .buttonQuestion {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
-  height: 32px;
+  /* height: 32px; */
   background-image: url('/images/icon/button_question.svg');
   background-repeat: no-repeat;
   background-position: 50% 50%;

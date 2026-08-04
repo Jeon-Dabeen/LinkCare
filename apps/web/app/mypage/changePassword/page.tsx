@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import clsx from "clsx";
 import commonStyle from "@/styles/common.module.css";
@@ -9,8 +10,7 @@ import formStyle from "@/styles/components/form.module.css";
 
 import Button from "@/app/_components/ui/Button";
 import Input from "@/app/_components/ui/Input";
-import { apiFetch } from "@/app/meal/_api/apiFetch";
-import { toast } from "sonner";
+import { apiFetch } from "@/utils/api/apiFetch";
 
 export default function ChangePasswordPage() {
   const router = useRouter();
@@ -21,15 +21,22 @@ export default function ChangePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // 비밀번호 형식 확인
+  const isValidNewPassword = newPassword.length >= 6;
+  const isPasswordValid = isValidNewPassword && newPassword === confirmPassword;
+  const newPasswordMessage = isValidNewPassword
+    ? "사용할 수 있는 비밀번호예요"
+    : "비밀번호는 6자 이상 입력해 주세요";
+
   // 비밀번호 일치 여부 확인
   const isPasswordMatch = newPassword !== "" && newPassword === confirmPassword;
 
   // 비밀번호 입력 관련 에러 메시지
   const passwordErrorMessage =
     confirmPassword && !isPasswordMatch
-      ? "비밀번호가 일치하지 않습니다."
+      ? "변경할 비밀번호가 서로 달라요"
       : confirmPassword && isPasswordMatch
-        ? "비밀번호가 일치합니다."
+        ? "변경할 비밀번호가 일치해요"
         : "";
 
   // 폼 제출 가능 여부 (모든 필드 입력 + 새 비밀번호 일치 + 로딩 중이 아님)
@@ -108,6 +115,19 @@ export default function ChangePasswordPage() {
               placeholder="새로운 비밀번호를 입력해 주세요"
               required
             />
+
+            {/* 비밀번호 형식 확인 메시지 */}
+            {newPasswordMessage && (
+              <p
+                className={
+                  isValidNewPassword
+                    ? commonStyle.textSuccess
+                    : commonStyle.textError
+                }
+              >
+                {newPasswordMessage}
+              </p>
+            )}
           </div>
 
           {/* 비밀번호 확인 */}
@@ -124,20 +144,19 @@ export default function ChangePasswordPage() {
               placeholder="새로운 비밀번호를 다시 입력해 주세요"
               required
             />
+            {/* 비밀번호 일치 상태 메시지 */}
+            {passwordErrorMessage && (
+              <p
+                className={
+                  isPasswordMatch
+                    ? commonStyle.textSuccess
+                    : commonStyle.textError
+                }
+              >
+                {passwordErrorMessage}
+              </p>
+            )}
           </div>
-
-          {/* 비밀번호 일치 상태 메시지 */}
-          {passwordErrorMessage && (
-            <p
-              className={
-                isPasswordMatch
-                  ? commonStyle.textSuccess
-                  : commonStyle.textError
-              }
-            >
-              {passwordErrorMessage}
-            </p>
-          )}
 
           <div className={clsx(formStyle.formButtonWrapper, formStyle.column)}>
             <div className={formStyle.formBox}>

@@ -42,7 +42,9 @@ export function ViewCalendar({
       </div>
       <div className={styles.infoBox}>
         <div className={commonStyle.infoBox}>
-          <p className={commonStyle.textInfo}>오늘 기준으로 최대 3개월 이전의 기록만 조회할 수 있어요</p>
+          <p className={commonStyle.textInfo}>
+            오늘 기준으로 최대 3개월 이전의 기록만 조회할 수 있어요
+          </p>
         </div>
       </div>
     </div>

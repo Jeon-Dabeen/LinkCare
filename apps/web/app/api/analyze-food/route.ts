@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { analyzeFoodByGemini } from "@/app/meal/_api/apiGenAI";
+import { analyzeFoodByGemini } from "@/utils/api/apiGenAI";
 
 export async function POST(req: NextRequest) {
   try {

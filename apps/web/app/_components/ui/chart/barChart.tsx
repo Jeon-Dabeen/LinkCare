@@ -1,27 +1,15 @@
 "use client";
 
-
-
-import clsx from "clsx";
 import styles from "@/styles/components/chartBar.module.css";
-
-import {StatusType} from "@/types/statusType";
-
 
 type BarChartChart = {
   level?: string;
   position?: number;
-}
+};
 
-export default function BarChart({
-  level,
-  position,
-}: BarChartChart){
-
-
-  return(
+export default function BarChart({ level, position }: BarChartChart) {
+  return (
     <div className={styles.wrapper}>
-
       <div className={styles.bar}>
         <div
           className={styles.value}
@@ -36,9 +24,5 @@ export default function BarChart({
         />
       </div>
     </div>
-  )
+  );
 }
-
-
-
-

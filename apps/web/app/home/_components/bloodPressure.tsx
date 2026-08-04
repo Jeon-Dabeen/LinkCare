@@ -37,7 +37,7 @@ export default function BP({ bpDate, systolic, diastolic }: BpProps) {
       <Card.Header icon={<HeartPulse />} right={bpDate} />
       <Card.Body noTopPadding>
         <GaugeChart
-          key={`${systolic}-${diastolic}`}
+          key={bpStatus}
           levels={["low", "normal", "caution", "warning", "danger"]}
           status={bpStatus as StatusType}
           value={bpStatusLabel || bpStatusLabel === "-" ? bpStatusLabel : bpStatus ? bpStatusTypeLabel[bpStatus as StatusType] : "-"}

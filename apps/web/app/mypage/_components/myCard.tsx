@@ -16,9 +16,11 @@ export default function MyCard({ icon, label, value, onClick }: MyCardProps) {
       <span className={styles.icon}>{icon}</span>
       <p className={styles.label}>{label}</p>
       <p className={styles.value}>{value}</p>
-      <ButtonIcon color="textLight" onClick={onClick}>
-        <ChevronRight size={16} />
-      </ButtonIcon>
+      <div className={styles.button}>
+        <ButtonIcon color="textLight" onClick={onClick}>
+          <ChevronRight size={16} />
+        </ButtonIcon>
+      </div>
     </div>
   );
 }

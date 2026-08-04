@@ -11,7 +11,7 @@ import CheckBox from "@/app/_components/ui/Checkbox";
 import Button from "@/app/_components/ui/Button";
 import BottomSheet from "@/app/_components/ui/BottomSheet";
 import Input from "@/app/_components/ui/Input";
-import { apiFetch } from "@/app/meal/_api/apiFetch";
+import { apiFetch } from "@/utils/api/apiFetch";
 import { toast } from "sonner";
 
 export default function WithdrawPage() {
@@ -26,6 +26,9 @@ export default function WithdrawPage() {
   // 키 입력 상태 관리
   const [editingValue, setEditingValue] = useState<string>("");
 
+  // 탈퇴 처리 중 로딩 상태 관리 추가
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+
   // 바텀시트 닫기
   const onClose = () => {
     setIsOpen(false);
@@ -34,6 +37,8 @@ export default function WithdrawPage() {
   // 탈퇴 완료 클릭 시 처리
   const handleWithdrawComplete = async () => {
     try {
+      setIsWithdrawing(true);
+
       const response = await apiFetch<{ success: boolean; message: string }>(
         `/profile/withdraw`,
         {
@@ -54,6 +59,8 @@ export default function WithdrawPage() {
         toast.error(error.message);
         setEditingValue("");
       }
+    }finally {
+      setIsWithdrawing(false);
     }
   };
 
@@ -71,10 +78,6 @@ export default function WithdrawPage() {
         <ul className={styles.list}>
           <li>
             LinkCare에서 이용하셨던 모든 개인정보와 기록은 다시 볼 수 없어요.
-          </li>
-          <li>
-            작성하신 게시글 및 댓글은 자동 삭제되지 않으니, 탈퇴 전에 직접
-            삭제해 주세요.
           </li>
           <li>
             탈퇴 신청 후 30일 동안은 동일한 이메일과 닉네임으로 다시 가입할 수
@@ -137,7 +140,7 @@ export default function WithdrawPage() {
               variant="secondary"
               size="large"
               onClick={() => setIsOpen(false)}
-              disabled={false}
+              disabled={isWithdrawing}
             >
               취소
             </Button>
@@ -146,9 +149,9 @@ export default function WithdrawPage() {
               variant="primary"
               size="large"
               onClick={handleWithdrawComplete}
-              disabled={!editingValue}
+              disabled={!editingValue || isWithdrawing}
             >
-              탈퇴 완료
+              {isWithdrawing ? "탈퇴 진행중..." : "탈퇴 완료"}
             </Button>
           </div>
         </div>

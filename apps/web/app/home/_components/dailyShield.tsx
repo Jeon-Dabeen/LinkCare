@@ -1,7 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pencil, Angry, BatteryCharging, BatteryFull, BatteryLow, BatteryWarning, Dumbbell, Frown, GlassWater, Laugh, Meh, PillBottle, Salad, ShieldCheck, Smile, SportShoe, Volleyball } from "lucide-react";
+import {
+  Pencil,
+  Angry,
+  BatteryCharging,
+  BatteryFull,
+  BatteryLow,
+  BatteryWarning,
+  Dumbbell,
+  Frown,
+  GlassWater,
+  Laugh,
+  Meh,
+  PillBottle,
+  Salad,
+  ShieldCheck,
+  Smile,
+  SportShoe,
+  Volleyball,
+} from "lucide-react";
 import styles from "@/styles/home/home.module.css";
-import Card from '@/app/_components/ui/Card';
+import Card from "@/app/_components/ui/Card";
 import Progress from "@/app/_components/ui/Progress";
 import QuickSelectCard from "./quickSelectCard";
 import WaterSelector from "./waterSelector";
@@ -20,48 +38,62 @@ const INITIAL_SHIELD_DATA: DailyShieldState = {
   id: 0,
   feel: 0,
   energy: 0,
-  exerciseTime: '',
-  exerciseType: '',
+  exerciseTime: "",
+  exerciseType: "",
   waterCup: 0,
-  supplementType: '',
-  dailyDate: '',
+  supplementType: "",
+  dailyDate: "",
   lastExerciseTime: "",
-  lastExerciseType: '',
+  lastExerciseType: "",
   lastWaterCup: 0,
-  lastSupplementType: ''
+  lastSupplementType: "",
 };
 
 const FEEL_OPTIONS = [
-  { val: 1, icon: <Angry />, label: '힘듦' },
-  { val: 2, icon: <Frown />, label: '별로' },
-  { val: 3, icon: <Meh />, label: '보통' },
-  { val: 4, icon: <Smile />, label: '좋음' },
-  { val: 5, icon: <Laugh />, label: '최고' },
+  { val: 1, icon: <Angry />, label: "힘듦" },
+  { val: 2, icon: <Frown />, label: "별로" },
+  { val: 3, icon: <Meh />, label: "보통" },
+  { val: 4, icon: <Smile />, label: "좋음" },
+  { val: 5, icon: <Laugh />, label: "최고" },
 ];
 
 const ENERGY_OPTIONS = [
-  { val: 1, icon: <BatteryWarning />, label: '지침' },
-  { val: 2, icon: <BatteryLow />, label: '부족' },
-  { val: 3, icon: <BatteryFull />, label: '충분' },
-  { val: 4, icon: <BatteryCharging />, label: '활력' },
+  { val: 1, icon: <BatteryWarning />, label: "지침" },
+  { val: 2, icon: <BatteryLow />, label: "부족" },
+  { val: 3, icon: <BatteryFull />, label: "충분" },
+  { val: 4, icon: <BatteryCharging />, label: "활력" },
 ];
 
 const EXERCISE_TIME_OPTIONS = [
-  { val: '10', label: '10분' },
-  { val: '30', label: '30분' },
-  { val: '60', label: '1시간' },
-  { val: '120', label: '2시간' },
+  { val: "10", label: "10분" },
+  { val: "30", label: "30분" },
+  { val: "60", label: "1시간" },
+  { val: "120", label: "2시간" },
   // { val: 'more', label: 'more' },
 ];
 
 const EXERCISE_TYPES = [
-  '걷기', '달리기', '요가', '스트레칭', '필라테스',
-  '수영', '헬스', '크로스핏', '자전거', '기타',
+  "걷기",
+  "달리기",
+  "요가",
+  "스트레칭",
+  "필라테스",
+  "수영",
+  "헬스",
+  "크로스핏",
+  "자전거",
+  "기타",
 ];
 
 const SUPPLEMENT_TYPES = [
-  '종합비타민', '비타민C', '비타민D', 'MSM', '콘드로이친',
-  '프로바이오틱스(유산균)', '코엔자임Q10', '멜라토닌',
+  "종합비타민",
+  "비타민C",
+  "비타민D",
+  "MSM",
+  "콘드로이친",
+  "프로바이오틱스(유산균)",
+  "코엔자임Q10",
+  "멜라토닌",
 ];
 
 // 순수 헬퍼 함수
@@ -80,14 +112,18 @@ const extractPayload = (data: DailyShieldState): ShieldPayload => {
 
 const checkIsSelected = (sourceStr: string, targetLabel: string): boolean => {
   if (!sourceStr) return false;
-  return sourceStr.split(',').map((s) => s.trim()).includes(targetLabel);
+  return sourceStr
+    .split(",")
+    .map((s) => s.trim())
+    .includes(targetLabel);
 };
 
 const calculateProgress = (formData: DailyShieldState): number => {
   let count = 0;
   if ((formData.feel ?? 0) > 0 && (formData.energy ?? 0) > 0) count += 1;
   if (Number(formData.waterCup ?? 0) > 0) count += 1;
-  if (Boolean(formData.exerciseTime?.trim() || formData.exerciseType?.trim())) count += 1;
+  if (Boolean(formData.exerciseTime?.trim() || formData.exerciseType?.trim()))
+    count += 1;
   if (Boolean(formData.supplementType?.trim())) count += 1;
   return count;
 };
@@ -97,8 +133,8 @@ const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/daily-shield`;
 
 const createDailyShield = async (payload: ShieldPayload) => {
   const response = await fetch(API_BASE_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -107,11 +143,11 @@ const createDailyShield = async (payload: ShieldPayload) => {
 };
 
 const updateDailyShield = async (id: number, payload: ShieldPayload) => {
-  console.log(`updateDailyShield: ${id}`)
-  console.log(`${API_BASE_URL}/${id}`)
+  console.log(`updateDailyShield: ${id}`);
+  console.log(`${API_BASE_URL}/${id}`);
   const response = await fetch(`${API_BASE_URL}/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -126,7 +162,8 @@ export default function DailyShield() {
 
   // 데일리 쉴드
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [formData, setFormData] = useState<DailyShieldState>(INITIAL_SHIELD_DATA);
+  const [formData, setFormData] =
+    useState<DailyShieldState>(INITIAL_SHIELD_DATA);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const progressValue = useMemo(() => calculateProgress(formData), [formData]);
@@ -137,15 +174,14 @@ export default function DailyShield() {
   const fetchDailyShield = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(
-        `${API_BASE_URL}?dailyDate=${targetDate}`, {
+      const response = await fetch(`${API_BASE_URL}?dailyDate=${targetDate}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error('데이터를 불러오는데 실패했습니다.');
+        throw new Error("데이터를 불러오는데 실패했습니다.");
       }
 
       const data: DailyShieldState = await response.json();
@@ -153,7 +189,7 @@ export default function DailyShield() {
       // API 결과를 formData 전체에 세팅 (생성된 id 및 last* 값 포함)
       setFormData(data);
     } catch (error) {
-      toast.error('서버 통신 에러가 발생했습니다.');
+      toast.error("서버 통신 에러가 발생했습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -167,31 +203,47 @@ export default function DailyShield() {
   // 2. 빠른생성
   const isExercise = Number(formData.exerciseTime ?? 0) > 0;
   const isWater = Number(formData.waterCup ?? 0) > 0;
-  const isSupplement = Boolean(formData.supplementType && formData.supplementType.trim().length > 0);
+  const isSupplement = Boolean(
+    formData.supplementType && formData.supplementType.trim().length > 0,
+  );
 
   // 빠른 생성 토글 핸들러
-  const handleQuickToggle = async (key: 'exercise' | 'water' | 'supplement') => {
+  const handleQuickToggle = async (
+    key: "exercise" | "water" | "supplement",
+  ) => {
     let updatedPayload: DailyShieldState = { ...formData };
 
-    if (key === 'exercise') {
+    if (key === "exercise") {
       const isExerciseActive = Number(formData.exerciseTime ?? 0) > 0;
-      const nextTime = isExerciseActive ? '' : (formData.lastExerciseTime?.trim() || '30');
-      const nextType = isExerciseActive ? '' : (formData.lastExerciseType?.trim() || '걷기');
+      const nextTime = isExerciseActive
+        ? ""
+        : formData.lastExerciseTime?.trim() || "30";
+      const nextType = isExerciseActive
+        ? ""
+        : formData.lastExerciseType?.trim() || "걷기";
       updatedPayload = {
         ...formData,
         exerciseTime: nextTime,
         exerciseType: nextType,
       };
-    } else if (key === 'water') {
+    } else if (key === "water") {
       const isWaterActive = Number(formData.waterCup ?? 0) > 0;
-      const nextCup = isWaterActive ? 0 : (formData.lastWaterCup && formData.lastWaterCup > 0 ? formData.lastWaterCup : 8);
+      const nextCup = isWaterActive
+        ? 0
+        : formData.lastWaterCup && formData.lastWaterCup > 0
+          ? formData.lastWaterCup
+          : 8;
       updatedPayload = {
         ...formData,
         waterCup: nextCup,
       };
-    } else if (key === 'supplement') {
-      const isSupplementActive = Boolean(formData.supplementType && formData.supplementType.trim().length > 0);
-      const nextSupplement = isSupplementActive ? '' : (formData.lastSupplementType?.trim() || '종합비타민');
+    } else if (key === "supplement") {
+      const isSupplementActive = Boolean(
+        formData.supplementType && formData.supplementType.trim().length > 0,
+      );
+      const nextSupplement = isSupplementActive
+        ? ""
+        : formData.lastSupplementType?.trim() || "종합비타민";
       updatedPayload = {
         ...formData,
         supplementType: nextSupplement,
@@ -203,7 +255,9 @@ export default function DailyShield() {
 
     try {
       if (isUpdate) {
-        console.log(`formData.id: ${formData.id}, payload: waterCup=${payload.waterCup}, supplementType=${payload.supplementType}, exerciseTime=${payload.exerciseTime}, exerciseType=${payload.exerciseType}`)
+        console.log(
+          `formData.id: ${formData.id}, payload: waterCup=${payload.waterCup}, supplementType=${payload.supplementType}, exerciseTime=${payload.exerciseTime}, exerciseType=${payload.exerciseType}`,
+        );
         await updateDailyShield(formData.id, payload);
       } else {
         const newResult = await createDailyShield(payload);
@@ -215,7 +269,7 @@ export default function DailyShield() {
 
       fetchDailyShield();
     } catch (error) {
-      console.error('Quick Toggle Auto-save Error:', error);
+      console.error("Quick Toggle Auto-save Error:", error);
       // 저장 실패 시 원래 데이터로 롤백
       await fetchDailyShield();
     }
@@ -236,27 +290,27 @@ export default function DailyShield() {
   // 단일 값 변경 핸들러 (기분, 에너지, 운동시간 등)
   const handleFieldChange = <K extends keyof DailyShieldState>(
     field: K,
-    value: DailyShieldState[K]
+    value: DailyShieldState[K],
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   // 다중 선택 토글 핸들러 (운동 종류, 영양제 종류 - 쉼표로 구반되는 문자열)
   const handleMultiSelectToggle = (
-    field: 'exerciseType' | 'supplementType',
-    itemLabel: string
+    field: "exerciseType" | "supplementType",
+    itemLabel: string,
   ) => {
     setFormData((prev) => {
       // 쉼표로 구분된 문자열을 배열로 변환
       const currentList = prev[field]
-        ? prev[field].split(',').map((s) => s.trim())
+        ? prev[field].split(",").map((s) => s.trim())
         : [];
 
       const newList = currentList.includes(itemLabel)
         ? currentList.filter((item) => item !== itemLabel)
         : [...currentList, itemLabel];
 
-      return { ...prev, [field]: newList.join(', ') }; // 걷기, 달리기 형태로 조합해서 return
+      return { ...prev, [field]: newList.join(", ") }; // 걷기, 달리기 형태로 조합해서 return
     });
   };
 
@@ -269,45 +323,52 @@ export default function DailyShield() {
       if (isUpdate) {
         // 수정 호출
         const result = await updateDailyShield(formData.id, payload);
-        console.log('수정 완료:', result);
-        toast.success('데일리 쉴드가 수정되었어요!');
+        console.log("수정 완료:", result);
+        toast.success("데일리 쉴드가 수정되었어요!");
       } else {
         // 생성 호출
         const result = await createDailyShield(payload);
-        console.log('생성 완료:', result);
-        toast.success('데일리 쉴드가 성공적으로 등록되었어요!');
+        console.log("생성 완료:", result);
+        toast.success("데일리 쉴드가 성공적으로 등록되었어요!");
       }
 
       setIsEditing(false);
       // 데이터 최신화
       await fetchDailyShield();
-
-
     } catch (error) {
-      console.error('Submit Error:', error);
-      toast.error('저장 중 오류가 발생했습니다.');
+      console.error("Submit Error:", error);
+      toast.error("저장 중 오류가 발생했습니다.");
     }
   };
 
   // 헬퍼: 특정 항목이 선택되었는지 체크하는 함수
   const isSelectedType = (
-    field: 'exerciseType' | 'supplementType',
-    label: string
+    field: "exerciseType" | "supplementType",
+    label: string,
   ) => {
-    return formData[field]?.split(',').map((s) => s.trim()).includes(label) ?? false;
+    return (
+      formData[field]
+        ?.split(",")
+        .map((s) => s.trim())
+        .includes(label) ?? false
+    );
   };
 
   return (
     <Card>
-      <div className={styles.headerWrapper}>
-      <Card.Header icon={<ShieldCheck />} title="데일리 쉴드 생성" />
-      {formData.id > 0 && !isEditing && (
-        <ButtonIcon onClick={handleStartEdit}>
-          <Pencil />
-        </ButtonIcon>
-      )}
-      </div>
-      <Card.Body noTopPadding>
+      <Card.Header
+        icon={<ShieldCheck />}
+        title="데일리 쉴드 생성"
+        right={
+          formData.id > 0 &&
+          !isEditing && (
+            <ButtonIcon onClick={handleStartEdit}>
+              <Pencil />
+            </ButtonIcon>
+          )
+        }
+      />
+      <Card.Body>
         <div className={styles.dailyShield}>
           <Progress value={progressValue} max={4} isInfo />
 
@@ -318,16 +379,18 @@ export default function DailyShield() {
               <QuickSelectCard
                 id="exercise"
                 checked={isExercise}
-                onChange={() => handleQuickToggle('exercise')}
+                onChange={() => handleQuickToggle("exercise")}
                 icon={<SportShoe />}
                 title="운동"
-                value={(formData.exerciseTime || formData.lastExerciseTime || '30')}
+                value={
+                  formData.exerciseTime || formData.lastExerciseTime || "30"
+                }
                 unit="min"
               />
               <QuickSelectCard
                 id="water"
                 checked={isWater}
-                onChange={() => handleQuickToggle('water')}
+                onChange={() => handleQuickToggle("water")}
                 icon={<GlassWater />}
                 title="수분섭취"
                 value={String(formData.waterCup || formData.lastWaterCup || 8)}
@@ -336,10 +399,14 @@ export default function DailyShield() {
               <QuickSelectCard
                 id="supplement"
                 checked={isSupplement}
-                onChange={() => handleQuickToggle('supplement')}
+                onChange={() => handleQuickToggle("supplement")}
                 icon={<PillBottle />}
                 title="영양제"
-                value={formData.supplementType || formData.lastSupplementType || '종합비타민'}
+                value={
+                  formData.supplementType ||
+                  formData.lastSupplementType ||
+                  "종합비타민"
+                }
               />
             </div>
           </article>
@@ -362,7 +429,7 @@ export default function DailyShield() {
                             value={String(item.val)}
                             icon={item.icon}
                             label={item.label}
-                            onChange={() => handleFieldChange('feel', item.val)}
+                            onChange={() => handleFieldChange("feel", item.val)}
                           />
                         ))}
                       </div>
@@ -383,7 +450,9 @@ export default function DailyShield() {
                                 value={String(item.val)}
                                 icon={item.icon}
                                 label={item.label}
-                                onChange={() => handleFieldChange('energy', item.val)}
+                                onChange={() =>
+                                  handleFieldChange("energy", item.val)
+                                }
                               />
                             ))}
                           </div>
@@ -414,7 +483,9 @@ export default function DailyShield() {
                         <WaterSelector
                           value={formData.waterCup || 0}
                           max={10}
-                          onChange={(newCup) => handleFieldChange('waterCup', newCup)}
+                          onChange={(newCup) =>
+                            handleFieldChange("waterCup", newCup)
+                          }
                         />
                       </div>
                     </CustomStep.Item>
@@ -445,7 +516,9 @@ export default function DailyShield() {
                             checked={formData.exerciseTime === time.val}
                             value={time.val}
                             label={time.label}
-                            onChange={() => handleFieldChange('exerciseTime', time.val)}
+                            onChange={() =>
+                              handleFieldChange("exerciseTime", time.val)
+                            }
                           />
                         ))}
                       </div>
@@ -455,15 +528,17 @@ export default function DailyShield() {
                       title="어떤 운동을 하셨나요?"
                     >
                       <div className={styles.customItems}>
-                         {EXERCISE_TYPES.map((type, idx) => (
+                        {EXERCISE_TYPES.map((type, idx) => (
                           <StepSelector
                             key={type}
                             name="exerciseType"
                             id={`exType0${idx + 1}`}
-                            checked={isSelectedType('exerciseType', type)}
+                            checked={isSelectedType("exerciseType", type)}
                             value={type}
                             label={type}
-                            onChange={() => handleMultiSelectToggle('exerciseType', type)}
+                            onChange={() =>
+                              handleMultiSelectToggle("exerciseType", type)
+                            }
                           />
                         ))}
                       </div>
@@ -491,10 +566,12 @@ export default function DailyShield() {
                             key={supp}
                             name="supplementType"
                             id={`spType0${idx + 1}`}
-                            checked={isSelectedType('supplementType', supp)}
+                            checked={isSelectedType("supplementType", supp)}
                             value={supp}
                             label={supp}
-                            onChange={() => handleMultiSelectToggle('supplementType', supp)}
+                            onChange={() =>
+                              handleMultiSelectToggle("supplementType", supp)
+                            }
                           />
                         ))}
                       </div>
@@ -512,5 +589,5 @@ export default function DailyShield() {
         </div>
       </Card.Body>
     </Card>
-  )
+  );
 }

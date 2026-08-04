@@ -144,7 +144,7 @@ export default function Greet() {
       <div className={styles.aiComment}>
         {showLoader ? (
           <div className={loadingStyles.icon}>
-            <Loader size={32} className={styles.loading} />
+            <Loader size={32} className={loadingStyles.loading} />
             <div className={styles.description}>링크케어 AI가 데이터를 분석하고 있어요...</div>
           </div>
         ) : error ? (

@@ -1,4 +1,3 @@
-
 import styles from "@/styles/meal/photoButton.module.css";
 import Image from "next/image";
 
@@ -11,7 +10,7 @@ type PhotoButtonProps = {
   canModify?: boolean;
   onClick?: () => void;
   isSkipped?: boolean;
-}
+};
 
 export default function PhotoButton({
   label,
@@ -20,24 +19,32 @@ export default function PhotoButton({
   onClick,
   isSkipped,
 }: PhotoButtonProps) {
-
-  return(
+  return (
     <div className={styles.wrapper}>
       {canModify ? (
-          <button type="button" className={styles.button} onClick={onClick}>
-            <span className={styles.label}>{getMealTypeLabel(label)}</span>
-            <Plus/>
-          </button>
-        ):
-          isSkipped 
-            ? <div className={styles.notModify}><BeefOff /></div>
-            : (<div className={styles.notModify}><PaperBag /></div>)
-      }
-      {imageUrl && 
-        <div className={styles.photo}>
-          <Image src={imageUrl} alt={`${label} 사진`} width={100} height={100} />
+        <button type="button" className={styles.button} onClick={onClick}>
+          <span className={styles.label}>{getMealTypeLabel(label)}</span>
+          <Plus />
+        </button>
+      ) : isSkipped ? (
+        <div className={styles.notModify}>
+          <BeefOff />
         </div>
-      }
+      ) : (
+        <div className={styles.notModify}>
+          <PaperBag />
+        </div>
+      )}
+      {imageUrl && (
+        <div className={styles.photo}>
+          <Image
+            src={imageUrl}
+            alt={`${label} 사진`}
+            width={100}
+            height={100}
+          />
+        </div>
+      )}
     </div>
-  )
+  );
 }

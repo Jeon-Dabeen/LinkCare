@@ -37,6 +37,11 @@
   color: var(--color-text-primary);
 }
 
+.item .button button{
+  width: 30px;
+  height: 30px;
+}
+
 /* password */
 .changePw {
   margin-top: var(--spacing-sm);
