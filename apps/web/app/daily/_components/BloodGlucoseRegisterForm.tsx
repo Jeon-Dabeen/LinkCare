@@ -12,8 +12,7 @@
     CreateBloodGlucoseResponse,
     MealTiming,
   } from "@/types/bloodGlucose";
-
-  const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/blood-glucose`;
+  import { ENV } from "@/env";
 
   interface BloodGlucoseRegisterFormProps {
     formattedDate: string;
@@ -64,7 +63,7 @@
       };
 
       try {
-        const response = await fetch(API_BASE_URL,
+        const response = await fetch(`${ENV.API_URL}/blood-glucose`,
           {
             method: "POST",
             headers: {"Content-Type": "application/json",},

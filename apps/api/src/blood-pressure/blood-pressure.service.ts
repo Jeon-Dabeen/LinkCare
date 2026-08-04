@@ -3,7 +3,6 @@ import { CreateBloodPressureDto } from "./dto/create-blood-pressure.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { logger } from "../config/logger";
 import { dayperiod } from "@prisma/client";
-import { UpdateBloodGlucoseDto } from "../blood-glucose/dto/update-blood-glucose.dto";
 import { UpdateBloodPressurePulseDto } from "./dto/update-blood-pressure.dto";
 
 @Injectable()
@@ -43,7 +42,7 @@ export class BloodPressureService {
     });
 
     logger.debug(`createBloodPressure result = ${JSON.stringify(result)}`);
-    logger.info(`blododPressureService createBloodPressure ended.` + `userId={userId}`);
+    logger.info(`blododPressureService createBloodPressure ended.` + `userId=${userId}`);
 
     return result;
   }
@@ -56,10 +55,8 @@ export class BloodPressureService {
    * @returns
    */
   async findWeekBloodPressure(userId: number, bpDate: string, dayPeriod: dayperiod) {
-    (logger.info(`bloodPressureService FindWeekBloodPressure started.` + `userId=${userId}`),
-      logger.debug(
-        `findWeekBloodPressure: userId = ${userId}, bpDate = ${bpDate}, dayPeriod = ${dayPeriod}`,
-      ));
+    logger.info(`bloodPressureService FindWeekBloodPressure started.` + `userId=${userId}`);
+    logger.debug(`findWeekBloodPressure: userId = ${userId}, bpDate = ${bpDate}, dayPeriod = ${dayPeriod}`);
 
     const endDate = this.toDate(bpDate); //프론트에서 받은 기준날짜인 오늘
     const startDate = new Date(endDate);
@@ -144,6 +141,13 @@ export class BloodPressureService {
 
   }
 
+  /**
+   * 
+   * @param userId 
+   * @param bloodPressureId 
+   * @param updateBloodPressurePulseDto 
+   * @returns 
+   */
   async updateBloodPressurePulse(userId: number,bloodPressureId:number, updateBloodPressurePulseDto:UpdateBloodPressurePulseDto,){
       logger.info(`bloodPressureService updateBloodPressurePulse started. userId=${userId}`);
   
@@ -165,7 +169,7 @@ export class BloodPressureService {
         where:{ id:bloodPressureId},
         data:{pulse}
       })
-      logger.debug(`updateBloodPressure result: ${result}`);
+      logger.debug(`updateBloodPressure result= ${JSON.stringify(result)}`);
       logger.info(`bloodPressureService updateBloodPressurePulse ended.`+ `userId=${userId}`);
   
       return result;

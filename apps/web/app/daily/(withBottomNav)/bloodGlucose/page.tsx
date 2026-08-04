@@ -28,8 +28,7 @@ import BarChart from "@/app/_components/ui/chart/barChart";
 import StatusTag from "@/app/_components/ui/StatusTag";
 import { getBarPercentage } from "@/utils/checkupBarRange";
 import { AFTER_BLOOD_GLUCOSE_THRESHOLDS, BEFORE_BLOOD_GLUCOSE_THRESHOLDS, getStatusByThreshold } from "@/utils/dailyStatus";
-
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/blood-glucose`;
+import { ENV } from "@/env";
 
 interface MonthBloodGlucoseRecord {
   bgDate: string;
@@ -171,7 +170,7 @@ export default function Page() {
 
       try {
         const response = await fetch(
-          `${API_BASE_URL}/week` +
+          `${ENV.API_URL}/blood-glucose/week` +
             `?bgDate=${formattedDate}` +
             `&mealType=${mealType}`,
           { credentials: "include" },
@@ -199,7 +198,7 @@ export default function Page() {
       setMonthError(null);
       try {
         const response = await fetch(
-          `${API_BASE_URL}/month?bgDate=${formattedDate}&mealType=${mealType}`,
+          `${ENV.API_URL}/blood-glucose/month?bgDate=${formattedDate}&mealType=${mealType}`,
           { credentials: "include" },
         );
 
@@ -359,7 +358,7 @@ const afterStatus = getStatusByThreshold(
     setSubmitting(true);
     setSheetError(null);
     try {
-      const response = await fetch(API_BASE_URL, {
+      const response = await fetch(`${ENV.API_URL}/blood-glucose`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

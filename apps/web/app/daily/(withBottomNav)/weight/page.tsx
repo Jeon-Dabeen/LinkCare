@@ -59,7 +59,7 @@ type CalendarData = { [date: string]: { status: StatusType } };
 
 const BMI_LEVELS: StatusType[] = ["low", "normal", "warning", "danger"];
 
-//달력용 데이터
+//달력용 bmi 데이터
 function makeCalendarData(records: MonthWeightRecord[]) {
   const result: CalendarData = {};
 

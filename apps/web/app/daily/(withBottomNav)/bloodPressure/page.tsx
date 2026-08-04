@@ -23,6 +23,7 @@ import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import StatePage from "@/app/_components/ui/StatePage";
 import BloodPressureRegisterForm from "../../_components/BloodPressureRegisterForm";
 import BloodPressureWeekChart from "../../_components/BloodPressureWeekChart";
+import { ENV } from "@/env";
 
 type BottomSheetMode = "CREATE_BLOOD_PRESSURE" | "UPDATE_PULSE" | null;
 
@@ -47,7 +48,10 @@ function getBloodPressureOutCount(records: BloodPressureRecord[]): number {
 
   records.forEach((record) => {
     const status = getBloodPressureStatus(record.systolic, record.diastolic);
-    if (status !== "normal") {
+    if (
+      status &&
+      status !== "normal"
+    ) {
       count += 1;
     }
   });
@@ -106,7 +110,7 @@ export default function Page() {
 
       try {
         const response = await fetch(
-          `http://localhost:3001/blood-pressure/week` +
+          `${ENV.API_URL}/blood-pressure/week` +
             `?bpDate=${formattedDate}` +
             `&dayPeriod=${dayPeriod}`,
           { credentials: "include" },
@@ -130,7 +134,7 @@ export default function Page() {
     async (dayPeriod: DayPeriod) => {
       try {
         const response = await fetch(
-          `http://localhost:3001/blood-pressure/month` +
+          `${ENV.API_URL}/blood-pressure/month` +
             `?bpDate=${formattedDate}` +
             `&dayPeriod=${dayPeriod}`,
           { credentials: "include" },
@@ -296,7 +300,7 @@ export default function Page() {
 
   try {
     const response = await fetch(
-      "http://localhost:3001/blood-pressure/",
+      `${ENV.API_URL}/blood-pressure/`,
       {
         method: "POST",
         headers: {"Content-Type": "application/json",
@@ -361,7 +365,7 @@ async function handleUpdatePulse() {
 
   try {
     const response = await fetch(
-      `http://localhost:3001/blood-pressure/${todayRecord.id}/pulse`,
+      `${ENV.API_URL}/blood-pressure/${todayRecord.id}/pulse`,
       {
         method: "PATCH",
         headers: {
@@ -705,7 +709,7 @@ return (
                 id="newSystolic"
                 name="newSystolic"
                 value={newSystolic}
-                placeholder="SYS 최고혈압"
+                placeholder="최고혈압"
                 onChange={(event) => {
                   setNewSystolic(event.target.value);
                   setSheetError(null);
@@ -721,7 +725,7 @@ return (
                 id="newDiastolic"
                 name="newDiastolic"
                 value={newDiastolic}
-                placeholder="DIA 최저혈압"
+                placeholder="최저혈압"
                 onChange={(event) => {
                   setNewDiastolic(event.target.value);
                   setSheetError(null);

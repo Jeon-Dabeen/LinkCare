@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseEnumPipe } from '@nestjs/common';
 import { BloodGlucoseService } from './blood-glucose.service';
 import { CreateBloodGlucoseDto } from './dto/create-blood-glucose.dto';
 import { mealtype } from '@prisma/client';
@@ -18,7 +18,7 @@ export class BloodGlucoseController {
     @CurrentUser("id") userId: number,
     @Body() createBloodGlucoseDto: CreateBloodGlucoseDto,
   ) {
-    return this.bloodGlucoseService.createBloodGlucose(Number(userId),createBloodGlucoseDto,);
+    return this.bloodGlucoseService.createBloodGlucose(userId,createBloodGlucoseDto,);
   }
 
   //최근 7일 조회
@@ -26,9 +26,9 @@ export class BloodGlucoseController {
   findWeekBloodGlucose(
     @CurrentUser("id") userId: number,
     @Query("bgDate") bgDate: string,
-    @Query("mealType") mealType: mealtype,
+    @Query("mealType", new ParseEnumPipe(mealtype)) mealType: mealtype,
   ) {
-    return this.bloodGlucoseService.findWeekBloodGlucose(Number(userId),bgDate,mealType,);
+    return this.bloodGlucoseService.findWeekBloodGlucose(userId,bgDate,mealType,);
   }
 
   //3개월 조회
@@ -36,8 +36,8 @@ export class BloodGlucoseController {
   findMonthBloodGlucose(
     @CurrentUser("id") userId: number,
     @Query("bgDate") bgDate: string,
-    @Query("mealType") mealType: mealtype,
+    @Query("mealType", new ParseEnumPipe(mealtype)) mealType: mealtype,
   ) {
-    return this.bloodGlucoseService.findMonthBloodGlucose(Number(userId),bgDate,mealType,);
+    return this.bloodGlucoseService.findMonthBloodGlucose(userId,bgDate,mealType);
   }
 }

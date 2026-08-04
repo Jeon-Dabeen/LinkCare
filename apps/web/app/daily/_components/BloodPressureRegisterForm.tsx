@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-
 import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
-
 import Button from "@/app/_components/ui/Button";
 import Input from "@/app/_components/ui/Input";
 import Radio from "@/app/_components/ui/Radio";
@@ -13,6 +11,7 @@ import {
   CreateBloodPressureResponse,
   DayPeriod,
 } from "@/types/bloodPressureType";
+import { ENV } from "@/env";
 
 interface BloodPressureRegisterFormProps {
   formattedDate: string;
@@ -93,7 +92,7 @@ export default function BloodPressureRegisterForm({
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3001/blood-pressure/", {
+      const response = await fetch(`${ENV.API_URL}/blood-pressure/`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",

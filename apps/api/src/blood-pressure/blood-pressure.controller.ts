@@ -28,7 +28,7 @@ export class BloodPressureController {
     @CurrentUser("id") userId: number,
     @Body() createBloodPressureDto: CreateBloodPressureDto,
   ) {
-    return this.bloodPressureService.createBloodPressure(Number(userId), createBloodPressureDto);
+    return this.bloodPressureService.createBloodPressure(userId, createBloodPressureDto);
   }
   //최근 7일 조회
   @Get("week")
@@ -37,7 +37,7 @@ export class BloodPressureController {
     @Query("bpDate") bpDate: string,
     @Query("dayPeriod", new ParseEnumPipe(dayperiod)) dayPeriod: dayperiod, //조회시
   ) {
-    return this.bloodPressureService.findWeekBloodPressure(Number(userId), bpDate, dayPeriod);
+    return this.bloodPressureService.findWeekBloodPressure(userId, bpDate, dayPeriod);
   }
 
   //최근 3개월 조회
@@ -47,18 +47,18 @@ export class BloodPressureController {
     @Query("bpDate") bpDate: string,
     @Query("dayPeriod", new ParseEnumPipe(dayperiod)) dayPeriod: dayperiod,
   ) {
-    return this.bloodPressureService.findMonthBloodPressure(Number(userId), bpDate, dayPeriod);
+    return this.bloodPressureService.findMonthBloodPressure( userId, bpDate, dayPeriod);
   }
 
   @Patch(":id/pulse")
   updateBloodPressurePulse(
     @CurrentUser("id") userId: number,
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseIntPipe) bloodPressureId : number,
     @Body() updateBloodPressurePulseDto: UpdateBloodPressurePulseDto,
   ) {
     return this.bloodPressureService.updateBloodPressurePulse(
-      Number(userId),
-      id,
+      userId,
+      bloodPressureId,
       updateBloodPressurePulseDto,
     );
   }
