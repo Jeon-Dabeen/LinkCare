@@ -84,7 +84,7 @@ export default function BottomSheetHeight({
               id="newHeight"
               name="newHeight"
               value={editingValue}
-              placeholder="예: 175.5"
+              placeholder={currentValue?.toLocaleString() || '예: 175.5'}
               unit="cm"
               onChange={handleChange}
             />

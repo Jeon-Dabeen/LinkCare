@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-import formStyle from "@/styles/components/form.module.css";
 import { Dices } from "lucide-react";
+import formStyle from "@/styles/components/form.module.css";
 
 import { apiFetch } from "@/utils/api/apiFetch";
 
-import { toast } from "sonner";
 import BottomSheet from "@/app/_components/ui/BottomSheet";
 import Input from "@/app/_components/ui/Input";
 import Button from "@/app/_components/ui/Button";
@@ -49,7 +49,7 @@ export default function BottomSheetNickName({
   // 닉네임 랜덤 생성 함수
   const getRandomNickname = async () => {
     try {
-      const result = await apiFetch<string>(`/profile/getNickname`);
+      const result = await apiFetch<string>(`/profile/randomNickname`);
       const data = result.data;
       setEditingValue(data);
     } catch (error) {
@@ -71,7 +71,6 @@ export default function BottomSheetNickName({
         },
       );
       const data = result.data;
-      console.log("닉네임 중복 확인 결과:", data);
       if (data.isAvailable) {
         toast.success("사용 가능한 닉네임이에요!");
         setCanSave(true);
@@ -104,6 +103,7 @@ export default function BottomSheetNickName({
               id="newNickname"
               name="newNickname"
               value={editingValue}
+              placeholder={currentValue || ''}
               onChange={onChangeValue}
             />
             <Button

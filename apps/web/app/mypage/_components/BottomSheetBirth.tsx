@@ -106,7 +106,7 @@ export default function BottomSheetBirth({
               id="birthDate"
               name="birthDate"
               value={editingValue}
-              placeholder="YYYY-MM-DD"
+              placeholder={currentValue.slice(0, 10)}
               onChange={onChangeValue}
             />
           </div>

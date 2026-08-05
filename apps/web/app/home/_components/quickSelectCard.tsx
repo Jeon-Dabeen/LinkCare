@@ -1,10 +1,8 @@
-'use client';
-
+"use client";
 
 import { ReactNode } from "react";
 
 import styles from "@/styles/home/quickSelectCard.module.css";
-
 
 type QuickSelectCardProps = {
   id: string;
@@ -14,7 +12,7 @@ type QuickSelectCardProps = {
   title: string;
   value: string;
   unit?: string;
-}
+};
 
 export default function QuickSelectCard({
   id,
@@ -25,9 +23,7 @@ export default function QuickSelectCard({
   value,
   unit,
   ...props
-}: QuickSelectCardProps){
-
-
+}: QuickSelectCardProps) {
   return (
     <label className={styles.card}>
       <input
@@ -46,6 +42,5 @@ export default function QuickSelectCard({
       </span>
       <i className={styles.checkedIcon}></i>
     </label>
-  )
+  );
 }
-

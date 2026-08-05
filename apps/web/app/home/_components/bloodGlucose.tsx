@@ -1,3 +1,6 @@
+
+import { useEffect, useState } from "react";
+
 import clsx from "clsx";
 import { Droplet } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
@@ -9,7 +12,6 @@ import {
   BEFORE_BLOOD_GLUCOSE_THRESHOLDS,
   getStatusByThreshold,
 } from "@/utils/dailyStatus";
-import { useEffect, useState } from "react";
 import { bgStatusTypeLabel } from "@/types/statusType";
 
 export const mealTimingLabelMap = {

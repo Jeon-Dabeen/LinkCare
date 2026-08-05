@@ -79,11 +79,11 @@ export class ProfileService {
    * 랜덤 닉네임 가져오기
    * @returns
    */
-  async getNickName() {
-    logger.info(`ProfileService getNickName started.`);
+  async randomNickname() {
+    logger.info(`ProfileService randomNickname started.`);
 
     const newNickName = await this.user.generateUniqueNickname();
-    logger.info(`ProfileService getNickName ended.`);
+    logger.info(`ProfileService randomNickname ended.`);
     return newNickName;
   }
 

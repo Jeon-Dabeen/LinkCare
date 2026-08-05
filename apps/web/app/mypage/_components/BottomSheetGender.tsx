@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import clsx from "clsx";
 import { Mars, Venus, Check } from "lucide-react";
 import formStyle from "@/styles/components/form.module.css";
 import styles from "@/styles/mypage/gender.module.css";
@@ -9,7 +10,6 @@ import styles from "@/styles/mypage/gender.module.css";
 import BottomSheet from "@/app/_components/ui/BottomSheet";
 import Button from "@/app/_components/ui/Button";
 import { GenderType, genderTypeLabel } from "@/types/profileType";
-import clsx from "clsx";
 
 interface SheetProps {
   isOpen: boolean;

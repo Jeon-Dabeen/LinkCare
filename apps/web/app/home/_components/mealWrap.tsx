@@ -1,12 +1,13 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
+
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import { apiFetch } from "@/utils/api/apiFetch";
 
 import { MealDailyResponse } from "@/types/home";
 import { getMealTypeLabel } from "@/types/mealType";
 import Meal from "./meal";
-import { useCallback, useEffect, useState } from "react";
 
 export default function Daily() {
   const { formattedDate } = useBaseDate();

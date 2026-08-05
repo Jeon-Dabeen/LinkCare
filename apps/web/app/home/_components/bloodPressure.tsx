@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import clsx from "clsx";
 import { HeartPulse } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
@@ -10,7 +12,6 @@ import {
   StatusType,
 } from "@/types/statusType";
 import { getBloodPressureStatus } from "@/utils/dailyStatus";
-import { useEffect, useState } from "react";
 
 type BpProps = {
   bpDate: string;
@@ -40,7 +41,13 @@ export default function BP({ bpDate, systolic, diastolic }: BpProps) {
           key={bpStatus}
           levels={["low", "normal", "caution", "warning", "danger"]}
           status={bpStatus as StatusType}
-          value={bpStatusLabel || bpStatusLabel === "-" ? bpStatusLabel : bpStatus ? bpStatusTypeLabel[bpStatus as StatusType] : "-"}
+          value={
+            bpStatusLabel || bpStatusLabel === "-"
+              ? bpStatusLabel
+              : bpStatus
+                ? bpStatusTypeLabel[bpStatus as StatusType]
+                : "-"
+          }
         />
         <div className={clsx(commonStyle.dataWrapper, commonStyle.jfCenter)}>
           <span className={commonStyle.dataValue}>{systolic}</span>

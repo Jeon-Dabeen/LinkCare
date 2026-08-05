@@ -1,26 +1,15 @@
-
 import clsx from "clsx";
-import { UserRound } from "lucide-react";
 import styles from "@/styles/home/weight.module.css";
 
 import { Card } from "@/app/_components/ui/Card";
 import PersonIcon from "./persionIcon";
 
-
-
 type WeightProps = {
-  current: string | number,
-  goal: string | number,
-}
+  current: string | number;
+  goal: string | number;
+};
 
-
-
-
-export default function Weight({
-  current,
-  goal
-}: WeightProps) {
-
+export default function Weight({ current, goal }: WeightProps) {
   const goalWeight = Number(goal);
   const currentWeight = Number(current);
 
@@ -32,23 +21,16 @@ export default function Weight({
   // 목표 대비 현재 체중 차이를 강조
   const scaleX = hasWeight
     ? Math.min(
-        Math.max(
-          1 + ((currentWeight - goalWeight) / goalWeight) * 2.5,
-          0.7
-        ),
-        1.4
+        Math.max(1 + ((currentWeight - goalWeight) / goalWeight) * 2.5, 0.7),
+        1.4,
       )
     : 1;
-  
 
   return (
     <Card variant="color">
       <Card.Body>
         <div className={styles.wrapper}>
-          <dl className={clsx(
-            styles.count,
-            styles.goal
-          )}>
+          <dl className={clsx(styles.count, styles.goal)}>
             <dt>목표 체중</dt>
             <dd>
               <strong>{goal}</strong>kg
@@ -68,14 +50,14 @@ export default function Weight({
                   } as React.CSSProperties
                 }
               >
-                <PersonIcon className={styles.iconCurrent} stroke="currentColor" />
+                <PersonIcon
+                  className={styles.iconCurrent}
+                  stroke="currentColor"
+                />
               </div>
             )}
           </div>
-          <dl className={clsx(
-            styles.count,
-            styles.current
-          )}>
+          <dl className={clsx(styles.count, styles.current)}>
             <dt>현재 체중</dt>
             <dd>
               <strong>{current}</strong>kg
@@ -84,5 +66,5 @@ export default function Weight({
         </div>
       </Card.Body>
     </Card>
-  )
+  );
 }

@@ -1,9 +1,10 @@
 'use client';
 
 import Image from "next/image";
+
 import { Scan, Utensils } from "lucide-react";
-import clsx from "clsx";
 import styles from "@/styles/home/meal.module.css";
+
 import Progress from "@/app/_components/ui/Progress";
 import { formatNumber } from "@/utils/format";
 

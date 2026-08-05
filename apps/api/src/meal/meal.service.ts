@@ -7,15 +7,13 @@ import {
 
 import { logger } from "../config/logger";
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma, mealtype, mealstatus, Meal, mealtiming } from "@prisma/client";
-import { BlobServiceClient } from "@azure/storage-blob";
+import { Prisma, mealtype, mealstatus, mealtiming } from "@prisma/client";
 
 import { UpdateMealDto } from "./dto/update-meal.dto";
 import { MealQueryDto } from "./dto/query-meal.dto";
 
 import { calculateDefaultGoalCalorie } from "./common/nutrition";
 import { isSameDate } from "./common/date";
-import { MealFoodDto } from "./dto/create-meal-food.dto";
 
 // Meal과 MealFood가 include된 반환 타입 정의
 type MealWithFoods = Prisma.MealGetPayload<{

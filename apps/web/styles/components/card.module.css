@@ -15,6 +15,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  gap: var(--spacing-xs);
   padding: var(--spacing-box-inner) var(--spacing-box-inner) calc(var(--spacing-box-inner) / 2);
 }
 

@@ -23,7 +23,6 @@ export default function ChangePasswordPage() {
 
   // 비밀번호 형식 확인
   const isValidNewPassword = newPassword.length >= 6;
-  const isPasswordValid = isValidNewPassword && newPassword === confirmPassword;
   const newPasswordMessage = isValidNewPassword
     ? "사용할 수 있는 비밀번호예요"
     : "비밀번호는 6자 이상 입력해 주세요";

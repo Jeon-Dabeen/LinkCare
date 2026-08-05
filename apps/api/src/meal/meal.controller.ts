@@ -24,19 +24,18 @@ import { ConvertToWebpInterceptor } from "../common/interceptors/convert.image.i
 import { JwtAuthGuard } from "../auth/guards/jwt-auth/jwt-auth.guard";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 
+@UseGuards(JwtAuthGuard)
 @Controller("meal")
 @UseInterceptors(TransformInterceptor)
 export class MealController {
   constructor(private readonly mealService: MealService) {}
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "날짜별 식사 내용 조회" })
   @Get()
   findMeal(@CurrentUser("id") userId: number, @Query() query: MealQueryDto) {
     return this.mealService.findMeal(userId, query);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "오늘 날짜의 식사 상태 수정" })
   @Patch("/:mealId/status")
   updateMealState(
@@ -47,21 +46,18 @@ export class MealController {
     return this.mealService.updateMealState(userId, id, dto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "목표 칼로리 변경" })
   @Patch("/goalCalorie")
   updateGoalCalorie(@CurrentUser("id") userId: number, @Body() dto: UpdateMealDto) {
     return this.mealService.updateGoalCalorie(userId, dto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "식사 상세 기록 조회" })
   @Get("/record/:mealId")
   findMealFood(@CurrentUser("id") userId: number, @Param("mealId", ParseIntPipe) id: number) {
     return this.mealService.findMealFoodDetail(userId, id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "식사 상세 기록 등록/수정" })
   @UseInterceptors(
     FileInterceptor("image", imageUploadOptions),
@@ -79,21 +75,18 @@ export class MealController {
     return this.mealService.recordMealFoodItems(userId, mealId, file, foods);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "식사 상세 기록 삭제" })
   @Delete("/record/:mealId")
   removeMealFood(@CurrentUser("id") userId: number, @Param("mealId", ParseIntPipe) mealId: number) {
     return this.mealService.removeMealFoodItems(userId, mealId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "홈 화면 식사 기록 조회" })
   @Get("/home/meals")
   findHomeMeals(@CurrentUser("id") userId: number, @Query() query: MealQueryDto) {
     return this.mealService.findHomeMeals(userId, query);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "홈 화면 데일리 기록 조회" })
   @Get("/home/daily")
   findHomeDaily(@CurrentUser("id") userId: number,  @Query() query: MealQueryDto) {

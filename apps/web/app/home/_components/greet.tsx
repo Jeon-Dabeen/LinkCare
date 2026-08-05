@@ -2,7 +2,6 @@
 
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 import styles from "@/styles/home/home.module.css";
-import clsx from "clsx";
 import loadingStyles from "@/styles/components/statePage.module.css";
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronUp, ChevronDown, RotateCw, Loader } from "lucide-react";
