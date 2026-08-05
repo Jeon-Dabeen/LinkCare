@@ -10,6 +10,9 @@ on:
       - ".github/workflows/be.yml"
   workflow_dispatch:
 
+env:
+  DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,12 +30,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate prisma client
-        run: npx turbo run generate
+      - name: Prisma DB Pull
+        run: npx prisma db pull
+
+      - name: Prisma Generate
+        run: npx prisma generate
 
       - name: Build with dummy database url
-        env:
-          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy?schema=public" # 💡 가짜 주소 주입
         run: pnpm turbo run build --filter=api
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
