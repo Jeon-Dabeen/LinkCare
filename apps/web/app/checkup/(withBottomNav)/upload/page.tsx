@@ -209,7 +209,6 @@ export default function Page() {
     setIsStatePageOpen(true);
 
     const data = response.json();
-    alert(JSON.stringify(data));
 
     router.push("/checkup");
   };
