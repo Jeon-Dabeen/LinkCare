@@ -30,7 +30,7 @@ jobs:
       - name: Generate prisma client
         run: npx turbo run generate
 
-      - name: Build
+      - name: Build with dummy database url
         env:
           DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy?schema=public" # 💡 가짜 주소 주입
         run: pnpm turbo run build --filter=api
