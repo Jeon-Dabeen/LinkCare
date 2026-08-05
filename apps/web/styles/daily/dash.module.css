@@ -65,8 +65,16 @@
   border-radius: 4px;
 }
 
+.low {
+  background-color: var(--color-low);
+}
+
 .normal {
-  background-color: var(--color-success);
+  background-color: var(--color-normal);
+}
+
+.caution {
+  background-color: var(--color-caution);
 }
 
 .warning {
@@ -74,5 +82,5 @@
 }
 
 .danger {
-  background-color: var(--color-error);
+  background-color: var(--color-danger);
 }

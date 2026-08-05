@@ -746,7 +746,7 @@ return (
               type="number"
               id="newPulse"
               name="newPulse"
-              placeholder="PULSE 맥박"
+              placeholder="맥박"
               value={newPulse}
               onChange={(event) => {
                 setNewPulse(event.target.value);

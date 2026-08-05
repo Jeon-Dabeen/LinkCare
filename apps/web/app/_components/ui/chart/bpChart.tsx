@@ -25,6 +25,7 @@ type ZoneColors = {
   low: string;
   normal: string;
   warning: string;
+  caution: string;
   danger: string;
   dotColor: string;
   textColor: string;
@@ -33,8 +34,9 @@ type ZoneColors = {
 
 // 기본 파스텔톤 불투명 색상 (Fallback)
 const DEFAULT_ZONES: ZoneColors = {
-  low: "#eafaf1",       // color-low 기반 연한 색
-  normal: "#eaf2fb",    // color-normal 기반 연한 색
+  low: "#eaf3fa",       // color-low 기반 연한 색
+  normal: "#eafbfa",    // color-normal 기반 연한 색
+  caution: "#efe9cd",   // color-caution 기반 연한 색
   warning: "#fdf4e7",   // color-warning 기반 연한 색
   danger: "#fceaea",    // color-danger 기반 연한 색
   dotColor: "#3172C7",
@@ -111,6 +113,7 @@ export default function BpChart({ systolic, diastolic }: BpChartProps) {
 
     const lowHex = getVar("--color-low", "#34b162");
     const normalHex = getVar("--color-normal", "#3172c7");
+    const cautionHex = getVar("--color-warning", "#D8C36A");
     const warningHex = getVar("--color-warning", "#dd8f0a");
     const dangerHex = getVar("--color-danger", "#e04e4e");
 
@@ -118,6 +121,7 @@ export default function BpChart({ systolic, diastolic }: BpChartProps) {
     setZoneColors({
       low: adjustColorLightness(lowHex, 50, 92),
       normal: adjustColorLightness(normalHex, 50, 92),
+      caution: adjustColorLightness(cautionHex, 50, 92),
       warning: adjustColorLightness(warningHex, 50, 92),
       danger: adjustColorLightness(dangerHex, 50, 92),
       dotColor: getVar("--color-normal", "#3172c7"),
@@ -177,7 +181,15 @@ export default function BpChart({ systolic, diastolic }: BpChartProps) {
             yMax: 140,
           },
           {
-            // 3. 정상 (Normal)
+            // 3. 주의
+            color: zoneColors.caution,
+            xMin: 0,
+            xMax: 80,
+            yMin: 0,
+            yMax: 130,
+          },
+          {
+            // 4. 정상 (Normal)
             color: zoneColors.normal,
             xMin: 0,
             xMax: 80,
@@ -185,7 +197,7 @@ export default function BpChart({ systolic, diastolic }: BpChartProps) {
             yMax: 120,
           },
           {
-            // 4. 저혈압 (Low) - 가장 작은 영역이자 맨 위
+            // 5. 저혈압 (Low) - 가장 작은 영역이자 맨 위
             color: zoneColors.low,
             xMin: 0,
             xMax: 60,
