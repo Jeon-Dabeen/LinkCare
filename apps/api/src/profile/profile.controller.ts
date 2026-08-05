@@ -41,6 +41,14 @@ export class ProfileController {
     return this.profileService.randomNickname();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "회원 성별 조회" })
+  @Get("/gender")
+  getGender(@CurrentUser("id") userId: number) {
+    return this.profileService.getGender(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "회원 정보 수정" })
   @Patch()
   update(@CurrentUser("id") userId: number, @Body() dto: UpdateProfileDto) {

@@ -54,54 +54,33 @@ export class CheckupController {
     return this.checkupService.findAll(userId);
   }
 
-  @ApiOperation({ summary: "검진 결과 최근 3개 데이터 조회" })
-  @Get("/years")
-  findYears(@CurrentUser("id") userId: number) {
-    return this.checkupService.findYears(userId);
-  }
-
   @ApiOperation({ summary: "신체 지표 데이터 조회" })
   @Get("/body-metrics")
-  findBodyMetrics(
-    @CurrentUser("id") userId: number,
-    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
-  ) {
-    return this.checkupService.findBodyMetrics(userId, years);
+  findBodyMetrics(@CurrentUser("id") userId: number) {
+    return this.checkupService.findBodyMetrics(userId);
   }
 
   @ApiOperation({ summary: "혈압 데이터 조회" })
   @Get("/blood-pressure")
-  findBloodPressure(
-    @CurrentUser("id") userId: number,
-    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
-  ) {
-    return this.checkupService.findBloodPressure(userId, years);
+  findBloodPressure(@CurrentUser("id") userId: number) {
+    return this.checkupService.findBloodPressure(userId);
   }
 
   @ApiOperation({ summary: "혈당 & 빈혈 데이터 조회" })
   @Get("/diabetes-anemia")
-  findDiabetesAnemia(
-    @CurrentUser("id") userId: number,
-    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
-  ) {
-    return this.checkupService.findDiabetesAnemia(userId, years);
+  findDiabetesAnemia(@CurrentUser("id") userId: number) {
+    return this.checkupService.findDiabetesAnemia(userId);
   }
 
   @ApiOperation({ summary: "간 데이터 조회" })
   @Get("/liver")
-  findLiver(
-    @CurrentUser("id") userId: number,
-    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
-  ) {
-    return this.checkupService.findLiver(userId, years);
+  findLiver(@CurrentUser("id") userId: number) {
+    return this.checkupService.findLiver(userId);
   }
 
   @ApiOperation({ summary: "신장 데이터 조회" })
   @Get("/kidney")
-  findKidney(
-    @CurrentUser("id") userId: number,
-    @Query("years", new ParseArrayPipe({ items: Number, separator: "," })) years: number[],
-  ) {
-    return this.checkupService.findKidney(userId, years);
+  findKidney(@CurrentUser("id") userId: number) {
+    return this.checkupService.findKidney(userId);
   }
 }

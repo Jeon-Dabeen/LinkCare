@@ -16,6 +16,14 @@ export const bgStatusTypeLabel = {
   danger: "위험",
 };
 
+export const fbgStatusTypeLabel = {
+  low: "",
+  normal: "정상",
+  caution: "",
+  warning: "주의",
+  danger: "위험",
+};
+
 export const bmiStatusTypeLabel = {
   low: "저체중",
   normal: "정상",

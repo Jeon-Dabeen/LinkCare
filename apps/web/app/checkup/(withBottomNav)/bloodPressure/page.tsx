@@ -46,18 +46,8 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const yearsResponse = await fetch(`${ENV.API_URL}/checkup/years`, {
-          credentials: "include",
-        });
-        if (!yearsResponse.ok) throw new Error("연도 조회에 실패했습니다.");
-        const yearsJson = await yearsResponse.json();
-        const years: number[] = yearsJson.data;
-
-        setSelectYear(years[0]);
-        console.log(years);
-
         const dataResponse = await fetch(
-          `${ENV.API_URL}/checkup/blood-pressure?years=${years.join(",")}`,
+          `${ENV.API_URL}/checkup/blood-pressure`,
           {
             credentials: "include",
           },
@@ -66,6 +56,7 @@ export default function Page() {
         const dataJson = await dataResponse.json();
         console.log(dataJson);
 
+        setSelectYear(dataJson.data[0].year);
         setBloodPressureData(dataJson.data);
       } catch (e) {
         console.error(e);
@@ -209,8 +200,8 @@ export default function Page() {
                 max={250}
               />
               <div className={commonStyle.infoBox}>
-                체중과 허리둘레 버튼을 클릭하면 각각의 그래프를 껐다켰다 할 수
-                있어요!
+                최고 혈압과 최저 혈압 버튼을 클릭하면 각각의 그래프를 껐다켰다
+                할 수 있어요!
               </div>
             </Card.Body>
           </Card>
@@ -220,9 +211,9 @@ export default function Page() {
             open={tooltipOpen}
             onClose={() => setTooltipOpen(false)}
           >
-            x축: 수축기, 최고 혈압
+            x축은 최저 혈압의 범위를 보여줘요.
             <br />
-            y축: 이완기, 최저 혈압
+            y축은 최고 혈압의 범위를 보여줘요.
           </Tooltip>
         </>
       )}

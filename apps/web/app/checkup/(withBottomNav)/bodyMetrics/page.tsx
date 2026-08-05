@@ -51,18 +51,8 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const yearsResponse = await fetch(`${ENV.API_URL}/checkup/years`, {
-          credentials: "include",
-        });
-        if (!yearsResponse.ok) throw new Error("연도 조회에 실패했습니다.");
-        const yearsJson = await yearsResponse.json();
-        const years: number[] = yearsJson.data;
-
-        setSelectYear(years[0]);
-        console.log(years);
-
         const dataResponse = await fetch(
-          `${ENV.API_URL}/checkup/body-metrics?years=${years.join(",")}`,
+          `${ENV.API_URL}/checkup/body-metrics`,
           {
             credentials: "include",
           },
@@ -71,6 +61,7 @@ export default function Page() {
         const dataJson = await dataResponse.json();
         console.log(dataJson);
 
+        setSelectYear(dataJson.data[0].year);
         setBodyMetricsData(dataJson.data);
       } catch (e) {
         console.error(e);

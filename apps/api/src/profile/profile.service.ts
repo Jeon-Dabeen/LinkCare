@@ -87,6 +87,20 @@ export class ProfileService {
     return newNickName;
   }
 
+  async getGender(userId: number) {
+    logger.info(`ProfileService getGender started.`);
+
+    const gender = await this.prisma.profile.findUnique({
+      where: { userId },
+      select: { gender: true },
+    });
+
+    if (!gender) throw new NotFoundException("성별이 등록되어 있지 않습니다.");
+
+    logger.info(`ProfileService getGender ended.`);
+    return gender;
+  }
+
   /**
    * 회원 정보 수정
    * @param userId
