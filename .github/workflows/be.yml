@@ -48,9 +48,9 @@ jobs:
           mkdir -p deploy-out
           cp -r apps/api/dist deploy-out/dist
           cp apps/api/package.json deploy-out/package.json
+          cp -r apps/api/prisma deploy-out/prisma
           cd deploy-out
           pnpm install --prod --ignore-workspace --node-linker=hoisted --no-frozen-lockfile
-          cp -r $GITHUB_WORKSPACE/apps/api/node_modules/@prisma ./node_modules/@prisma
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
