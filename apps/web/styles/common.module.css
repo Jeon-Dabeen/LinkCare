@@ -145,6 +145,17 @@
 }
 
 
+/* link */
+.link{
+  padding: 0 2px;
+  font-size: var(--font-size-sm);
+  color: var(--color-tertiary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link:hover{
+  color: var(--color-tertiary-hover);
+}
 
 /* data */
 .dataWrapper{
@@ -180,3 +191,16 @@
   margin-left: 10px;
 }
 
+
+/* list */
+.ollist{
+  padding-left: 1.2em;
+}
+
+.ollist > li{
+  list-style: decimal;
+}
+
+.ollist > li~li{
+  margin-top: 0.5em;
+}

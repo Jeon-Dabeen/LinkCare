@@ -424,7 +424,7 @@ export default function Page() {
             <Card.Item title="목표체중">
               <div className={commonStyle.dataWrapper}>
                 <span className={commonStyle.dataValue}>
-                  {profile?.goalWeight ?? "목표 체중을 입력"}
+                  {profile?.goalWeight ?? "-"}
                 </span>
                 <span className={commonStyle.dataUnit}>kg</span>
                 <ButtonIcon onClick={() => setOpenGoal(true)}>

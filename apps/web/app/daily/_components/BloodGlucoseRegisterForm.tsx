@@ -132,7 +132,7 @@
                 required
               />
             </div>
-            {error && <p>{error}</p>}
+            {error && <p className={commonStyle.textError}>{error}</p>}
 
             <div className={formStyle.formButtonWrapper}>
               <Button

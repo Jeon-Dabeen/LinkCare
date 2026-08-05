@@ -399,14 +399,14 @@ export default function Register() {
                   </button>
 
                   {/* 선택 안함 버튼 */}
-                  <button
+                  {/* <button
                     type="button"
                     className={clsx(genderStyles.radioButton, selectedGender === null && genderStyles.active,)}
                     onClick={() => handleGenderSelect(null)}
                   >
                     <span>{genderTypeLabel.null}</span>
                     {selectedGender === null && (<Check size={18} className={genderStyles.checkIcon} />)}
-                  </button>
+                  </button> */}
                 </div>
               </div>
 

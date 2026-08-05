@@ -80,16 +80,13 @@ export default function WithdrawPage() {
             LinkCare에서 이용하셨던 모든 개인정보와 기록은 다시 볼 수 없어요.
           </li>
           <li>
-            탈퇴 신청 후 30일 동안은 동일한 이메일과 닉네임으로 다시 가입할 수
-            없어요.
+            탈퇴 신청 후 30일 동안은 동일한 이메일과 닉네임으로 다시 가입할 수  없어요.
           </li>
           <li>
-            계정 데이터는 30일간 안전하게 보존된 후 완전히 파기되어 복구할 수
-            없어요.
+            계정 데이터는 30일간 안전하게 보존된 후 완전히 파기되어 복구할 수 없어요.
           </li>
           <li>
-            관련 법령에 의해 보관이 필요한 정보는 지정된 법적 기간 동안 안전하게
-            보존돼요.
+            관련 법령에 의해 보관이 필요한 정보는 지정된 법적 기간 동안 안전하게 보존돼요.
           </li>
         </ul>
         <div className={styles.checkAgree}>
@@ -105,6 +102,14 @@ export default function WithdrawPage() {
 
         <div className={commonStyle.fixedBottom}>
           <div className={commonStyle.fixedBottomInner}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="large"
+              onClick={() => router.back()}
+            >
+              취소
+            </Button>
             <Button
               type="button"
               variant="primary"

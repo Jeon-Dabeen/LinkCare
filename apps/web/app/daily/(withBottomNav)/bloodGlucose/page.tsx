@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
-import { Droplet, Pencil } from "lucide-react";
+import { Droplet, FileQuestionMark, Pencil } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 import formStyle from "@/styles/components/form.module.css";
 import style from "@/styles/daily/dash.module.css";
@@ -27,8 +27,14 @@ import BloodGlucoseWeekChart from "../../_components/BloodGlucoseWeekChart";
 import BarChart from "@/app/_components/ui/chart/barChart";
 import StatusTag from "@/app/_components/ui/StatusTag";
 import { getBarPercentage } from "@/utils/checkupBarRange";
-import { AFTER_BLOOD_GLUCOSE_THRESHOLDS, BEFORE_BLOOD_GLUCOSE_THRESHOLDS, getStatusByThreshold } from "@/utils/dailyStatus";
+import CalendarLegend from "@/app/_components/ui/calendar/CalendarLegend";
+import {
+  AFTER_BLOOD_GLUCOSE_THRESHOLDS,
+  BEFORE_BLOOD_GLUCOSE_THRESHOLDS,
+  getStatusByThreshold,
+} from "@/utils/dailyStatus";
 import { ENV } from "@/env";
+import EmptyPage from "@/app/_components/ui/EmptyPage";
 
 interface MonthBloodGlucoseRecord {
   bgDate: string;
@@ -61,13 +67,9 @@ function getBgOutCount(records: BloodGlucoseRecord[]): number {
       );
 
       //값이 있고 nomal이 아닌경우만 집계
-      if (
-        beforeStatus &&
-        beforeStatus !== "normal"
-      ) {
+      if (beforeStatus && beforeStatus !== "normal") {
         count += 1;
       }
-
     }
 
     if (record.after != null) {
@@ -76,10 +78,7 @@ function getBgOutCount(records: BloodGlucoseRecord[]): number {
         AFTER_BLOOD_GLUCOSE_THRESHOLDS,
       );
 
-      if (
-        afterStatus &&
-        afterStatus !== "normal"
-      ) {
+      if (afterStatus && afterStatus !== "normal") {
         count += 1;
       }
     }
@@ -141,7 +140,7 @@ export default function Page() {
   const [monthBloodGlucose, setMonthBloodGlucose] = useState<
     MonthBloodGlucoseRecord[]
   >([]);
-  const [monthLoading, setMonthLoading]=useState(true)
+  const [monthLoading, setMonthLoading] = useState(true);
   const [monthError, setMonthError] = useState<string | null>(null);
 
   //월간달력용 데이터
@@ -249,9 +248,10 @@ export default function Page() {
 
   if (weekError) {
     return (
-      <section className={commonStyle.mainContent}>
-        <p>{weekError}</p>
-      </section>
+      <EmptyPage
+        icon={<FileQuestionMark size={32} />}
+        title={weekError}
+      />
     );
   }
 
@@ -261,16 +261,16 @@ export default function Page() {
   );
 
   //오늘의 식전 혈당 상태
- const beforeStatus = getStatusByThreshold(
-  todayRecord?.before,
-  BEFORE_BLOOD_GLUCOSE_THRESHOLDS,
-);
+  const beforeStatus = getStatusByThreshold(
+    todayRecord?.before,
+    BEFORE_BLOOD_GLUCOSE_THRESHOLDS,
+  );
 
   //식후 혈당
-const afterStatus = getStatusByThreshold(
-  todayRecord?.after,
-  AFTER_BLOOD_GLUCOSE_THRESHOLDS,
-);
+  const afterStatus = getStatusByThreshold(
+    todayRecord?.after,
+    AFTER_BLOOD_GLUCOSE_THRESHOLDS,
+  );
 
   //바차트용 퍼센테이지
   const beforePosition =
@@ -539,13 +539,13 @@ const afterStatus = getStatusByThreshold(
           {monthLoading ? (
             <p>혈당 기록을 불러오고 있어요.</p>
           ) : monthError ? (
-          <p>{monthError}</p>
-        ) : (
-        <MonthCalendar
-        selectedDate={baseDate}
-        data={calendarData}
-  />
-)}
+            <p>{monthError}</p>
+          ) : (
+            <>
+              <MonthCalendar selectedDate={baseDate} data={calendarData} />
+              <CalendarLegend labelMap={bgStatusTypeLabel} />
+            </>
+          )}
         </Card.Body>
       </Card>
 
@@ -572,7 +572,7 @@ const afterStatus = getStatusByThreshold(
             />
           </div>
 
-          {sheetError && <p>{sheetError}</p>}
+          {sheetError && <p className={commonStyle.textError}>{sheetError}</p>}
 
           <Button
             type="button"

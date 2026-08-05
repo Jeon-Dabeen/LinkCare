@@ -24,6 +24,7 @@ import StatePage from "@/app/_components/ui/StatePage";
 import BloodPressureRegisterForm from "../../_components/BloodPressureRegisterForm";
 import BloodPressureWeekChart from "../../_components/BloodPressureWeekChart";
 import { ENV } from "@/env";
+import CalendarLegend from "@/app/_components/ui/calendar/CalendarLegend";
 
 type BottomSheetMode = "CREATE_BLOOD_PRESSURE" | "UPDATE_PULSE" | null;
 
@@ -691,6 +692,7 @@ return (
 
     {/* 혈압 기록 달력 */}
     <MonthCalendar data={calendarData} />
+    <CalendarLegend labelMap={bpStatusTypeLabel} />
 
     {/* 혈압 POST / 맥박 PATCH 바텀시트 */}
     <BottomSheet

@@ -5,7 +5,7 @@
   min-width: 0;
   padding: 12px 8px;
   background-color: var(--color-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--input-border-color);
   border-radius: var(--border-radius);
   cursor: pointer;
 }

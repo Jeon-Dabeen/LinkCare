@@ -11,6 +11,7 @@ type TabsProps = {
   defaultValue: string;
   value?: string,
   onChange?: (value: string) => void;
+  roundButton?: boolean;
 }
 
 type TabNavProps = {
@@ -50,7 +51,8 @@ export function Tabs({
   defaultValue,
   value,
   children,
-  onChange
+  onChange,
+  roundButton = false,
 }: TabsProps){
 
   const [internalValue, setInternalValue] = useState(defaultValue);
@@ -70,7 +72,10 @@ export function Tabs({
         changeTab
       }}
     >
-      <div className={styles.TabsWrapper}>
+      <div className={clsx(
+        styles.TabsWrapper,
+        roundButton && styles.round
+      )}>
         {children}
       </div>
     </TabsContext.Provider>
@@ -83,7 +88,11 @@ function TabNav({
 }: TabNavProps){
 
   return (
-    <nav className={styles.tabNav}>{children}</nav>
+    <nav className={clsx(
+      styles.tabNav,
+    )}>
+      {children}
+    </nav>
   )
 }
 

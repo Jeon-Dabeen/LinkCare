@@ -11,6 +11,7 @@
 .input {
   flex: 1;
   padding: 12px 16px;
+  width: 100%;
   height: var(--input-height);
   font-size: var(--font-size-base);
   border: 1px solid var(--input-border-color);

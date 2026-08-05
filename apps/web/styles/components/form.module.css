@@ -17,7 +17,7 @@
 .formGroup{
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-sm);
   width: 100%;
 }
 

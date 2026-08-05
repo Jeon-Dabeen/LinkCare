@@ -198,27 +198,25 @@ export default function BloodPressureRegisterForm({
               }}
             />
           </div>
-          {error && <p>{error}</p>}
-          <div className={commonStyle.fixedBottom}>
-            <div className={commonStyle.fixedBottomInner}>
-              <Button 
-                type="button" 
-                variant="secondary" 
-                size="large"
-                onClick={onSkip}
-                disabled={submitting}
+          {error && <p className={commonStyle.textError}>{error}</p>}
+          <div className={formStyle.formButtonWrapper}>
+            <Button 
+              type="button" 
+              variant="secondary" 
+              size="large"
+              onClick={onSkip}
+              disabled={submitting}
+            >
+              건너뛰기
+            </Button>
+            <Button 
+              type="submit"
+              variant="primary" 
+              size="large"
+              disabled={!isValueOk || submitting}
               >
-                건너뛰기
-              </Button>
-              <Button 
-                type="submit"
-                variant="primary" 
-                size="large"
-                disabled={!isValueOk || submitting}
-                >
-                {submitting ? "저장 중 ..." : "기록"}
-              </Button>
-            </div>
+              {submitting ? "저장 중 ..." : "기록"}
+            </Button>
           </div>
         </form>
       </div>

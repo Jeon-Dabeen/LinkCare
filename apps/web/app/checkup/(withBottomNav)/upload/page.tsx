@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { CircleQuestionMark, FileCode } from "lucide-react";
+import Link from "next/link";
+import { CircleQuestionMark, FileCode, FileQuestionMark } from "lucide-react";
 
 import clsx from "clsx";
 import commonStyle from "@/styles/common.module.css";
@@ -9,12 +10,13 @@ import formStyle from "@/styles/components/form.module.css";
 
 import Button from "@/app/_components/ui/Button";
 import StatePage from "@/app/_components/ui/StatePage";
-import BottomSheet from "@/app/_components/ui/BottomSheet";
+import Modal from "@/app/_components/ui/Modal";
 import { ENV } from "@/env";
 import { toast } from "sonner";
 import Tabs from "@/app/_components/ui/Tabs";
 import Input from "@/app/_components/ui/Input";
 import { useRouter } from "next/navigation";
+import EmptyPage from "@/app/_components/ui/EmptyPage";
 
 interface ParsingPdfResponseData {
   checkup_year: string;
@@ -95,7 +97,7 @@ export default function Page() {
   const [pdfFile, setPdfFile] = useState<File>();
   const [uploadedData, setUploadedData] = useState<UploadedData>();
   const [years, setYears] = useState<number[]>();
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [isStatePageOpen, setIsStatePageOpen] = useState(false);
   const router = useRouter();
 
@@ -118,12 +120,12 @@ export default function Page() {
     }
   };
 
-  const handleBottomSheetOpen = () => {
-    setIsBottomSheetOpen(true);
+  const handleGuideModalOpen = () => {
+    setIsGuideModalOpen(true);
   };
 
-  const handleBottomSheetClose = () => {
-    setIsBottomSheetOpen(false);
+  const handleGuideModalClose = () => {
+    setIsGuideModalOpen(false);
   };
 
   const handleUpload = async (event: FormEvent<HTMLFormElement>) => {
@@ -146,9 +148,10 @@ export default function Page() {
     });
 
     if (response.status > 399) {
-
-      toast.warning(`링크케어 AI가 분서 분석을 못해냈어요. 빠르게 수정할게요! 며칠 뒤 다시 시도해주세요.`);
-      router.push('/home');
+      toast.warning(
+        `링크케어 AI가 분서 분석을 못해냈어요. 빠르게 수정할게요! 며칠 뒤 다시 시도해주세요.`,
+      );
+      router.push("/home");
     }
 
     console.info(`pdf 업로드 결과: ${response.status}`);
@@ -180,7 +183,9 @@ export default function Page() {
       return {
         ...prev,
         checkup_history: prev.checkup_history.map((item) =>
-          item.checkup_year === year ? { ...item, key: `checkup-${year}`, [field]: value } : item,
+          item.checkup_year === year
+            ? { ...item, key: `checkup-${year}`, [field]: value }
+            : item,
         ),
       };
     });
@@ -200,7 +205,8 @@ export default function Page() {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.message || "검진 데이터 저장 중 오류가 발생했습니다.";
+      const errorMessage =
+        errorData.message || "검진 데이터 저장 중 오류가 발생했습니다.";
 
       toast.error(errorMessage);
       throw new Error(errorMessage);
@@ -258,7 +264,7 @@ export default function Page() {
             >
               <div className={formStyle.formBoxCenter}>
                 <Button
-                  onClick={handleBottomSheetOpen}
+                  onClick={handleGuideModalOpen}
                   variant="text-primary"
                   size="small"
                 >
@@ -281,17 +287,26 @@ export default function Page() {
           </form>
         </div>
 
-        <BottomSheet
-          open={isBottomSheetOpen}
-          onClose={handleBottomSheetClose}
-          title="국가 건강검진 PDF 다운로드 가이드"
+        <Modal
+          title="건강검진 PDF 받기"
+          open={isGuideModalOpen}
+          onClose={handleGuideModalClose}
         >
-          <p>1. 국민건강보험 접속 후 로그인</p>
-          <p>
-            2. 건강모아 탭 ➔ 나의 건강 ➔ 건강검진 결과조회 ➔ 검진결과 한눈에
-            보기 ➔ 출력/저장 클릭 후 PDF 저장
-          </p>
-        </BottomSheet>
+          <ul className={commonStyle.ollist}>
+            <li>
+              국민건강보험 로그인{" "}
+              <Link
+                href="https://www.nhis.or.kr/"
+                target="_blank"
+                className={commonStyle.link}
+              >
+                바로가기
+              </Link>
+            </li>
+            <li>건강모아 → 나의 건강 → 건강검진 결과조회 → 결과 한눈에 보기</li>
+            <li>출력/저장 → PDF 저장</li>
+          </ul>
+        </Modal>
 
         <StatePage
           open={isStatePageOpen}
@@ -316,10 +331,14 @@ export default function Page() {
         </div>
 
         <div className={formStyle.formWrapper}>
-          <Tabs defaultValue={`year${years![0]}`}>
+          <Tabs defaultValue={`year${years![0]}`} roundButton>
             <Tabs.Nav key="tabNav">
               {[...years!].reverse().map((y) => (
-                <Tabs.NavItem key={`nav-year-${y}`} value={`year${y}`} title={`${y}`} />
+                <Tabs.NavItem
+                  key={`nav-year-${y}`}
+                  value={`year${y}`}
+                  title={`${y}`}
+                />
               ))}
             </Tabs.Nav>
 
@@ -331,9 +350,9 @@ export default function Page() {
               return (
                 <Tabs.Content key={y} value={`year${y}`}>
                   {yearData ? (
-                    <div className={formStyle.formGroup}>
-                      <label className={formStyle.formLabel}>
-                        감마지피티(y-GPT)
+                    <div className={formStyle.form}>
+                      <div className={formStyle.formGroup}>
+                        <p className={formStyle.formLabel}>감마지피티(y-GPT)</p>
                         <Input
                           key="ygtp"
                           unit="U/L"
@@ -342,53 +361,61 @@ export default function Page() {
                           defaultValue={yearData.ygtp}
                           onChange={() => handleChange}
                         />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        ALT
-                        <Input
-                          key="alt"
-                          unit="U/L"
-                          type="number"
-                          placeholder={`${yearData.alt}`}
-                          defaultValue={yearData.alt}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        AST
-                        <Input
-                          key="ast"
-                          unit="U/L"
-                          type="number"
-                          placeholder={`${yearData.ast}`}
-                          defaultValue={yearData.ast}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        신사구체여과율(GFR)
-                        <Input
-                          key="egfr"
-                          unit="mL/min"
-                          type="number"
-                          placeholder={`${yearData.egfr}`}
-                          defaultValue={yearData.egfr}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        혈청 크레아티닌
-                        <Input
-                          key="creatinine"
-                          unit="mg/DL"
-                          type="number"
-                          placeholder={`${yearData.creatinine}`}
-                          defaultValue={yearData.creatinine}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        공복혈당
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <div className={formStyle.formInputWrapper}>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>ALT</p>
+                            <Input
+                              key="alt"
+                              unit="U/L"
+                              type="number"
+                              placeholder={`${yearData.alt}`}
+                              defaultValue={yearData.alt}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>AST</p>
+                            <Input
+                              key="ast"
+                              unit="U/L"
+                              type="number"
+                              placeholder={`${yearData.ast}`}
+                              defaultValue={yearData.ast}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <div className={formStyle.formInputWrapper}>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>신사구체여과율(GFR)</p>
+                            <Input
+                              key="egfr"
+                              unit="mL/min"
+                              type="number"
+                              placeholder={`${yearData.egfr}`}
+                              defaultValue={yearData.egfr}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>혈청 크레아티닌</p>
+                            <Input
+                              key="creatinine"
+                              unit="mg/DL"
+                              type="number"
+                              placeholder={`${yearData.creatinine}`}
+                              defaultValue={yearData.creatinine}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <p className={formStyle.formLabel}>공복혈당</p>
                         <Input
                           key="fbg"
                           unit="mg/DL"
@@ -397,9 +424,9 @@ export default function Page() {
                           defaultValue={yearData.fbg}
                           onChange={() => handleChange}
                         />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        혈색소
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <p className={formStyle.formLabel}>혈색소</p>
                         <Input
                           key="hemoglobin"
                           unit="g/DL"
@@ -408,9 +435,9 @@ export default function Page() {
                           defaultValue={yearData.hemoglobin}
                           onChange={() => handleChange}
                         />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        요단백
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <p className={formStyle.formLabel}>요단백</p>
                         <Input
                           key="urine_protein"
                           type="text"
@@ -418,31 +445,35 @@ export default function Page() {
                           defaultValue={yearData.urine_protein}
                           onChange={() => handleChange}
                         />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        최저 혈압
-                        <Input
-                          key="bp_diastolic"
-                          unit="mmHg"
-                          type="number"
-                          placeholder={`${yearData.bp_diastolic}`}
-                          defaultValue={yearData.bp_diastolic}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        최고 혈압
-                        <Input
-                          key="bp_systolic"
-                          unit="mmHg"
-                          type="number"
-                          placeholder={`${yearData.bp_systolic}`}
-                          defaultValue={yearData.bp_systolic}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        청력
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <div className={formStyle.formInputWrapper}>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>최저 혈압</p>
+                            <Input
+                              key="bp_diastolic"
+                              unit="mmHg"
+                              type="number"
+                              placeholder={`${yearData.bp_diastolic}`}
+                              defaultValue={yearData.bp_diastolic}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>최고 혈압</p>
+                            <Input
+                              key="bp_systolic"
+                              unit="mmHg"
+                              type="number"
+                              placeholder={`${yearData.bp_systolic}`}
+                              defaultValue={yearData.bp_systolic}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <p className={formStyle.formLabel}>청력</p>
                         <Input
                           key="hearing"
                           type="text"
@@ -450,80 +481,98 @@ export default function Page() {
                           defaultValue={yearData.hearing}
                           onChange={() => handleChange}
                         />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        시력 우
-                        <Input
-                          key="visionRight"
-                          type="number"
-                          placeholder={`${yearData.visionRight}`}
-                          defaultValue={yearData.visionRight}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        시력 좌
-                        <Input
-                          key="visionLeft"
-                          type="number"
-                          placeholder={`${yearData.visionLeft}`}
-                          defaultValue={yearData.visionLeft}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        BMI
-                        <Input
-                          key="bmi"
-                          unit="kg/㎡"
-                          type="number"
-                          placeholder={`${yearData.bmi}`}
-                          defaultValue={yearData.bmi}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        허리둘레
-                        <Input
-                          key="waist"
-                          unit="cm"
-                          type="number"
-                          placeholder={`${yearData.waist}`}
-                          defaultValue={yearData.waist}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        몸무게
-                        <Input
-                          key="weight"
-                          unit="kg"
-                          type="number"
-                          placeholder={`${yearData.weight}`}
-                          defaultValue={yearData.weight}
-                          onChange={() => handleChange}
-                        />
-                      </label>
-                      <label className={formStyle.formLabel}>
-                        키
-                        <Input
-                          key="height"
-                          unit="cm"
-                          type="number"
-                          placeholder={`${yearData.height}`}
-                          defaultValue={yearData.height}
-                          onChange={() => handleChange}
-                        />
-                      </label>
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <div className={formStyle.formInputWrapper}>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>시력 우</p>
+                            <Input
+                              key="visionRight"
+                              type="number"
+                              placeholder={`${yearData.visionRight}`}
+                              defaultValue={yearData.visionRight}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>시력 좌</p>
+                            <Input
+                              key="visionLeft"
+                              type="number"
+                              placeholder={`${yearData.visionLeft}`}
+                              defaultValue={yearData.visionLeft}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <div className={formStyle.formInputWrapper}>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>BMI</p>
+                            <Input
+                              key="bmi"
+                              unit="kg/㎡"
+                              type="number"
+                              placeholder={`${yearData.bmi}`}
+                              defaultValue={yearData.bmi}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>허리둘레</p>
+                            <Input
+                              key="waist"
+                              unit="cm"
+                              type="number"
+                              placeholder={`${yearData.waist}`}
+                              defaultValue={yearData.waist}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={formStyle.formGroup}>
+                        <div className={formStyle.formInputWrapper}>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>몸무게</p>
+                            <Input
+                              key="weight"
+                              unit="kg"
+                              type="number"
+                              placeholder={`${yearData.weight}`}
+                              defaultValue={yearData.weight}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                          <div className={formStyle.formGroup}>
+                            <p className={formStyle.formLabel}>키</p>
+                            <Input
+                              key="height"
+                              unit="cm"
+                              type="number"
+                              placeholder={`${yearData.height}`}
+                              defaultValue={yearData.height}
+                              onChange={() => handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
                   ) : (
-                    <p>{y}년 데이터가 없어요.</p>
+                    <EmptyPage
+                      icon={<FileQuestionMark size={32} />}
+                      description={`{y}년 데이터가 없어요.`}
+                    />
                   )}
                 </Tabs.Content>
               );
             })}
           </Tabs>
-          <div className={clsx(formStyle.formButtonWrapper, formStyle.column)}>
+          <div
+            className={clsx(formStyle.formButtonWrapper, formStyle.column)}
+          >
             <div className={formStyle.formBox}>
               <Button
                 type="button"

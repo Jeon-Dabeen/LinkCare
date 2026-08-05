@@ -18,6 +18,11 @@ export default function Input ({
       <input
         className={styles.input}
         {...props} 
+        onWheel={
+          props.type === "number"
+            ? (e) => e.currentTarget.blur()
+            : props.onWheel
+        }
       />
       {unit && 
         <div className={styles.unit}>{unit}</div>

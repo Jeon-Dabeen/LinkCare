@@ -1,0 +1,13 @@
+
+.agree{
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.agreeList dt{
+  padding-bottom: 0.5rem;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-text-dark);
+}

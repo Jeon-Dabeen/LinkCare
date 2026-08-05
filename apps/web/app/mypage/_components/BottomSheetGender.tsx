@@ -93,7 +93,7 @@ export default function BottomSheetGender({
             </button>
 
             {/* 선택 안함 버튼 */}
-            <button
+            {/* <button
               type="button"
               className={clsx(
                 styles.radioButton,
@@ -105,7 +105,7 @@ export default function BottomSheetGender({
               {selectedGender === null && (
                 <Check size={18} className={styles.checkIcon} />
               )}
-            </button>
+            </button> */}
           </div>
         </div>
 

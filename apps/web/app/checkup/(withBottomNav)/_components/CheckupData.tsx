@@ -134,6 +134,7 @@ export function CheckupData({
               <Card.Grid>
                 <Card.Item>
                   <GaugeChart
+                    key={assessment.bmi}
                     levels={["low", "normal", "warning", "danger"]}
                     status={assessment.bmi}
                     value={getStatusTypeLabel(
@@ -195,6 +196,7 @@ export function CheckupData({
           <Card.Header icon={<HeartPulse />} title="혈압" />
           <Card.Body noTopPadding>
             <GaugeChart
+              key={bpStatus}
               levels={["low", "normal", "caution", "warning", "danger"]}
               status={bpStatus as StatusType}
               value={getStatusTypeLabel(
