@@ -31,6 +31,8 @@ jobs:
         run: npx turbo run generate
 
       - name: Build
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy?schema=public" # 💡 가짜 주소 주입
         run: pnpm turbo run build --filter=api
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
