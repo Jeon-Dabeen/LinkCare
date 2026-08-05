@@ -5,6 +5,7 @@ import { logger } from "../config/logger";
 import { PrismaService } from "../prisma/prisma.service";
 import { AiAdvisorService } from "../integrations/ai-advisor/ai-advisor.service";
 import { DailyShieldService } from "../daily-shield/daily-shield.service";
+import { MealService } from "../meal/meal.service";
 
 @Injectable()
 export class GreetService {
@@ -12,6 +13,7 @@ export class GreetService {
     private readonly prisma: PrismaService,
     private readonly aiAdvisor: AiAdvisorService,
     private readonly dailyShield: DailyShieldService,
+    private readonly meal: MealService,
   ) {}
 
   create(createGreetDto: CreateGreetDto) {
@@ -84,8 +86,27 @@ export class GreetService {
   }
 
   async generateComment(userId: number, dailyDate: string) {
-    const dailyData = await this.dailyShield.findOne(userId, dailyDate);
-    // TODO: 혈당, 혈압, 체중 데이터 불러와서 데이터 모두 ai 전송
+    logger.info(`GreetService generateComment. userId=${userId}`);
+
+    const [shield, weight, meal] = await Promise.all([
+      this.dailyShield.findOne(userId, dailyDate),
+      this.meal.findHomeDaily(userId, dailyDate),
+      this.meal.findHomeMeals(userId, dailyDate),
+    ]);
+
+    const dailyShieldData = shield;
+    const dailyWeightData = weight;
+    const dailyMealData = meal;
+
+    const dailyData = {
+      shield: dailyShieldData,
+      healthData: dailyWeightData,
+      meals: dailyMealData,
+    };
+
+    logger.debug(`userId=${userId}, dailtWeightData: ${JSON.stringify(dailyData)}`);
+
+    // 데이터 모두 ai 전송
     const newAdviceMeta = await this.aiAdvisor.generateDailyAdvice(JSON.stringify(dailyData));
 
     if (!newAdviceMeta.success) {

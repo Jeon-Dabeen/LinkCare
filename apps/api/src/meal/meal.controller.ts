@@ -83,13 +83,13 @@ export class MealController {
 
   @ApiOperation({ summary: "홈 화면 식사 기록 조회" })
   @Get("/home/meals")
-  findHomeMeals(@CurrentUser("id") userId: number, @Query() query: MealQueryDto) {
-    return this.mealService.findHomeMeals(userId, query);
+  findHomeMeals(@CurrentUser("id") userId: number, @Query("date") todayDate: string) {
+    return this.mealService.findHomeMeals(userId, todayDate);
   }
 
   @ApiOperation({ summary: "홈 화면 데일리 기록 조회" })
   @Get("/home/daily")
-  findHomeDaily(@CurrentUser("id") userId: number,  @Query() query: MealQueryDto) {
-    return this.mealService.findHomeDaily(userId, query);
+  findHomeDaily(@CurrentUser("id") userId: number,  @Query("date") todayDate: string) {
+    return this.mealService.findHomeDaily(userId, todayDate);
   }
 }

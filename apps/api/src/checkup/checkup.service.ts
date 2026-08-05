@@ -86,7 +86,7 @@ export class CheckupService {
 
     if (!aiComment) throw new NotFoundException("AI 검진분석 결과를 찾을 수 없어요.");
 
-    logger.debug(`findAIComment userId=${userId}, checkupId=${checkupId}, aiComment=${aiComment}`);
+    logger.debug(`findAIComment userId=${userId}, checkupId=${checkupId}, aiComment=${JSON.stringify(aiComment)}`);
     logger.info(`CheckupService findAIComment ended. userId=${userId}, checkupId=${checkupId}`);
 
     return { aiComment: aiComment.comment };

@@ -14,6 +14,12 @@ import { MealQueryDto } from "./dto/query-meal.dto";
 
 import { calculateDefaultGoalCalorie } from "./common/nutrition";
 import { isSameDate } from "./common/date";
+import {
+  HomeDailyResponseDto,
+  BloodPressureDto,
+  BloodGlucoseDto,
+  WeightDto,
+} from "./dto/home-daily-response.dto";
 
 // Meal과 MealFood가 include된 반환 타입 정의
 type MealWithFoods = Prisma.MealGetPayload<{
@@ -54,6 +60,7 @@ export class MealService {
 
     const result = meals;
 
+    logger.debug(`findMeal result: ${result}`);
     logger.info(`MealService findMeal ended.`);
     return result;
   }
@@ -494,11 +501,10 @@ export class MealService {
    * @param userId
    * @param query
    */
-  async findHomeMeals(userId: number, query: MealQueryDto) {
-    logger.info(`MealService findHomeMeals started. userId: ${userId} query: ${query.date}`);
+  async findHomeMeals(userId: number, todayDate) {
+    logger.info(`MealService findHomeMeals started. userId: ${userId} todayDate: ${todayDate}`);
 
-    const { date } = query;
-    const mealDate = this.toDate(date);
+    const mealDate = this.toDate(todayDate);
 
     type DateMealType = {
       userId: number;
@@ -559,147 +565,128 @@ export class MealService {
   }
 
   /**
-   * 홈 화면 데일리 기록 조회
+   * 홈 화면 데일리 기록 조회 - 혈압, 혈당, 체중
    * @param userId
-   * @param date
+   * @param todayDate
    * @returns
    */
-  async findHomeDaily(userId: number, query: MealQueryDto) {
-    logger.info(`MealService findHomeDaily started. userId: ${userId}  query: ${query.date}`);
+  async findHomeDaily(userId: number, todayDate: string): Promise<HomeDailyResponseDto> {
+    logger.info(`MealService findHomeDaily started. userId: ${userId} todayDate: ${todayDate}`);
 
-    const { date } = query;
-    const thisDate = this.toDate(date);
+    // 각 도메인별 데이터를 비동기 병렬 처리하여 성능 향상 및 로직 분리
+    const [bloodPressure, bloodGlucose, weight] = await Promise.all([
+      this.getLatestBloodPressure(userId),
+      this.getLatestBloodGlucose(userId),
+      this.getWeightAndGoal(userId),
+    ]);
 
-    type DailyRecordType = {
-      userId: number;
-      date: string;
-      bloodPressure: {
-        bpDate: string | null;
-        systolic: number | null;
-        diastolic: number | null;
-      };
-      bloodGlucose: {
-        bgDate: string | null;
-        glucose: number | null;
-        mealTiming: mealtiming | null;
-      };
-      weight: {
-        weight: number | null;
-        goalWeight: number | null;
-      };
-    };
-
-    // 오늘 날짜의 혈압, 혈당, 체중 기본값
-    const result: DailyRecordType = {
+    const result: HomeDailyResponseDto = {
       userId,
-      date: date,
-      bloodPressure: {
-        bpDate: null,
-        systolic: null,
-        diastolic: null,
-      },
-      bloodGlucose: {
-        bgDate: null,
-        glucose: null,
-        mealTiming: null,
-      },
-      weight: {
-        weight: null,
-        goalWeight: null,
-      },
+      date: todayDate,
+      bloodPressure,
+      bloodGlucose,
+      weight,
     };
 
-    // [혈압] 가장 최신 날짜의 데이터를 찾고, 해당 날짜 내에서 EVENING > MORNING 우선순위 적용
+    logger.debug(`findHomeDaily userId: ${userId}, result: ${JSON.stringify(result)}`);
+    logger.info(`MealService findHomeDaily ended. userId: ${userId}`);
+
+    return result;
+  }
+
+  /**
+   * [혈압] 최신 날짜 데이터 조회 및 EVENING > MORNING 우선순위 적용
+   */
+  private async getLatestBloodPressure(userId: number): Promise<BloodPressureDto> {
     const latestBp = await this.prisma.bloodPressure.findFirst({
       where: { userId },
-      orderBy: { bpDate: "desc" },
+      orderBy: { bpDate: 'desc' },
     });
 
-    if (latestBp) {
-      const bpList = await this.prisma.bloodPressure.findMany({
-        where: {
-          userId,
-          bpDate: latestBp.bpDate, // 가장 최신 날짜와 일치하는 데이터들
-        },
-      });
-
-      const priorityDayPeriod = ["EVENING", "MORNING"];
-      let targetBp: (typeof bpList)[number] | undefined;
-
-      for (const period of priorityDayPeriod) {
-        targetBp = bpList.find((bp) => bp.dayPeriod === period);
-        if (targetBp) break;
-      }
-
-      // 만약 우선순위에 해당하는 데이터가 없다면 가장 최신 단건 데이터를 사용
-      const finalBp = targetBp ?? latestBp;
-
-      result.bloodPressure.bpDate = finalBp.bpDate.toISOString().split("T")[0];
-      result.bloodPressure.systolic = finalBp.systolic;
-      result.bloodPressure.diastolic = finalBp.diastolic;
+    if (!latestBp) {
+      return { bpDate: null, systolic: null, diastolic: null };
     }
 
-    // [혈당] 가장 최신 날짜의 데이터를 찾고, 해당 날짜 내에서 DINNER > LUNCH > BREAKFAST 및 AFTER > BEFORE 우선순위 적용
+    const bpList = await this.prisma.bloodPressure.findMany({
+      where: {
+        userId,
+        bpDate: latestBp.bpDate,
+      },
+    });
+
+    const priorityDayPeriod = ['EVENING', 'MORNING'];
+    const targetBp = priorityDayPeriod
+      .map((period) => bpList.find((bp) => bp.dayPeriod === period))
+      .find((bp) => bp !== undefined);
+
+    const finalBp = targetBp ?? latestBp;
+
+    return {
+      bpDate: finalBp.bpDate.toISOString().split('T')[0],
+      systolic: finalBp.systolic,
+      diastolic: finalBp.diastolic,
+    };
+  }
+
+  /**
+   * [혈당] 최신 날짜 데이터 조회 및 (DINNER > LUNCH > BREAKFAST) / (AFTER > BEFORE) 우선순위 적용
+   */
+  private async getLatestBloodGlucose(userId: number): Promise<BloodGlucoseDto> {
     const latestBg = await this.prisma.bloodGlucose.findFirst({
       where: { userId },
-      orderBy: { bgDate: "desc" },
+      orderBy: { bgDate: 'desc' },
     });
 
-    if (latestBg) {
-      const bgList = await this.prisma.bloodGlucose.findMany({
-        where: {
-          userId,
-          bgDate: latestBg.bgDate, // 가장 최신 날짜와 일치하는 데이터들
-        },
-      });
+    if (!latestBg) {
+      return { bgDate: null, glucose: null, mealTiming: null };
+    }
 
-      const priorityMeal = ["DINNER", "LUNCH", "BREAKFAST"];
-      const priorityTiming = ["AFTER", "BEFORE"]; // 식후 -> 식전 순서
+    const bgList = await this.prisma.bloodGlucose.findMany({
+      where: {
+        userId,
+        bgDate: latestBg.bgDate,
+      },
+    });
 
-      let targetBg: (typeof bgList)[number] | undefined;
+    const priorityMeal = ['DINNER', 'LUNCH', 'BREAKFAST'];
+    const priorityTiming = ['AFTER', 'BEFORE'];
 
-      for (const mealType of priorityMeal) {
-        for (const mealTiming of priorityTiming) {
-          targetBg = bgList.find((bg) => bg.mealType === mealType && bg.mealTiming === mealTiming);
-          if (targetBg) break;
-        }
+    let targetBg: (typeof bgList)[number] | undefined;
+
+    for (const mealType of priorityMeal) {
+      for (const mealTiming of priorityTiming) {
+        targetBg = bgList.find((bg) => bg.mealType === mealType && bg.mealTiming === mealTiming);
         if (targetBg) break;
       }
-
-      // 우선순위에 해당하는 데이터가 없다면 가장 최신 단건 데이터를 사용
-      const finalBg = targetBg ?? latestBg;
-
-      result.bloodGlucose.bgDate = finalBg.bgDate.toISOString().split("T")[0];
-      result.bloodGlucose.glucose = finalBg.glucose;
-      result.bloodGlucose.mealTiming = finalBg.mealTiming;
+      if (targetBg) break;
     }
 
-    // 체중
-    const weightData = await this.prisma.weight.findFirst({
-      where: {
-        userId,
-      },
-      orderBy: {
-        weightDate: "desc",
-      },
-    });
+    const finalBg = targetBg ?? latestBg;
 
-    if (weightData) {
-      result.weight.weight = weightData.weight;
-    }
+    return {
+      bgDate: finalBg.bgDate.toISOString().split('T')[0],
+      glucose: finalBg.glucose,
+      mealTiming: finalBg.mealTiming,
+    };
+  }
 
-    // 목표 체중
-    const profile = await this.prisma.profile.findUnique({
-      where: {
-        userId,
-      },
-    });
+  /**
+   * [체중 & 목표체중] 최신 체중 기록 및 프로필 목표 체중 조회
+   */
+  private async getWeightAndGoal(userId: number): Promise<WeightDto> {
+    const [weightData, profile] = await Promise.all([
+      this.prisma.weight.findFirst({
+        where: { userId },
+        orderBy: { weightDate: 'desc' },
+      }),
+      this.prisma.profile.findUnique({
+        where: { userId },
+      }),
+    ]);
 
-    if (profile) {
-      result.weight.goalWeight = profile.goalWeight;
-    }
-
-    logger.info(`MealService findHomeMeals ended.`);
-    return result;
+    return {
+      weight: weightData?.weight ?? null,
+      goalWeight: profile?.goalWeight ?? null,
+    };
   }
 }
