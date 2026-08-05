@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useBaseDate } from "@/app/_providers/BaseDateProvider";
 
@@ -41,7 +41,8 @@ type MealFoodPayload = {
   calorie: number;
 };
 
-export default function MealRecord() {
+// 실제 useSearchParams() 및 폼 로직을 수행하는 내부 컴포넌트
+function MealRecordContent() {
   const router = useRouter();
   const { formattedDate } = useBaseDate();
 
@@ -482,5 +483,14 @@ export default function MealRecord() {
         </form>
       </div>
     </section>
+  );
+}
+
+// Export 메인 컴포넌트: Suspense Boundary로 감싸서 반환
+export default function MealRecord() {
+  return (
+    <Suspense fallback={<div>식사 기록 페이지 로딩 중...</div>}>
+      <MealRecordContent />
+    </Suspense>
   );
 }

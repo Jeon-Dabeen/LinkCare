@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
 
@@ -22,7 +22,9 @@ import MealDetailList from "../_components/mealDetailList";
 import { useAlert } from "@/app/_providers/AlertContext";
 import { toast } from "sonner";
 
-export default function Page() {
+
+// 실제 폼 로직을 수행하는 내부 컴포넌트
+function MealDiaryContent() {
   const router = useRouter();
   const { formattedDate } = useBaseDate();
   const searchParams = useSearchParams();
@@ -158,5 +160,14 @@ export default function Page() {
         onClose={() => setViewCalendar(false)}
       />
     </section>
+  );
+}
+
+// Export 메인 컴포넌트: Suspense Boundary로 감싸서 반환
+export default function Page() {
+  return (
+    <Suspense fallback={<div></div>}>
+      <MealDiaryContent />
+    </Suspense>
   );
 }
