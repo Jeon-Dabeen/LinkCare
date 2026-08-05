@@ -1,13 +1,7 @@
 import Link from "next/link";
 import clsx from "clsx";
 
-import {
-  Bean,
-  BookHeart,
-  Droplet,
-  FlaskRound,
-  HeartPulse,
-} from "lucide-react";
+import { Bean, BookHeart, Droplet, FlaskRound, HeartPulse } from "lucide-react";
 
 import commonStyle from "@/styles/common.module.css";
 import styles from "@/styles/checkup/checkupDash.module.css";
@@ -87,7 +81,9 @@ export function CheckupData({
   const gender = "female"; // 임시 성별 코드
 
   // blood pressure (안전성을 위해 Optional Chaining 및 기본값 처리)
-  const bp = assessment?.bp ? assessment.bp.split("/").map((d: string) => d.split(":")[1]) : [];
+  const bp = assessment?.bp
+    ? assessment.bp.split("/").map((d: string) => d.split(":")[1])
+    : [];
   const bpStatus = bp[0] === "normal" ? bp[1] : bp[0];
 
   // diabetes & anemia
@@ -159,10 +155,7 @@ export function CheckupData({
                 </Card.Item>
                 <div className={styles.basicValues}>
                   <div
-                    className={clsx(
-                      commonStyle.dataWrapper,
-                      commonStyle.jfEnd,
-                    )}
+                    className={clsx(commonStyle.dataWrapper, commonStyle.jfEnd)}
                   >
                     <span className={commonStyle.dataValue}>
                       {body_metrics.height}
@@ -170,10 +163,7 @@ export function CheckupData({
                     <span className={commonStyle.dataUnit}>cm</span>
                   </div>
                   <div
-                    className={clsx(
-                      commonStyle.dataWrapper,
-                      commonStyle.jfEnd,
-                    )}
+                    className={clsx(commonStyle.dataWrapper, commonStyle.jfEnd)}
                   >
                     <span className={commonStyle.dataValue}>
                       {body_metrics.weight}
@@ -181,10 +171,7 @@ export function CheckupData({
                     <span className={commonStyle.dataUnit}>kg</span>
                   </div>
                   <div
-                    className={clsx(
-                      commonStyle.dataWrapper,
-                      commonStyle.jfEnd,
-                    )}
+                    className={clsx(commonStyle.dataWrapper, commonStyle.jfEnd)}
                   >
                     <span className={commonStyle.dataLabel}>L</span>
                     <span className={commonStyle.dataValue}>
@@ -210,7 +197,10 @@ export function CheckupData({
             <GaugeChart
               levels={["low", "normal", "caution", "warning", "danger"]}
               status={bpStatus as StatusType}
-              value={getStatusTypeLabel(bpStatusTypeLabel, bpStatus as StatusType)}
+              value={getStatusTypeLabel(
+                bpStatusTypeLabel,
+                bpStatus as StatusType,
+              )}
             />
             <div
               className={clsx(commonStyle.dataWrapper, commonStyle.jfCenter)}
@@ -228,7 +218,7 @@ export function CheckupData({
         </Card>
       </Grid.Link>
 
-      <Grid.Link href="/checkup/basic">
+      <Grid.Link href="/checkup/diabetesAnemia">
         <Card>
           <Card.Header icon={<Droplet />} title="빈혈/혈당" />
           <div className={styles.dataList}>
@@ -257,10 +247,7 @@ export function CheckupData({
               <dt className={styles.mainItemLabel}>여과율</dt>
               <dd className={styles.value}>{kidney.egfr}</dd>
             </dl>
-            <BarChart
-              level={assessment.egfr}
-              position={egfrBarChartPosition}
-            />
+            <BarChart level={assessment.egfr} position={egfrBarChartPosition} />
             <Card.Grid columns={1}>
               <Card.Item title="요단백">
                 <div className={commonStyle.dataWrapper}>
@@ -273,10 +260,7 @@ export function CheckupData({
           </div>
           <StatusTag
             status={kidneyTotalStatus}
-            label={getStatusTypeLabel(
-              commonStatusTypeLabel,
-              kidneyTotalStatus,
-            )}
+            label={getStatusTypeLabel(commonStatusTypeLabel, kidneyTotalStatus)}
           />
         </Card>
       </Grid.Link>
@@ -305,10 +289,7 @@ export function CheckupData({
           </div>
           <StatusTag
             status={liverTotalStatus}
-            label={getStatusTypeLabel(
-              commonStatusTypeLabel,
-              liverTotalStatus,
-            )}
+            label={getStatusTypeLabel(commonStatusTypeLabel, liverTotalStatus)}
           />
         </Card>
       </Grid.Link>
