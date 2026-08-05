@@ -34,9 +34,12 @@ jobs:
         run: pnpm --filter api exec prisma db pull
 
       - name: Prisma Generate
-        run: npx turbo run generate
+        run: pnpm --filter api exec prisma generate
 
-      - name: Build with dummy database url
+      - name: Where is Prisma Client?
+        run: find . -name ".prisma" -type d
+
+      - name: Build
         run: pnpm turbo run build --filter=api
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
