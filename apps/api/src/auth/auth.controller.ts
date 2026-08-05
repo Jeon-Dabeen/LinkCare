@@ -4,6 +4,7 @@ import { ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Controller("auth")
 @ApiTags("auth")
@@ -21,6 +22,12 @@ export class AuthController {
   @ApiOperation({ summary: "회원 가입" })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
+  }
+
+  @Post("reset-password")
+  @ApiOperation({summary: "비밀번호 재설정"})
+  resetPassword(@Body() dto: ResetPasswordDto){
+    return this.authService.resetPassword(dto);
   }
 
   @Post("login")
