@@ -88,6 +88,7 @@ export function LiverData({ liverData, gender }: LiverDataProps) {
                             onClick={() => setAltTooltipOpen(true)}
                           />
                         }
+                        noWidePadding
                       />
                       <div
                         className={clsx(

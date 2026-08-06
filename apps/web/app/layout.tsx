@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${pretendard.variable}`}>
-        <SampleLink />
+        {/* <SampleLink /> */}
         <div className={style.wrapper}>
           <aside />
           <Providers>
