@@ -246,8 +246,7 @@ export default function Page() {
                 max={200}
               />
               <div className={commonStyle.infoBox}>
-                공복혈당과 혈색소 버튼을 클릭하면 각각의 그래프를 껐다켰다 할 수
-                있어요!
+                공복혈당 버튼을 클릭하면 각각의 그래프를 껐다켰다 할 수 있어요!
               </div>
             </Card.Body>
           </Card>
