@@ -1,0 +1,129 @@
+name: Build and Deploy to Azure Container Apps (pub1)
+
+on:
+  push:
+    branches:
+      - pub1
+
+jobs:
+  # ----------------------------------------------------
+  # 1. 변경사항 감지 (Path Filtering)
+  # ----------------------------------------------------
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check for file changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            api:
+              - 'apps/api/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+            web:
+              - 'apps/web/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+
+  # ----------------------------------------------------
+  # 2. API 앱 빌드 및 배포
+  # ----------------------------------------------------
+  deploy-api:
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ACR 로그인
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      # Docker 이미지 빌드 및 Push (루트 context '.')
+      - name: Build & Push API Image
+        run: |
+          docker build \
+            -f apps/api/Dockerfile \
+            -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/api:${{ github.sha }} \
+            -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/api:latest .
+
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/api:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/api:latest
+
+      # Azure 로그인
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Container Apps 업데이트
+      - name: Deploy API to Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: rg-linkcare-app
+          containerAppName: app-api
+          imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}/api:${{ github.sha }}
+
+  # ----------------------------------------------------
+  # 3. Web 앱 빌드 및 배포
+  # ----------------------------------------------------
+  deploy-web:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ACR 로그인
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      # Docker 이미지 빌드 및 Push (ARG 환경변수 전달 포함)
+      - name: Build & Push Web Image
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+            --build-arg NEXT_PUBLIC_GEMINI_API_KEY=${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }} \
+            -f apps/web/Dockerfile \
+            -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/web:${{ github.sha }} \
+            -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/web:latest .
+
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/web:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/web:latest
+
+      # Azure 로그인
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Container Apps 업데이트
+      - name: Deploy Web to Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: rg-linkcare-app
+          containerAppName: app-web
+          imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}/web:${{ github.sha }}
