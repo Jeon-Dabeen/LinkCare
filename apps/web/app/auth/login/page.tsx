@@ -43,7 +43,8 @@ export default function Login() {
         const data = await response.json();
 
         if (data.count > 1) {
-          router.push("/home"); 
+          // router.push("/home");
+          window.location.href = '/home'
         } else {
           router.push("/checkup/upload"); 
         }
