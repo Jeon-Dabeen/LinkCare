@@ -8,6 +8,7 @@ import Grid from "@/app/_components/ui/Grid";
 import Card from "@/app/_components/ui/Card";
 import { ENV } from "@/env";
 
+
 // Props 인터페이스 정의
 interface CheckupAIProps {
   id: number;
