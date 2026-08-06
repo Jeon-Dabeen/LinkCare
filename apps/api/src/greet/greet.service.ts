@@ -41,6 +41,12 @@ export class GreetService {
     return `This action returns all greet`;
   }
 
+  /**
+   * 오늘의 AI 조언 조회
+   * @param userId 
+   * @param dailyDate 
+   * @returns 
+   */
   async findOne(userId: number, dailyDate: string) {
     logger.info(`GreetService findOne started. userId=${userId}`);
 
@@ -74,6 +80,9 @@ export class GreetService {
     });
   }
 
+  /**
+   * 오늘의 AI 조언 새로 생성
+   */
   async update(userId: number, dailyDate: string) {
     logger.info(`GreetService update started. userId=${userId}, dailyDate=${dailyDate}`);
 
@@ -85,6 +94,12 @@ export class GreetService {
     return { aiComment: todayAdvice.comment };
   }
 
+  /**
+   * AI 조언 생성을 위한 데이터 수집 & 요청
+   * @param userId 
+   * @param dailyDate 
+   * @returns 
+   */
   async generateComment(userId: number, dailyDate: string) {
     logger.info(`GreetService generateComment. userId=${userId}`);
 
