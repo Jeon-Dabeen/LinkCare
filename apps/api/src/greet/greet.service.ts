@@ -37,10 +37,6 @@ export class GreetService {
     return result;
   }
 
-  findAll() {
-    return `This action returns all greet`;
-  }
-
   /**
    * 오늘의 AI 조언 조회
    * @param userId 
