@@ -57,7 +57,7 @@ COPY --from=builder /app/node_modules ./node_modules
 
 # api 앱 및 공통 packages 결과물 복사
 COPY --from=builder /app/apps/api ./apps/api
-COPY --from=pruner /app/out/full/packages ./packages
+# COPY --from=pruner /app/out/full/packages ./packages
 
 USER nestjs
 
