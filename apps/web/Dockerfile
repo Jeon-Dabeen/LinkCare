@@ -30,7 +30,7 @@ RUN pnpm install --frozen-lockfile
 # 실제 소스 코드 복사
 COPY --from=pruner /app/out/full/ .
 
-# 빌드 시점에 주입받을 환경변수 선언
+# 빌드 시점에 주입받을 환경변수 선언 (Build ARG)
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_GEMINI_API_KEY
 
@@ -54,12 +54,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# 정적 파일 복사
-COPY --from=builder /app/apps/web/public ./apps/web/public
-
-# Standalone 빌드 결과물 복사
+# [수정] Standalone 복사 및 권한 설정
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
+# [수정] public 디렉터리 권한 및 복사 (없어도 에러나지 않도록 public 위치 지정)
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+
+# [수정] Next.js 서버가 런타임 캐시/이미지 등을 쓸 수 있도록 권한 부여
+RUN mkdir -p /app/apps/web/.next && chown -R nextjs:nodejs /app/apps/web/.next
 
 USER nextjs
 
