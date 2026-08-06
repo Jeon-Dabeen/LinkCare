@@ -267,7 +267,7 @@ export function CheckupData({
         </Card>
       </Grid.Link>
 
-      <Grid.Link href="/checkup/basic">
+      <Grid.Link href="/checkup/liver">
         <Card>
           <Card.Header icon={<FlaskRound />} title="간" />
           <div className={styles.dataList}>

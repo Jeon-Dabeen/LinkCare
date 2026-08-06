@@ -206,7 +206,7 @@ export default function Page() {
                             </div>
                             <BarChart
                               level={hemoglobinAssessment}
-                              position={fbgBarChartPosition}
+                              position={hemoglobinBarChartPosition}
                             />
                             <div
                               className={`${commonStyle.textLight} ${style.detailMessage}`}
