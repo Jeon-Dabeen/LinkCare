@@ -32,7 +32,9 @@ COPY --from=pruner /app/out/full/ .
 
 # Prisma Client 생성 및 API 빌드
 # (Prisma schema 위치에 맞춰 실행)
-RUN pnpm --filter api prisma:generate
+# RUN pnpm --filter api prisma:generate
+# DATABASE_URL 임시값 부여하여 타입스클립트/Prisma 클라이언트 클래스만 생성
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" pnpm --filter api prisma:generate
 RUN pnpm --filter api build
 
 # -----------------------------------------------
