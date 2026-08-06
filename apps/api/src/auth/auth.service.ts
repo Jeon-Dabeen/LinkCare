@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/common";
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from "@nestjs/common";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { UserService } from "../user/user.service";
@@ -6,6 +6,7 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { logger } from "../config/logger";
 import type { CookieOptions, Response } from "express";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Injectable()
 export class AuthService {
@@ -53,6 +54,9 @@ export class AuthService {
     const user = await this.userService.createUser({
       email: dto.email,
       password: hashed,
+      birthDate: dto.birthDate,
+      gender: dto.gender,
+      height: dto.height,
     });
 
     const { password, ...result } = user; // 비밀번호를 빼고 나머지 데이터 반환 위함
@@ -100,6 +104,29 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
       count: loginData.loginCnt,
     };
+  }
+
+  /**
+   * 비밀번호 변경
+   * @param dto 
+   * @returns 
+   */
+  async resetPassword(dto: ResetPasswordDto){
+    logger.info(`AuthService resetPassword started. email =${dto.email}`);
+
+    //입력한 이메일로 회원 조회
+    const user = await this.userService.findByEmail(dto.email);
+
+    if(!user){
+      throw new NotFoundException("해당 이메일로 가입된 회원을 찾을 수 없습니다.");
+    }
+
+    //userService의 비밀번호 업데이트 메서드 호출
+    await this.userService.updatePassword(user.id, dto.newPassword);
+
+    logger.info(`AuthService resetPassword ended. email=${dto.email}`);
+
+    return { success: true, message: "비밀번호가 재설정되었습니다."};
   }
 
   /**

@@ -1,5 +1,5 @@
 # -----------------------------------------------
-# 1. Base Stage
+# 1. Base Stage: pnpm 환경 및 기초 라이브러리 설정
 # -----------------------------------------------
 FROM node:24-alpine AS base
 RUN apk add --no-cache libc6-compat
@@ -7,23 +7,30 @@ RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 WORKDIR /app
 
 # -----------------------------------------------
-# 2. Builder Stage
+# 2. Pruner Stage: Turborepo에서 web 관련 코드만 분리
+# -----------------------------------------------
+FROM base AS pruner
+COPY . .
+# web 앱과 의존 관계가 있는 packages만 추출
+RUN npx turbo prune --scope=web --docker
+
+# -----------------------------------------------
+# 3. Builder Stage: 의존성 설치 및 Next.js 빌드
 # -----------------------------------------------
 FROM base AS builder
+WORKDIR /app
 
-# 모노레포 설정 파일 및 전체 package.json 복사
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/web/package.json ./apps/web/
-# 모노레포 공통 패키지들의 package.json 복사 (존재할 경우)
-COPY packages ./packages
+# 추출된 package.json과 lockfile 복사 (의존성 설치 캐싱)
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # 의존성 설치
 RUN pnpm install --frozen-lockfile
 
-# 소스코드 전체 및 apps/web 복사
-COPY apps/web ./apps/web
+# 실제 소스 코드 복사
+COPY --from=pruner /app/out/full/ .
 
-# 빌드 시점에 필요한 NEXT_PUBLIC 환경변수 선언
+# 빌드 시점에 주입받을 환경변수 선언
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_GEMINI_API_KEY
 
@@ -35,7 +42,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm --filter web build
 
 # -----------------------------------------------
-# 3. Runner Stage
+# 4. Runner Stage: 경량화된 프로덕션 실행 환경
 # -----------------------------------------------
 FROM base AS runner
 WORKDIR /app
@@ -43,12 +50,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# 비루트 사용자 설정 (보안 모범 사례)
+# 보안을 위한 비루트 사용자 설정
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# 빌드 결과물 복사
+# 정적 파일 복사
 COPY --from=builder /app/apps/web/public ./apps/web/public
+
+# Standalone 빌드 결과물 복사
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
 
@@ -59,5 +68,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# 실행 경로 지정
+# Next.js Standalone 서버 실행
 CMD ["node", "apps/web/server.js"]

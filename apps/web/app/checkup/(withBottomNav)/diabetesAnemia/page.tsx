@@ -18,6 +18,7 @@ import BarChart from "@/app/_components/ui/chart/barChart";
 
 import { ENV } from "@/env";
 import {
+  commonStatusTypeLabel,
   fbgStatusTypeLabel,
   getStatusTypeLabel,
   StatusType,
@@ -213,10 +214,10 @@ export default function Page() {
                               헤모글로빈 수치를 확인하고 빈혈이 있는지 알려줘요.
                             </div>
                             <StatusTag
-                              status={fbgAssessment as StatusType}
+                              status={hemoglobinAssessment as StatusType}
                               label={getStatusTypeLabel(
-                                fbgStatusTypeLabel,
-                                fbgAssessment as StatusType,
+                                commonStatusTypeLabel,
+                                hemoglobinAssessment as StatusType,
                               )}
                             />
                           </Card.Item>
@@ -245,8 +246,7 @@ export default function Page() {
                 max={200}
               />
               <div className={commonStyle.infoBox}>
-                공복혈당과 혈색소 버튼을 클릭하면 각각의 그래프를 껐다켰다 할 수
-                있어요!
+                공복혈당 버튼을 클릭하면 각각의 그래프를 껐다켰다 할 수 있어요!
               </div>
             </Card.Body>
           </Card>

@@ -21,6 +21,7 @@ import {
   StatusType,
 } from "@/types/statusType";
 import BpChart from "@/app/_components/ui/chart/bpChart";
+import { toast } from "sonner";
 
 interface BloodPressureData {
   id: number;
@@ -169,11 +170,26 @@ export default function Page() {
             <Card.Body noTopPadding>
               <Card.Grid columns={1}>
                 <Card.Item>
-                  <BpChart
-                    key={"bpChart"}
-                    systolic={systolics[0] as number}
-                    diastolic={diastolics[0] as number}
-                  />
+                  {(() => {
+                    if (!bloodPressureData) return;
+
+                    const data = bloodPressureData.find(
+                      (d) => d.year === selectedYear,
+                    );
+
+                    if (!data) {
+                      toast.warning("선택하신 년도의 결과는 존재하지 않아요!");
+                      return;
+                    }
+
+                    return (
+                      <BpChart
+                        key={"bpChart"}
+                        systolic={data.bp_systolic}
+                        diastolic={data.bp_diastolic}
+                      />
+                    );
+                  })()}
                 </Card.Item>
               </Card.Grid>
             </Card.Body>

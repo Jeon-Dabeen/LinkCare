@@ -19,7 +19,8 @@ export function middleware(request: NextRequest) {
   const isPublicPage =
     pathname === "/auth/login" ||
     pathname.startsWith("/auth/login") ||
-    pathname.startsWith("/auth/register");
+    pathname.startsWith("/auth/register") ||
+    pathname.startsWith("/auth/forgot-password");
 
   // 3. 토큰이 없는 비로그인 유저가 보호된 페이지에 접근할 때 -> /auth/login 으로 이동
   if (!token && !isPublicPage) {

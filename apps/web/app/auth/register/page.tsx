@@ -78,6 +78,14 @@ export default function Register() {
       return;
     }
 
+    //YYYY-MM-DD 형식과 월,일의 기본 범위 확인
+    const birthCheck = /^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/;
+
+    if (!birthCheck.test(birth)) {
+      toast.warning("생년월일을 YYYY-MM-DD 형식으로 입력해주세요.");
+      return;
+    }
+
     if (!selectedGender) {
       toast.warning(`성별을 선택해주세요.`);
       return;
@@ -99,7 +107,13 @@ export default function Register() {
       const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ 
+          email,
+          password,
+          birthDate: birth,
+          gender: selectedGender,
+          height: Number(height),
+         }),
       });
 
       if (response.ok) {

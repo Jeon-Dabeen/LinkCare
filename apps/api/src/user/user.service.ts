@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { logger } from "../config/logger";
 import { NicknameService } from "../common/services/nickname.service";
 import { log } from "console";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UserService {
@@ -61,7 +62,13 @@ export class UserService {
    * @param data
    * @returns
    */
-  async createUser(data: { email: string; password: string }) {
+  async createUser(data: { 
+    email: string; 
+    password: string;
+    birthDate: string;
+    gender: "M" | "F";
+    height: number;
+  }) {
     logger.info(`UserService createUser started. email=${data.email}`);
 
     const nickName = await this.generateUniqueNickname();
@@ -69,13 +76,20 @@ export class UserService {
 
     const { user, profile } = await this.prisma.$transaction(async (tx) => {
       // 1. 유저 생성
-      const newUser = await tx.user.create({ data });
+      const newUser = await tx.user.create({ 
+        data: {
+          email: data.email,
+          password: data.password,
+        } });
 
       // 2. 프로필 생성 (User PK 필드가 'id'인 경우 newUser.id 사용)
       const newProfile = await tx.profile.create({
         data: {
           userId: newUser.id,
           nickName: nickName,
+          birthDate: new Date(`${data.birthDate}T00:00:00.000Z`),
+          gender: data.gender,
+          height: data.height,
         },
       });
 
@@ -99,6 +113,29 @@ export class UserService {
 
   async findUseByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email, useyn: "Y" } });
+  }
+  /**
+   * 비밀번호 변경
+   * @param userId 
+   * @param newPassword 
+   * @returns 
+   */
+  async updatePassword(userId: number, newPassword: string){
+    logger.info(`UserService updatePassword started. userId=${userId}`);
+
+    //새 비밀번호 암호화
+    const hashedPassword =await bcrypt.hash(newPassword, 10);
+
+    //새 비밀번호로 변경된 유저
+    const updatedUser = await this.prisma.user.update({
+      where: {id: userId},
+      data: {
+        password: hashedPassword,
+      },
+    });
+    
+    logger.info(`UserService updatedPassword ended. userId=${userId}`);
+    return updatedUser;
   }
 
   findOne(id: number) {

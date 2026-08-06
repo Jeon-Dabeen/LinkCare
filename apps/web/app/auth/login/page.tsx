@@ -89,7 +89,11 @@ export default function Login() {
 
           <div className={clsx(formStyle.formButtonWrapper, formStyle.column)}>
             <div className={clsx(formStyle.formBoxRight)}>
-              <Button variant="text-primary" size="small">비밀번호를 잊으셨나요?</Button>
+              <Button 
+                type ="button"
+                variant="text-primary" 
+                size="small"
+                onClick={()=> {console.log("비밀번호 찾기 버튼 클릭"); router.push("/auth/forgot-password")}}>비밀번호를 잊으셨나요?</Button>
             </div>
             <div className={formStyle.formBox}>
               <Button type="submit" variant="primary" size="large" full disabled={loading}>
