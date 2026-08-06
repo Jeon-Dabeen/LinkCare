@@ -59,6 +59,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api ./apps/api
 # COPY --from=pruner /app/out/full/packages ./packages
 
+RUN mkdir -p /app/log && chown -R nestjs:nodejs /app
+
 USER nestjs
 
 EXPOSE 3001
