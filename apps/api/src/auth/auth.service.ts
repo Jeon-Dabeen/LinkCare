@@ -10,13 +10,17 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Injectable()
 export class AuthService {
-  // 공통 쿠키 기본 옵션
-  private readonly baseCookieOptions: CookieOptions = {
-    httpOnly: true, // XSS 공격 방지
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax", // Cross-site 쿠키 전송 허용
-    path: "/", // 쿠키 경로 설정
-  };
+  // 이후 따로 빼는 것이 필요. 컨트롤러와 중복 됨
+  private get baseCookieOptions(): CookieOptions {
+    const isProduction = process.env.NODE_ENV === "production";
+
+    return {
+      httpOnly: true,
+      sameSite: isProduction ? "none" : "lax", // 배포 환경 필수 설정
+      secure: isProduction,
+      path: "/",
+    };
+  }
 
   constructor(
     private readonly userService: UserService,

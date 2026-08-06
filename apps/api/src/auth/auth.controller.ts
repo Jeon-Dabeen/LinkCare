@@ -35,10 +35,13 @@ export class AuthController {
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { access_token, count } = await this.authService.login(dto);
 
+    const isProduction = process.env.NODE_ENV === "production";
+
     response.cookie("access_token", access_token, {
       httpOnly: true, // XSS 공격 방지
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", // Cross-site 쿠키 전송 허용
+      sameSite: isProduction ? "none" : "lax", // Cross-site 쿠키 전송 허용
+      path: "/",
       maxAge: 14 * 24 * 60 * 60 * 1000, // 14일 (JwtModule의 expiresIn과 동일하게 설정)
     });
 
