@@ -93,7 +93,7 @@ export default function WeightRegisterForm({
   return (
     <section className={commonStyle.mainContent}>
       <div className={commonStyle.pageTitleWrapper}>
-        <h2 className={commonStyle.pageTitle}>오늘 측정한 혈압을 입력하세요</h2>
+        <h2 className={commonStyle.pageTitle}>오늘 측정한 체중을 입력하세요</h2>
       </div>
       <div className={formStyle.formWrapper}>
         <form
