@@ -42,6 +42,7 @@ export default function RootLayout({
           <aside />
           <Providers>
             <div className={style.app}>
+              <div style={{width: '100%', height: '56px', backgroundColor: 'var(--header-bg)'}}></div>
               <Header />
               <main className={style.main}>{children}</main>
             </div>
