@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "@/styles/reset.css";
 import "@/styles/variables.css";
@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   title: "LinkCare",
   description: "AI 기반 맞춤형 웰니스 케어 서비스",
 };
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // user-scalable=no 와 동일합니다.
+}
 
 export default function RootLayout({
   children,
