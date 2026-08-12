@@ -137,7 +137,7 @@ function MealRecordContent() {
   const isModified =
     !isSaving &&
     (selectedFile != null ||
-    JSON.stringify(foodItems) !== JSON.stringify(initialFoodItems));
+      JSON.stringify(foodItems) !== JSON.stringify(initialFoodItems));
 
   /**
    * 아이템 추가 버튼 함수
@@ -331,8 +331,17 @@ function MealRecordContent() {
    */
   const handleDelete = async () => {
     // 삭제 전 다시 확인
-    const isConfirmed = window.confirm("정말 이 식사 기록을 삭제하실 건가요?");
-    if (!isConfirmed) return;
+    const isConfirmed = await customConfirm(
+      "정말 이 식사 기록을 삭제하실 건가요?",
+      {
+        title: "식사 내용 덮어쓰기",
+        confirmText: "덮어쓰기",
+        cancelText: "취소",
+      },
+    );
+    if (!isConfirmed) {
+      return;
+    }
 
     try {
       await apiFetch(`/meal/record/${mealId}`, {
