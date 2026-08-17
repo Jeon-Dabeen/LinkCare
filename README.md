@@ -4,7 +4,8 @@
 <br>
 
 ## 프로젝트 설명
-- 국민건강보험의 건강검진 데이터를 기록하고, 사용자가 자신의 건강 상태와 생활 습관을 꾸준히 관리하며 AI의 조언을 받을 수 있는 헬스케어 모바일 웹 서비스
+국민건강보험의 건강검진 데이터를 기록하고, 사용자가 자신의 건강 상태와 생활 습관을 꾸준히 관리하며 AI의 조언을 받을 수 있는 헬스케어 모바일 웹 서비스
+
 
 ## 프로젝트 정보
 - 개발 인원 : 4명
@@ -35,16 +36,16 @@
 
 |혈압|혈당|체중|
 |--|--|--|
-|<img src="./readme/daily_bp2.png" width="120px">|<img src="./readme/daily_bd2.png" width="120px">|<img src="./readme/daily_weight1.png" width="120px">|
+|<img src="./readme/daily_bp2.png" width="120px">|<img src="./readme/daily_bg2.png" width="120px">|<img src="./readme/daily_weight1.png" width="120px">|
 
 ### **식사 다이어리**
 - 목표 칼로리를 설정하고 매일의 식단 관리
 - 음식 사진 AI 분석으로 음식명/칼로리 표시
 - 최대 3개월간의 기록 조회
 
-|식사|식사 입력|
-|--|--|
-|<img src="./readme/meal1.png" width="120px">|<img src="./readme/meal2.png" width="120px">|
+|식사|식사 입력|목표 칼로리|
+|--|--|--|
+|<img src="./readme/meal1.png" width="120px">|<img src="./readme/meal2.png" width="120px">|<img src="./readme/meal3.png" width="120px">|
 
 ### **건강검진**
 - 건강검진 결과 업로드 & 조회
@@ -61,19 +62,20 @@
 - 비밀번호 변경
 - 로그아웃, 회원탈퇴
 
-|마이페이지|회원정보 수정|
-|--|--|
-|<img src="./readme/mypage1.png" width="120px">|<img src="./readme/mypage2.png" width="120px">|
+|마이페이지|회원정보 수정|비밀번호 변경|회원 탈퇴|
+|--|--|--|--|
+|<img src="./readme/mypage1.png" width="120px">|<img src="./readme/mypage2.png" width="120px">|<img src="./readme/mypage3.png" width="120px">|<img src="./readme/mypage4.png" width="120px">|
 
 
 ## 기술 스택
 
-<img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" style="border-radius: 3px">
-<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" style="border-radius: 3px">
-<img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" style="border-radius: 3px">
-<img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" style="border-radius: 3px">
-<img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" style="border-radius: 3px">
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" style="border-radius: 3px">
-<img src="https://img.shields.io/badge/Azure-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" style="border-radius: 3px">
-
+<div>
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" style="border-radius: 3px">
+  <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" style="border-radius: 3px">
+  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" style="border-radius: 3px">
+  <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" style="border-radius: 3px">
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" style="border-radius: 3px">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" style="border-radius: 3px">
+  <img src="https://img.shields.io/badge/Azure-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" style="border-radius: 3px">
+</div>
 
