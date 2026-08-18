@@ -6,7 +6,7 @@ import { CirclePlus } from "lucide-react";
 import commonStyle from "@/styles/common.module.css";
 import Button from "@/app/_components/ui/Button";
 import { ENV } from "@/env";
-import { CheckupDashboardClient } from "./_components/CheckupDashboardClient";
+import { CheckupDashboardClient } from "../_components/CheckupDashboardClient";
 
 export default async function Page() {
   const cookieStore = await cookies();
@@ -17,7 +17,7 @@ export default async function Page() {
     redirect("/auth/login");
   }
 
-  const realToken = token.split(';')[0];
+  const realToken = token.split(";")[0];
   console.log(`realToken: ${realToken}`);
   const response = await fetch(`${ENV.API_URL}/checkup`, {
     headers: { Cookie: `access_token=${realToken}` },
@@ -36,7 +36,7 @@ export default async function Page() {
 
   // json.data가 배열 형태 [ { id: 1, ... }, { id: 2, ... } ]
   const checkupList = json.data;
-  console.log(`data: ${JSON.stringify(checkupList)}`)
+  console.log(`data: ${JSON.stringify(checkupList)}`);
 
   return (
     <section className={commonStyle.mainContent}>

@@ -4,9 +4,9 @@ import { ENV } from "@/env";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { CheckupLineChart } from "../_components/CheckupLineChart";
-import { Liver, LiverDataProps } from "../_components/LiverData";
-import { LiverClient } from "../_components/LiverClient";
+import { CheckupLineChart } from "../../_components/CheckupLineChart";
+import { Liver, LiverDataProps } from "../../_components/LiverData";
+import { LiverClient } from "../../_components/LiverClient";
 
 export default async function Page() {
   const cookieStore = await cookies();
