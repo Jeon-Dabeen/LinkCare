@@ -23,7 +23,7 @@ export async function apiFetch<T>(
   path: string,
   options: ApiFetchOptions = {},
 ): Promise<ApiResponse<T>> {
-  const { auth = false, headers, body, credentials, ...rest } = options;
+  const { auth = false, headers, body, ...rest } = options;
 
   const requestHeaders = new Headers({
     Accept: "application/json",
@@ -44,10 +44,10 @@ export async function apiFetch<T>(
   }
 
   const response = await fetch(`${BASE_URL}${path}`, {
+    ...rest,                          // 다른 옵션들을 먼저 펼치고
     headers: requestHeaders,
     body,
-    credentials: "include",
-    ...rest,
+    credentials: "include",           // [강제 고정] 무조건 쿠키를 포함하도록 설정
   });
 
   const result = (await response.json()) as ApiResponse<T>;
