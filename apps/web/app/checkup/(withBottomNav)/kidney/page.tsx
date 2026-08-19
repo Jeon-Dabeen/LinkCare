@@ -4,9 +4,9 @@ import { ENV } from "@/env";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { KidneyClient } from "../_components/KidneyClient";
-import { CheckupLineChart } from "../_components/CheckupLineChart";
-import { KidneyDataProps } from "../_components/KidneyData";
+import { KidneyClient } from "../../_components/KidneyClient";
+import { CheckupLineChart } from "../../_components/CheckupLineChart";
+import { KidneyDataProps } from "../../_components/KidneyData";
 
 export default async function Page() {
   const cookieStore = await cookies();

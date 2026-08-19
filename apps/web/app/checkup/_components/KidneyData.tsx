@@ -7,7 +7,7 @@ import StatusTag from "@/app/_components/ui/StatusTag";
 import { Tabs } from "@/app/_components/ui/Tabs";
 import Tooltip from "@/app/_components/ui/ToolTip";
 import GaugeChart from "@/app/_components/ui/chart/guageChart";
-import { Bean } from "lucide-react";
+import { Bean, TestTubeDiagonal } from "lucide-react";
 
 import commonStyle from "@/styles/common.module.css";
 import style from "@/styles/checkup/checkupDetail.module.css";
@@ -58,7 +58,7 @@ export function KidneyData(kidneyDataProps: KidneyDataProps) {
               <Card>
                 <Card.Body noTopPadding>
                   <Card.Item>
-                    <Card.Header icon={<Bean />} title="신사구체여과율" />
+                    <Card.Header icon={<Bean />} title="신사구체여과율" noWidePadding />
                     <GaugeChart
                       key={kidneyDataProps.egfr}
                       levels={["normal", "danger"]}
@@ -98,25 +98,27 @@ export function KidneyData(kidneyDataProps: KidneyDataProps) {
                     />
                   </Card.Item>
 
-                  <Card.Item>
-                    <Card.Header title="요단백" />
-                    <div
-                      className={`${commonStyle.textLight} ${style.detailMessage}`}
-                    >
-                      소변에 단백질이 섞여 나오는지를 보는 검사에요.
-                      <ButtonQuestion
-                        ref={urineProteinBtnTooltipRef}
-                        onClick={() => setUrineProteinTooltipOpen(true)}
+                  <Card.Grid columns={1} topDivider>
+                    <Card.Item>
+                      <Card.Header icon={<TestTubeDiagonal />} title="요단백" noPadding />
+                      <div
+                        className={`${commonStyle.textLight} ${style.detailMessage}`}
+                      >
+                        소변에 단백질이 섞여 나오는지를 보는 검사에요.
+                        <ButtonQuestion
+                          ref={urineProteinBtnTooltipRef}
+                          onClick={() => setUrineProteinTooltipOpen(true)}
+                        />
+                      </div>
+                      <StatusTag
+                        status={urineProteinAssessment}
+                        label={getStatusTypeLabel(
+                          commonStatusTypeLabel,
+                          urineProteinAssessment,
+                        )}
                       />
-                    </div>
-                    <StatusTag
-                      status={urineProteinAssessment}
-                      label={getStatusTypeLabel(
-                        commonStatusTypeLabel,
-                        urineProteinAssessment,
-                      )}
-                    />
-                  </Card.Item>
+                    </Card.Item>
+                  </Card.Grid>
                 </Card.Body>
               </Card>
             </Grid.ItemFull>

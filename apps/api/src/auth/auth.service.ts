@@ -80,12 +80,12 @@ export class AuthService {
     const user = await this.userService.findUseByEmail(dto.email);
 
     if (!user) {
-      throw new UnauthorizedException("회원정보를 찾을 수 없어요.");
+      throw new UnauthorizedException("이메일 또는 비번이 틀려요.");
     }
 
     // 탈퇴한 회원 접근 차단
     if (user.useyn === "N") {
-      throw new UnauthorizedException("탈퇴 처리된 계정입니다.");
+      throw new UnauthorizedException("이메일 또는 비번이 틀려요.");
     }
 
     const isRight = await bcrypt.compare(dto.password, user.password);

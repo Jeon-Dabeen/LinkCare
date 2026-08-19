@@ -52,6 +52,7 @@ type CardHeaderProps = {
   left?: ReactNode;
   right?: ReactNode;
   noPadding?: boolean;
+  noWidePadding?: boolean;
   isLeftFull?: boolean;
 }
 
@@ -61,6 +62,7 @@ export function CardHeader({
   left,
   right,
   noPadding,
+  noWidePadding,
   isLeftFull,
 }:CardHeaderProps){
 
@@ -68,6 +70,7 @@ export function CardHeader({
     <div className={clsx(
       styles.cardHeader,
       noPadding && styles.noPadding,
+      noWidePadding && styles.noWidePadding,
       isLeftFull && styles.fullLeft
     )}
     >

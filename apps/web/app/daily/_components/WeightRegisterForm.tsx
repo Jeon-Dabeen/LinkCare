@@ -93,7 +93,7 @@ export default function WeightRegisterForm({
   return (
     <section className={commonStyle.mainContent}>
       <div className={commonStyle.pageTitleWrapper}>
-        <h2 className={commonStyle.pageTitle}>체중을 입력하세요</h2>
+        <h2 className={commonStyle.pageTitle}>오늘 측정한 체중을 입력하세요</h2>
       </div>
       <div className={formStyle.formWrapper}>
         <form
@@ -112,6 +112,7 @@ export default function WeightRegisterForm({
               type="number"
               id="currentWeight"
               name="currentWeight"
+              placeholder="체중을 입력하세요"
               value={currentWeight}
               onChange={(e) => setCurrentWeight(e.target.value)}
               required
@@ -130,6 +131,7 @@ export default function WeightRegisterForm({
                 type="number"
                 id="goalWeight"
                 name="goalWeight"
+                placeholder="목표 체중을 입력하세요"
                 value={goalWeight}
                 onChange={(e) => setGoalWeight(e.target.value)}
                 required

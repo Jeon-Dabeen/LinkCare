@@ -80,9 +80,28 @@ export class CheckupService {
   async findAIComment(userId: number, checkupId: number) {
     logger.info(`CheckupService findAIComment started. userId=${userId}, checkupId=${checkupId}`);
 
-    const aiComment = await this.prisma.checkUpComment.findFirst({
+    // 딜레이를 주기 위한 유틸리티 함수
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    let aiComment = await this.prisma.checkUpComment.findFirst({
       where: { checkUpId: checkupId },
     });
+
+    // 데이터가 없을 경우 재시도 로직 (3초 간격, 총 5회 시도)
+    if (!aiComment) {
+      for (let attempt = 1; attempt <= 5; attempt++) {
+        await delay(3000); // 3초 대기
+        logger.debug(`findAIComment: 3초 대기 중...`);
+
+        aiComment = await this.prisma.checkUpComment.findFirst({
+          where: { checkUpId: checkupId },
+        });
+
+        if (aiComment) {
+          break; // 데이터를 찾았으면 루프 탈출
+        }
+      }
+    }
 
     if (!aiComment) throw new NotFoundException("AI 검진분석 결과를 찾을 수 없어요.");
 

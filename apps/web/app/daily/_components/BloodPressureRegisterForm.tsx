@@ -150,7 +150,7 @@ export default function BloodPressureRegisterForm({
               type="number"
               id="bpHigh"
               name="bpHigh"
-              placeholder="최고혈압"
+              placeholder="수축기 혈압을 입력하세요"
               min={1}
               max={200}
               value={systolic}
@@ -170,7 +170,7 @@ export default function BloodPressureRegisterForm({
               type="number"
               id="bpLow"
               name="bpLow"
-              placeholder="최저혈압"
+              placeholder="이완기 혈압을 입력하세요"
               min={1}
               value={diastolic}
               onChange={(event)=>{
@@ -189,7 +189,7 @@ export default function BloodPressureRegisterForm({
               type="number"
               id="bpm"
               name="bpm"
-              placeholder="맥박"
+              placeholder="맥박을 입력하세요"
               min={1}
               value={pulse}
               onChange={(event)=>{

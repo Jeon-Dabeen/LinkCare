@@ -377,6 +377,15 @@ export default function DailyShield() {
             <p className={styles.shieldTitle}>빠른 생성</p>
             <div className={styles.quickWrapper}>
               <QuickSelectCard
+                id="water"
+                checked={isWater}
+                onChange={() => handleQuickToggle("water")}
+                icon={<GlassWater />}
+                title="수분섭취"
+                value={String(formData.waterCup || formData.lastWaterCup || 8)}
+                unit="cups"
+              />
+              <QuickSelectCard
                 id="exercise"
                 checked={isExercise}
                 onChange={() => handleQuickToggle("exercise")}
@@ -386,15 +395,6 @@ export default function DailyShield() {
                   formData.exerciseTime || formData.lastExerciseTime || "30"
                 }
                 unit="min"
-              />
-              <QuickSelectCard
-                id="water"
-                checked={isWater}
-                onChange={() => handleQuickToggle("water")}
-                icon={<GlassWater />}
-                title="수분섭취"
-                value={String(formData.waterCup || formData.lastWaterCup || 8)}
-                unit="cups"
               />
               <QuickSelectCard
                 id="supplement"

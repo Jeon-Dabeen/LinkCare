@@ -33,7 +33,7 @@ export default function MealGoalCard({
 
   // 목표칼로리 수정용 상태
   const [openGoal, setOpenGoal] = useState(false);
-  const [inputGoalCalorie, setinputGoalCalorie] = useState<number>(2000);
+  const [inputGoalCalorie, setinputGoalCalorie] = useState<number | "">(2000);
   const [message, setMessage] = useState<string>(
     "목표를 향해 차근차근 잘 가고 있어요!",
   );
@@ -55,23 +55,31 @@ export default function MealGoalCard({
 
   // input 변경
   function handleChangeInput(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = Number(e.target.value);
-    if (value > MAX_CALORIE) {
-      setinputGoalCalorie(MAX_CALORIE);
+    const rawValue = Number(e.target.value);
+
+    // 빈 값이 입력된 경우
+    if(rawValue === null){
       return;
     }
-    setinputGoalCalorie(Number(e.target.value));
+
+    // 숫자로 변환 후 최대값 제한 적용
+    const value = Number(rawValue);
+    setinputGoalCalorie(Math.min(value, MAX_CALORIE));
   }
 
   // input 변경사항 유무 및 유효성 체크
   const isButtonDisabled =
     inputGoalCalorie === goalCalorie ||
+    inputGoalCalorie === "" ||
     !inputGoalCalorie ||
     inputGoalCalorie <= 0 ||
     inputGoalCalorie > MAX_CALORIE;
 
   // 목표 칼로리 저장하기
   async function handleSaveGoal() {
+    // 빈값일 때
+    if(inputGoalCalorie === "") return;
+
     try {
       // API 호출
       await apiFetch<GoalCalorieResponse>("/meal/goalCalorie", {
@@ -133,7 +141,7 @@ export default function MealGoalCard({
               type="number"
               id="goalCalorie"
               name="goalCalorie"
-              value={inputGoalCalorie}
+              value={inputGoalCalorie || ""}
               onChange={handleChangeInput}
             />
           </div>

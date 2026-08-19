@@ -301,7 +301,6 @@ export default function BpChart({ systolic, diastolic }: BpChartProps) {
         data={data}
         options={options}
         plugins={[bpBgPlugin]}
-        style={{ height: "140px", width: "100%" }}
       />
     </div>
   );

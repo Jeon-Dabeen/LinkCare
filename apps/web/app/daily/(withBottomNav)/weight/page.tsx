@@ -485,7 +485,7 @@ export default function Page() {
 
       <BottomSheet
         open={openTodayWeight}
-        title="체중"
+        title="체중 입력"
         onClose={handleCloseWeight}
       >
         <div className={formStyle.formWrapper}>
@@ -516,7 +516,7 @@ export default function Page() {
       {/* 목표체중 입력·수정 바텀시트 */}
       <BottomSheet
         open={openGoal}
-        title="목표 체중"
+        title="목표 체중 입력"
         onClose={handleCloseGoalWeight}
       >
         <div className={formStyle.formWrapper}>

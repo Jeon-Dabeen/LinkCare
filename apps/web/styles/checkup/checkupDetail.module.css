@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  height: 100%;
+  height: fit-content;
   text-align: center;
 }
 

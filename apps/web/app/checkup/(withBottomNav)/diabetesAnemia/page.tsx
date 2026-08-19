@@ -151,6 +151,7 @@ export default function Page() {
                                   onClick={() => setFbgTooltipOpen(true)}
                                 />
                               }
+                              noWidePadding
                             />
                             <div
                               className={clsx(
@@ -192,6 +193,7 @@ export default function Page() {
                                   onClick={() => setHemoglobinTooltipOpen(true)}
                                 />
                               }
+                              noWidePadding
                             />
                             <div
                               className={clsx(
@@ -206,7 +208,7 @@ export default function Page() {
                             </div>
                             <BarChart
                               level={hemoglobinAssessment}
-                              position={fbgBarChartPosition}
+                              position={hemoglobinBarChartPosition}
                             />
                             <div
                               className={`${commonStyle.textLight} ${style.detailMessage}`}

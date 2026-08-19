@@ -18,7 +18,7 @@ import { ApiOperation } from "@nestjs/swagger";
 import { MealQueryDto } from "./dto/query-meal.dto";
 import { MealFoodDto } from "./dto/create-meal-food.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { RenameFileInterceptor } from "../common/interceptors/rename.file.interceptor";
+import { RenameImageInterceptor } from "../common/interceptors/rename.image.interceptor";
 import { imageUploadOptions } from "../config/upload.config";
 import { ConvertToWebpInterceptor } from "../common/interceptors/convert.image.interceptor";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth/jwt-auth.guard";
@@ -61,7 +61,7 @@ export class MealController {
   @ApiOperation({ summary: "식사 상세 기록 등록/수정" })
   @UseInterceptors(
     FileInterceptor("image", imageUploadOptions),
-    RenameFileInterceptor,
+    RenameImageInterceptor,
     ConvertToWebpInterceptor,
   )
   @Patch("/record/:mealId")
@@ -89,7 +89,7 @@ export class MealController {
 
   @ApiOperation({ summary: "홈 화면 데일리 기록 조회" })
   @Get("/home/daily")
-  findHomeDaily(@CurrentUser("id") userId: number,  @Query("date") todayDate: string) {
+  findHomeDaily(@CurrentUser("id") userId: number, @Query("date") todayDate: string) {
     return this.mealService.findHomeDaily(userId, todayDate);
   }
 }

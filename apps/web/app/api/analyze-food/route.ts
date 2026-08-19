@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeFoodByGemini } from "@/utils/api/apiGenAI";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const {

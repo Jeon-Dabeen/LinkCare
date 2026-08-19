@@ -43,3 +43,29 @@ export interface CheckupDashBoardResponse {
     ygtp: StatusType;
   };
 }
+
+export interface CheckupHistoryItem {
+  checkup_year: number;
+  checkup_date: string;
+  height: number;
+  weight: number;
+  waist: number;
+  bmi: number;
+  visionLeft: number;
+  visionRight: number;
+  hearing: string;
+  bp_systolic: number;
+  bp_diastolic: number;
+  urine_protein: string;
+  hemoglobin: number;
+  fbg: number;
+  creatinine: number;
+  egfr: number;
+  ast: number;
+  alt: number;
+  ygtp: number;
+}
+
+export interface UploadedData {
+  checkup_history: CheckupHistoryItem[];
+}

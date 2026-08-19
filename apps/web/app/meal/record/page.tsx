@@ -23,6 +23,7 @@ import StatePage from "@/app/_components/ui/StatePage";
 import { getMealTypeLabel, MealType } from "@/types/mealType";
 import { useAlert } from "@/app/_providers/AlertContext";
 import { useConfirm } from "@/app/_providers/ConfirmContext";
+import { compressImage } from "@/utils/imageCompress";
 
 type RecordModeType =
   | "EDIT" // 오늘 + 기존 데이터 있음 (수정)
@@ -137,7 +138,7 @@ function MealRecordContent() {
   const isModified =
     !isSaving &&
     (selectedFile != null ||
-    JSON.stringify(foodItems) !== JSON.stringify(initialFoodItems));
+      JSON.stringify(foodItems) !== JSON.stringify(initialFoodItems));
 
   /**
    * 아이템 추가 버튼 함수
@@ -186,7 +187,7 @@ function MealRecordContent() {
    * @param file
    * @returns
    */
-  const handleImageSelected = async (file: File) => {
+  const handleImageSelected = async (originalFile: File) => {
     // 이미 입력된 음식 데이터나 기존 이미지가 있는 경우 확인 창 띄우기
     const hasExistingData = foodItems.some(
       (item) => item.foodName.trim() !== "" || item.calorie !== null,
@@ -209,6 +210,9 @@ function MealRecordContent() {
     setIsPhotoLoading(true);
 
     try {
+      // 업로드된 이미지 압축
+      const file = await compressImage(originalFile);
+      
       // 이미지 분석
       const foods = await analyzeFood(file);
 
@@ -331,8 +335,17 @@ function MealRecordContent() {
    */
   const handleDelete = async () => {
     // 삭제 전 다시 확인
-    const isConfirmed = window.confirm("정말 이 식사 기록을 삭제하실 건가요?");
-    if (!isConfirmed) return;
+    const isConfirmed = await customConfirm(
+      "정말 이 식사 기록을 삭제하실 건가요?",
+      {
+        title: "식사 내용 덮어쓰기",
+        confirmText: "덮어쓰기",
+        cancelText: "취소",
+      },
+    );
+    if (!isConfirmed) {
+      return;
+    }
 
     try {
       await apiFetch(`/meal/record/${mealId}`, {
