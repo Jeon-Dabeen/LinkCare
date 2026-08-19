@@ -42,6 +42,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === "production",
       sameSite: isProduction ? "none" : "lax", // Cross-site 쿠키 전송 허용
       path: "/",
+      domain: ".azurecontainerapps.io",
       maxAge: 14 * 24 * 60 * 60 * 1000, // 14일 (JwtModule의 expiresIn과 동일하게 설정)
     });
 
