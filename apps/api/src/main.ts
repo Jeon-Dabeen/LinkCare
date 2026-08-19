@@ -10,7 +10,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
-  app.enableCors({ origin: process.env.WEB_SERVER_URL, credentials: true });
+  app.enableCors({
+    origin: process.env.WEB_SERVER_URL ?? "https://app-web.niceplant-976abd6a.koreacentral.azurecontainerapps.io",
+    credentials: true, // ★ 쿠키/인증 정보를 위해 필수
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // ★ 허용할 HTTP 메서드 명시
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"], // ★ 프론트엔드가 보낼 수 있는 헤더 명시
+    exposedHeaders: ["Set-Cookie"], // ★ 브라우저가 응답 헤더의 쿠키를 읽을 수 있게 허용
+  });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // 글로벌 예외 필터 (모든 에러 인터셉터)
