@@ -140,7 +140,7 @@ export default function Page() {
                         <div
                           className={`${commonStyle.textLight} ${style.detailMessage}`}
                         >
-                          혈압은 최저가 60~80, 최고가 90~120이면 정상이에요.
+                          혈압은 최저가 60~79, 최고가 90~119이면 정상이에요.
                         </div>
                       </Card.Grid>
                     </Card.Body>
